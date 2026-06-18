@@ -1,0 +1,13 @@
+# Firebase — chaves locais (no GitHub vêm dos Secrets na Action)
+firebase-env.js
+firebase-config.js
+
+# Gerado no deploy (opcional manter local)
+# manifest.webmanifest
+
+# Sistema / IDE
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
+.cursor/

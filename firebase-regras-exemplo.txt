@@ -1,0 +1,52 @@
+// Regras Firestore — projeto system-restaurants (BAYTIGRILL)
+// Firebase Console → Firestore Database → Regras
+// NÃO apague regras existentes — ADICIONE ou ajuste conforme sua segurança.
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ========== BAYTIGRILL (Restaurante) ==========
+    // Comandas / mesas / delivery — pedidos em tempo real
+    match /clientes/{clienteId} {
+      allow read, write: if true;
+    }
+
+    // Cardápio (produtos, preços, fotos)
+    match /catalogo/{produtoId} {
+      allow read, write: if true;
+    }
+
+    // Configurações (empresa, cardápio semanal, contador)
+    match /config/{docId} {
+      allow read, write: if true;
+    }
+
+    // Movimento de caixa
+    match /caixa/{lancamentoId} {
+      allow read, write: if true;
+    }
+
+    // Usuários (login garçom / cozinha / admin)
+    match /usuarios/{userId} {
+      allow read, write: if true;
+    }
+
+    // ========== Outros apps no mesmo projeto ==========
+    // (mantenha as regras do Gestão de Clientes, Controle de Veículos, etc.)
+  }
+}
+
+// ========== AUTENTICAÇÃO ==========
+// Firebase Console → Authentication → Settings → Authorized domains
+// Adicione:
+//   localhost
+//   SEU-USUARIO.github.io
+//   system-restaurants.firebaseapp.com
+
+// ========== SINCRONIZAÇÃO EM TEMPO REAL ==========
+// Todos os aparelhos (caixa, garçom, cozinha) usam o MESMO projeto Firebase.
+// O sistema usa onSnapshot — ao garçom lançar pedido no celular,
+// o caixa e a cozinha atualizam automaticamente.
+
+// PRODUÇÃO: troque "if true" por regras com request.auth != null quando ativar login.
