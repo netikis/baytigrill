@@ -8,6 +8,13 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="format-detection" content="telephone=no">
 <meta name="theme-color" content="#3D4A38">
+<meta name="description" content="BAYTIGRILL — pedidos, comandas, cozinha e garçom em tempo real">
+<meta name="apple-mobile-web-app-title" content="BAYTIGRILL">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+<link rel="apple-touch-icon" href="icons/icon-512.png">
 <title>BAYTIGRILL - Sistema</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -111,7 +118,74 @@
       box-shadow: 0 5px 15px rgba(0,0,0,0.8); cursor: pointer; display: none;
   }
   body.mode-kds #btnSairKDS { display: block; }
-  body.role-func #btnSairKDS { display: none !important; } 
+  body.role-func #btnSairKDS { display: none !important; }
+
+  /* --- MODO GARÇOM (painel caixa) --- */
+  body.mode-garcom .container > *:not(#painelGarcom) { display: none !important; }
+  body.mode-garcom #painelGarcom {
+      display: grid !important;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 15px; padding: 15px; padding-top: 20px;
+      width: 100%; max-width: 1200px; margin: 0 auto;
+  }
+  body.mode-garcom .titulo-caixa { display: none !important; }
+  body.mode-garcom .titulo-garcom { display: inline !important; color: #fff; }
+  body.mode-garcom .header { border-bottom: 2px solid var(--accent); }
+  body.mode-garcom .btn-garcom-toggle,
+  body.mode-garcom .btn-kds-toggle { display: none !important; }
+  body.mode-garcom .faixa-garcons { display: none !important; }
+  body.mode-garcom .app-layout { display: none !important; }
+  body.mode-garcom .sidebar-nav { display: none !important; }
+  body.mode-garcom .mobile-bottom-nav { display: none !important; }
+  body.mode-garcom #btnToggleSidebar { display: none !important; }
+  #btnSairGarcom {
+      position: fixed; bottom: 20px; right: 20px; z-index: 9999999;
+      background: var(--danger); color: white; border: 1px solid var(--text-main);
+      padding: 12px 20px; border-radius: 6px; font-weight: 600; font-size: 13px;
+      letter-spacing: 1px; box-shadow: 0 5px 15px rgba(0,0,0,0.8);
+      cursor: pointer; display: none;
+  }
+  body.mode-garcom #btnSairGarcom { display: block; }
+  .titulo-garcom { display: none; }
+  .faixa-garcons {
+      display: none; align-items: center; flex-wrap: wrap; gap: 8px;
+      background: linear-gradient(180deg, #2E3830 0%, var(--bg-dark) 100%);
+      border-bottom: 1px solid var(--accent);
+      padding: 8px 14px;
+      position: sticky; top: 0; z-index: 40;
+  }
+  .faixa-garcons-label {
+      font-size: 10px; font-weight: 700; color: var(--text-muted);
+      letter-spacing: 0.5px; white-space: nowrap;
+  }
+  .garcom-chip {
+      background: var(--card-elevated); color: var(--text-main);
+      border: 1px solid var(--border-soft); border-radius: 20px;
+      padding: 6px 14px; font-size: 12px; font-weight: 700;
+      cursor: pointer; font-family: 'Poppins', sans-serif;
+      display: inline-flex; align-items: center; gap: 6px;
+      touch-action: manipulation; min-height: 36px;
+  }
+  .garcom-chip.pendente {
+      border-color: var(--accent);
+      color: var(--accent);
+      animation: piscarAlertaLateral 1.2s ease-in-out infinite;
+      box-shadow: 0 0 0 2px rgba(201, 162, 59, 0.25);
+  }
+  .garcom-chip-qtd {
+      background: var(--danger); color: #fff; font-size: 10px;
+      min-width: 18px; height: 18px; border-radius: 9px;
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 0 5px;
+  }
+  .garcom-pedido-bloco {
+      background: var(--input-bg); border: 1px solid var(--border-soft);
+      border-radius: 8px; padding: 14px; margin-bottom: 12px;
+      border-left: 4px solid var(--accent);
+  }
+  .garcom-pedido-itens { font-size: 13px; line-height: 1.5; color: var(--text-main); }
+  .garcom-pedido-itens .obs { font-size: 11px; color: var(--text-muted); font-style: italic; }
+  .garcom-card-pendente { animation: piscarAlertaLateral 1.5s ease-in-out infinite; }
 
   /* --- LAYOUT LATERAL (ABAS) --- */
   .app-layout {
@@ -132,6 +206,8 @@
       overflow-y: auto;
       z-index: 50;
       flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
   }
   .sidebar-nav-logo {
       padding: 10px 12px 14px;
@@ -161,6 +237,35 @@
       border-left-color: var(--accent);
   }
   .sidebar-item .ico { font-size: 18px; width: 24px; text-align: center; }
+  .sidebar-item-sair {
+      margin-top: auto;
+      border-top: 1px solid var(--border-soft);
+      color: var(--danger) !important;
+  }
+  .sidebar-item-sair:hover { border-left-color: var(--danger) !important; color: #fff !important; }
+  #btnSairSessao {
+      display: none;
+      position: fixed;
+      bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+      left: 16px; right: 16px;
+      z-index: 9999999;
+      background: var(--danger); color: #fff;
+      border: 1px solid var(--text-main);
+      padding: 14px 20px; border-radius: 8px;
+      font-weight: 700; font-size: 13px; letter-spacing: 0.5px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.8);
+      cursor: pointer; text-align: center;
+      font-family: 'Poppins', sans-serif;
+  }
+  body.role-func #btnSairSessao { display: block; }
+  .btn-trocar-login {
+      font-size: 10px !important;
+      padding: 8px 12px !important;
+      font-weight: 700 !important;
+      white-space: nowrap;
+      min-height: 36px;
+      border-radius: 6px;
+  }
   .main-panels {
       flex: 1; min-width: 0; padding: 15px 20px 30px;
       max-width: 100%;
@@ -295,8 +400,13 @@
       }
       body.mode-kds .main-panels { padding-bottom: 20px; }
       body.mode-kds .mobile-bottom-nav { display: none !important; }
+      body.mode-garcom .mobile-bottom-nav { display: none !important; }
       .comandas-inicio-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
       body.mode-kds #painelKDS {
+          grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+          padding: 12px;
+      }
+      body.mode-garcom #painelGarcom {
           grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
           padding: 12px;
       }
@@ -320,7 +430,18 @@
           min-height: 44px;
           white-space: nowrap;
       }
+      .btn-garcom-toggle {
+          font-size: 10px !important;
+          padding: 10px 10px !important;
+          min-height: 44px;
+          white-space: nowrap;
+      }
       #userDisplay { display: none !important; }
+      .btn-trocar-login {
+          font-size: 9px !important;
+          padding: 10px 10px !important;
+          min-height: 44px;
+      }
       .logo-frame--header { max-width: 128px; }
       .logo-frame--header .logo-brand { max-height: 34px; }
 
@@ -387,8 +508,16 @@
           width: auto;
           text-align: center;
       }
+      #btnSairGarcom {
+          bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+          left: 16px;
+          right: 16px;
+          width: auto;
+          text-align: center;
+      }
 
       body.mode-kds #painelKDS { grid-template-columns: 1fr; gap: 10px; padding: 10px; }
+      body.mode-garcom #painelGarcom { grid-template-columns: 1fr; gap: 10px; padding: 10px; }
       .kds-card { padding: 14px; }
 
       .mobile-nav-item { font-size: 9px; }
@@ -418,6 +547,7 @@
           max-height: 90vh;
       }
       body.mode-kds #painelKDS { grid-template-columns: repeat(2, 1fr); }
+      body.mode-garcom #painelGarcom { grid-template-columns: repeat(2, 1fr); }
   }
 
   @media (min-width: 1024px) {
@@ -452,6 +582,19 @@
       background: var(--card-bg); padding: 25px; border-radius: 10px; 
       margin-bottom: 20px; border: 1px solid var(--border-soft); 
       box-shadow: 0 4px 16px rgba(0,0,0,0.15); 
+  }
+  .card--full { width: 100%; max-width: none; box-sizing: border-box; }
+  .carrinho-print-actions {
+      display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px;
+  }
+  .carrinho-print-actions button {
+      flex: 1; min-width: 200px; padding: 14px 12px; font-size: 12px;
+      background: transparent; color: var(--accent); border: 1px solid rgba(201, 162, 59, 0.55);
+  }
+  .num-pedido-display {
+      font-weight: 700; font-size: 18px; color: var(--accent);
+      letter-spacing: 2px; font-family: 'Poppins', sans-serif;
+      min-width: 56px; text-align: center;
   }
   .card h3 { 
       color: var(--text-main); margin: 0 0 20px 0; font-size: 20px; 
@@ -609,14 +752,167 @@
     @page { margin: 0.5cm; size: auto; }
   }
   
-  /* LOGIN — desativado até configurar Firebase Auth */
-  #loginOverlay { display: none !important; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #4B5D3F 0%, #2A3328 70%); z-index: 1000000; flex-direction: column; align-items: center; justify-content: center; }
+  /* LOGIN */
+  #loginOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #4B5D3F 0%, #2A3328 70%); z-index: 1000000; flex-direction: column; align-items: center; justify-content: center; }
   .login-box { background: var(--card-elevated); padding: 40px; border-radius: 12px; border: 1px solid var(--border-soft); width: 85%; max-width: 380px; text-align: center; box-shadow: 0 12px 36px rgba(0,0,0,0.18); }
   .login-logo-wrap { display: flex; justify-content: center; align-items: center; margin-bottom: 16px; min-height: 110px; }
   #logoLoginDisplay.visivel { display: block; }
 
   body.role-func .admin-only { display: none !important; }
-  
+  body.role-garcom .admin-only { display: none !important; }
+  body.role-garcom .header,
+  body.role-garcom .faixa-garcons,
+  body.role-garcom .container,
+  body.role-garcom .mobile-bottom-nav,
+  body.role-garcom #btnSairKDS,
+  body.role-garcom #btnSairGarcom { display: none !important; }
+  body.role-garcom { padding-bottom: 0; }
+
+  /* --- APP GARÇOM (TELA EXCLUSIVA) --- */
+  #appGarcom {
+      display: none; flex-direction: column; min-height: 100vh;
+      background: linear-gradient(165deg, #2A3328 0%, #1e251c 100%);
+  }
+  body.role-garcom #appGarcom { display: flex !important; }
+  .garcom-topbar {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: calc(10px + env(safe-area-inset-top, 0px)) 16px 10px;
+      background: linear-gradient(180deg, var(--primary) 0%, #3A4536 100%);
+      border-bottom: 2px solid var(--accent);
+      flex-wrap: wrap;
+  }
+  .garcom-topbar-brand { display: flex; align-items: center; gap: 10px; }
+  .garcom-topbar-brand img { max-height: 36px; }
+  .garcom-topbar-brand span { font-size: 11px; color: var(--accent); letter-spacing: 3px; font-weight: 600; }
+  .garcom-topbar-user { text-align: right; }
+  .garcom-topbar-user strong { display: block; color: #fff; font-size: 14px; }
+  .garcom-topbar-user small { color: var(--text-muted); font-size: 10px; letter-spacing: 1px; }
+  .garcom-pedido-num {
+      background: var(--accent); color: #1a1a1a; font-weight: 800;
+      padding: 6px 14px; border-radius: 20px; font-size: 13px; letter-spacing: 0.5px;
+  }
+  .garcom-layout {
+      display: grid; grid-template-columns: 320px 1fr; flex: 1;
+      min-height: 0; gap: 0;
+  }
+  .garcom-painel-mesa {
+      background: var(--bg-panel); border-right: 1px solid var(--border-soft);
+      padding: 16px; overflow-y: auto;
+      display: flex; flex-direction: column; gap: 12px;
+  }
+  .garcom-painel-mesa h3 {
+      margin: 0; font-size: 13px; color: var(--accent); letter-spacing: 2px;
+      font-weight: 600; text-transform: uppercase;
+  }
+  .garcom-field label {
+      display: block; font-size: 10px; color: var(--text-muted);
+      letter-spacing: 0.5px; margin-bottom: 5px; font-weight: 600;
+  }
+  .garcom-field input, .garcom-field select {
+      width: 100%; box-sizing: border-box; padding: 14px;
+      background: var(--input-bg); border: 1px solid var(--border-soft);
+      border-radius: 8px; color: var(--text-main); font-size: 16px;
+  }
+  .garcom-field input:focus, .garcom-field select:focus { border-color: var(--accent); outline: none; }
+  .garcom-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .garcom-carrinho {
+      flex: 1; background: var(--card-bg); border: 1px solid var(--border-soft);
+      border-radius: 10px; padding: 12px; overflow-y: auto; min-height: 120px;
+  }
+  .garcom-carrinho-item {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding: 10px 0; border-bottom: 1px solid var(--border-soft); gap: 8px;
+  }
+  .garcom-carrinho-item:last-child { border-bottom: none; }
+  .garcom-carrinho-item .nome { font-weight: 600; font-size: 13px; color: var(--text-main); }
+  .garcom-carrinho-item .obs { font-size: 10px; color: var(--text-muted); font-style: italic; margin-top: 3px; }
+  .garcom-carrinho-item .preco { color: var(--accent); font-weight: 700; font-size: 13px; white-space: nowrap; }
+  .garcom-carrinho-item button {
+      background: transparent; border: 1px solid var(--danger); color: var(--danger);
+      border-radius: 4px; padding: 4px 8px; font-size: 11px; cursor: pointer; margin-top: 4px;
+  }
+  .garcom-total-box {
+      text-align: center; padding: 14px; background: var(--input-bg);
+      border-radius: 10px; border: 1px solid rgba(201,162,59,0.3);
+  }
+  .garcom-total-box .lbl { font-size: 10px; color: var(--text-muted); letter-spacing: 1px; }
+  .garcom-total-box .val { font-size: 28px; color: var(--accent); font-weight: 700; }
+  .btn-enviar-garcom {
+      width: 100%; padding: 18px; font-size: 14px; font-weight: 800;
+      letter-spacing: 1.5px; border-radius: 10px; border: none;
+      background: linear-gradient(135deg, var(--accent) 0%, #a8862f 100%);
+      color: #1a1a1a; cursor: pointer; touch-action: manipulation;
+  }
+  .btn-enviar-garcom:disabled { opacity: 0.5; cursor: not-allowed; }
+  .garcom-cardapio-area {
+      display: flex; flex-direction: column; min-height: 0; overflow: hidden;
+  }
+  .garcom-cat-bar {
+      display: flex; gap: 6px; padding: 12px 14px; overflow-x: auto;
+      background: var(--card-bg); border-bottom: 1px solid var(--border-soft);
+      flex-shrink: 0; -webkit-overflow-scrolling: touch;
+  }
+  .garcom-cat-btn {
+      flex-shrink: 0; padding: 10px 16px; border-radius: 20px;
+      background: var(--input-bg); border: 1px solid var(--border-soft);
+      color: var(--text-muted); font-size: 11px; font-weight: 600;
+      cursor: pointer; white-space: nowrap; font-family: 'Poppins', sans-serif;
+  }
+  .garcom-cat-btn.active { background: var(--accent); color: #1a1a1a; border-color: var(--accent); }
+  .garcom-busca-wrap { padding: 10px 14px; background: var(--bg-panel); flex-shrink: 0; }
+  .garcom-busca-wrap input {
+      width: 100%; box-sizing: border-box; padding: 14px 16px;
+      background: var(--input-bg); border: 1px solid var(--border-soft);
+      border-radius: 10px; color: var(--text-main); font-size: 16px;
+  }
+  .garcom-produtos-grid {
+      flex: 1; overflow-y: auto; padding: 14px;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px; align-content: start;
+      padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  }
+  .garcom-prod-card {
+      background: var(--card-elevated); border: 1px solid var(--border-soft);
+      border-radius: 12px; padding: 14px; cursor: pointer;
+      transition: 0.2s; touch-action: manipulation; min-height: 100px;
+      display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .garcom-prod-card:active { transform: scale(0.97); border-color: var(--accent); }
+  .garcom-prod-card .cat { font-size: 9px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+  .garcom-prod-card .nome { font-size: 14px; font-weight: 600; color: var(--text-main); margin: 6px 0; line-height: 1.3; }
+  .garcom-prod-card .preco { font-size: 16px; font-weight: 700; color: var(--accent); }
+  .garcom-prod-card .add-hint { font-size: 10px; color: var(--text-muted); margin-top: 6px; }
+  .garcom-prod-card .prod-thumb {
+      width: 100%; height: 88px; object-fit: cover; border-radius: 8px;
+      margin-bottom: 8px; background: var(--input-bg);
+  }
+  .produto-thumb-mini {
+      width: 52px; height: 52px; object-fit: cover; border-radius: 6px;
+      flex-shrink: 0; background: var(--input-bg); border: 1px solid var(--border-soft);
+  }
+  .img-upload-box {
+      background: var(--input-bg); border: 1px dashed var(--border-soft);
+      border-radius: 8px; padding: 12px; margin-bottom: 15px; text-align: center;
+  }
+  .img-upload-box label { font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 8px; font-weight: 600; }
+  .img-upload-preview { max-width: 100%; max-height: 200px; border-radius: 8px; margin-top: 10px; object-fit: contain; }
+  .cardapio-semana-preview { max-width: 100%; max-height: 320px; border-radius: 10px; border: 1px solid var(--border-soft); object-fit: contain; margin-bottom: 12px; }
+  .garcom-vazio { text-align: center; color: var(--text-muted); padding: 40px 20px; font-style: italic; grid-column: 1 / -1; }
+
+  @media (max-width: 900px) {
+      .garcom-layout { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+      .garcom-painel-mesa {
+          border-right: none; border-bottom: 1px solid var(--border-soft);
+          max-height: 42vh; flex-shrink: 0;
+      }
+      .garcom-produtos-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 480px) {
+      .garcom-produtos-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .garcom-prod-card { padding: 10px; min-height: 90px; }
+      .garcom-prod-card .nome { font-size: 12px; }
+  }
+
   /* ABAS E TAGS */
   .tab-btn { flex: 1; padding: 12px; background: var(--input-bg); border: 1px solid var(--border-soft); color: var(--text-muted); cursor: pointer; text-align:center; font-weight: 600; border-radius: 6px; transition: 0.2s; }
   .tab-btn.active { background: var(--primary); color: #FFF; border-color: var(--primary); }
@@ -646,6 +942,8 @@
 <div id="notificationArea" class="admin-only"></div>
 
 <button id="btnSairKDS" class="admin-only" onclick="toggleKDS()">VOLTAR AO CAIXA</button>
+<button id="btnSairGarcom" class="admin-only" onclick="toggleGarcom()">VOLTAR AO CAIXA</button>
+<button id="btnSairSessao" type="button" onclick="trocarLogin()">🚪 SAIR / TROCAR ACESSO</button>
 
 <div id="printOverlay">
     <div class="print-controls" style="position:fixed; top:20px; right:20px; z-index:10000000;">
@@ -664,6 +962,7 @@
     <h2 class="titulo" style="font-size:22px; margin-bottom:5px; color:#fff; letter-spacing:3px;">BAYTIGRILL</h2>
     <div id="step-1" style="margin-top:20px;">
         <button class="primary" onclick="selecionarPerfil('admin')" style="width:100%; margin-bottom:10px; padding:15px; font-size:14px;">🛡️ GERÊNCIA (CAIXA)</button>
+        <button class="warning" onclick="selecionarPerfil('garcom')" style="width:100%; margin-bottom:10px; padding:15px; font-size:14px;">🧑‍🍳 GARÇOM (SALÃO)</button>
         <button class="dark" onclick="selecionarPerfil('func')" style="width:100%; padding:15px; font-size:14px;">👨‍🍳 COZINHA (PRODUÇÃO)</button>
     </div>
     <div id="step-2" style="display:none; margin-top:20px;">
@@ -684,8 +983,67 @@
   </div>
 </div>
 
+<!-- APP EXCLUSIVO DO GARÇOM -->
+<div id="appGarcom">
+  <header class="garcom-topbar">
+    <div class="garcom-topbar-brand">
+      <img src="logo-baytigrill-sistema.png?v=2" alt="BAYTIGRILL">
+      <span>SALÃO</span>
+    </div>
+    <div class="garcom-pedido-num" id="garcomNumPedidoDisplay">PEDIDO #1</div>
+    <div class="garcom-topbar-user">
+      <strong id="garcomNomeDisplay">Garçom</strong>
+      <small>ATENDIMENTO</small>
+    </div>
+    <button class="danger" onclick="trocarLogin()" style="padding:10px 14px; font-size:11px; border-radius:8px; font-weight:700;">🚪 SAIR</button>
+  </header>
+  <div class="garcom-layout">
+    <aside class="garcom-painel-mesa">
+      <h3>Comanda da Mesa</h3>
+      <div class="garcom-field">
+        <label>MESA / LOCAL</label>
+        <input type="text" id="garcomInputMesa" placeholder="Ex: Mesa 12, Varanda, VIP" autocomplete="off" oninput="sincronizarMesaGarcom()">
+      </div>
+      <div class="garcom-field">
+        <label>NOME DO CLIENTE (opcional)</label>
+        <input type="text" id="garcomInputCliente" placeholder="Ex: Sr. Silva" autocomplete="off">
+      </div>
+      <div class="garcom-field">
+        <label>MESA EM ABERTO</label>
+        <select id="garcomSelectMesa" onchange="selecionarMesaGarcomExistente()">
+          <option value="">— Nova mesa / digitar acima —</option>
+        </select>
+      </div>
+      <div class="garcom-row-3">
+        <div class="garcom-field"><label>PESSOAS</label><input type="number" id="garcomInputPessoas" min="0" inputmode="numeric" placeholder="0"></div>
+        <div class="garcom-field"><label>COPOS</label><input type="number" id="garcomInputCopos" min="0" inputmode="numeric" placeholder="0"></div>
+        <div class="garcom-field"><label>PRATOS</label><input type="number" id="garcomInputPratos" min="0" inputmode="numeric" placeholder="0"></div>
+      </div>
+      <h3 style="margin-top:8px;">Itens do Pedido</h3>
+      <div class="garcom-carrinho" id="garcomListaCarrinho">
+        <p class="garcom-vazio" style="padding:20px;margin:0;">Toque no cardápio para adicionar pratos</p>
+      </div>
+      <div class="garcom-total-box">
+        <div class="lbl">TOTAL DO PEDIDO</div>
+        <div class="val" id="garcomTotalDisplay">R$ 0,00</div>
+      </div>
+      <button type="button" class="btn-enviar-garcom" id="btnEnviarPedidoGarcom" onclick="concluirPedidoGarcom()">ENVIAR PARA COZINHA E CAIXA</button>
+    </aside>
+    <main class="garcom-cardapio-area">
+      <div class="garcom-cat-bar" id="garcomCategorias"></div>
+      <div class="garcom-busca-wrap">
+        <input type="search" id="garcomBuscaProduto" placeholder="🔍 Buscar no cardápio..." oninput="renderCardapioGarcom()" autocomplete="off">
+      </div>
+      <div class="garcom-produtos-grid" id="garcomGridProdutos"></div>
+    </main>
+  </div>
+</div>
+
 <header class="header">
-  <button class="warning btn-kds-toggle admin-only" onclick="toggleKDS()" style="font-size:11px; padding:8px 12px; font-weight:600;">👨‍🍳 COZINHA</button>
+  <div class="header-left admin-only" style="display:flex; gap:8px; align-items:center; flex-shrink:0;">
+    <button class="warning btn-kds-toggle" onclick="toggleKDS()" style="font-size:11px; padding:8px 12px; font-weight:600;">👨‍🍳 COZINHA</button>
+    <button class="warning btn-garcom-toggle" onclick="toggleGarcom()" style="font-size:11px; padding:8px 12px; font-weight:600;">🧑‍🍳 GARÇOM</button>
+  </div>
   <div class="header-center">
     <div class="logo-frame logo-frame--header">
       <img id="logoHeader" src="logo-baytigrill-sistema.png?v=2" class="logo-brand" alt="BAYTIGRILL">
@@ -693,16 +1051,21 @@
     <div class="titulo">
         <span class="titulo-caixa">BAYTIGRILL</span>
         <span class="titulo-cozinha" style="display:none;">Produção - Cozinha</span>
+        <span class="titulo-garcom">Pedidos — Garçom</span>
     </div>
   </div>
   <div style="display:flex; gap:10px; align-items:center;">
     <div id="userDisplay" style="font-size:11px; text-align:right; color:var(--text-muted);" class="admin-only">Modo Administrador</div>
+    <button type="button" class="danger btn-trocar-login admin-only" onclick="trocarLogin()">🚪 SAIR</button>
   </div>
 </header>
+
+<div id="faixaGarcons" class="faixa-garcons admin-only"></div>
 
 <div class="container">
   
   <div id="painelKDS" style="display:none;"></div>
+  <div id="painelGarcom" style="display:none;"></div>
 
   <div class="app-layout admin-only">
     <nav class="sidebar-nav" id="sidebarNav">
@@ -713,10 +1076,13 @@
         <span class="logo-sub">Restaurante</span>
       </div>
       <button type="button" class="sidebar-item active" data-painel="inicio" onclick="abrirPainelLateral('inicio', this)"><span class="ico">🏠</span> Início <span id="badgeSidebarInicio" class="sidebar-badge" style="display:none">0</span></button>
-      <button type="button" class="sidebar-item" data-painel="comandas" onclick="abrirPainelLateral('comandas', this)"><span class="ico">📋</span> Comandas</button>
+      <button type="button" class="sidebar-item" data-painel="produtos" onclick="abrirPainelLateral('produtos', this)"><span class="ico">🍴</span> Cadastrar Produtos</button>
+      <button type="button" class="sidebar-item" data-painel="acesso" onclick="abrirPainelLateral('acesso', this)"><span class="ico">👥</span> Acesso Equipe</button>
       <button type="button" class="sidebar-item" data-painel="pedido" onclick="abrirPainelLateral('pedido', this)"><span class="ico">🍽️</span> Lançar Pedido</button>
+      <button type="button" class="sidebar-item" data-painel="comandas" onclick="abrirPainelLateral('comandas', this)"><span class="ico">📋</span> Comandas</button>
       <button type="button" class="sidebar-item" data-painel="cardapio" onclick="abrirPainelLateral('cardapio', this)"><span class="ico">📅</span> Menu do Dia</button>
       <button type="button" class="sidebar-item" data-painel="config" onclick="abrirPainelLateral('config', this)"><span class="ico">⚙️</span> Configurações</button>
+      <button type="button" class="sidebar-item sidebar-item-sair" onclick="trocarLogin()"><span class="ico">🚪</span> Sair / Trocar acesso</button>
     </nav>
 
     <div class="main-panels">
@@ -752,10 +1118,65 @@
         <div class="card" style="text-align:center; padding:30px;">
             <p style="color:var(--text-muted); margin:0 0 20px; font-size:14px;">Acesso rápido às operações do restaurante</p>
             <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
-                <button class="primary" onclick="abrirPainelLateral('comandas')" style="min-width:160px;">📋 Ver Comandas</button>
                 <button class="warning" onclick="abrirPainelLateral('pedido')" style="min-width:160px;">🍽️ Novo Pedido</button>
+                <button class="primary" onclick="abrirPainelLateral('comandas')" style="min-width:160px;">📋 Ver Comandas</button>
+                <button class="success" onclick="abrirPainelLateral('produtos')" style="min-width:160px;">🍴 Cadastrar Produtos</button>
+                <button class="dark" onclick="abrirPainelLateral('acesso')" style="min-width:160px;">👥 Acesso Equipe</button>
                 <button class="dark" onclick="toggleKDS()" style="min-width:160px;">👨‍🍳 Abrir Cozinha</button>
+                <button class="warning" onclick="toggleGarcom()" style="min-width:160px;">🧑‍🍳 Ver Garçons</button>
             </div>
+        </div>
+      </div>
+
+      <!-- PAINEL CADASTRAR PRODUTOS -->
+      <div id="painel-produtos" class="painel-secao">
+        <h2 class="painel-titulo">Cadastrar Produtos</h2>
+        <div class="card card--full">
+          <p style="font-size:12px; color:var(--text-muted); margin-top:0; margin-bottom:20px;">Monte o cardápio do restaurante — pratos, bebidas e adicionais usados nos pedidos.</p>
+          <h4 style="color:var(--accent); margin-top:0;">Adicionar ao Menu</h4>
+          <select id="catCategoria" style="width:100%; margin-bottom:12px;">
+              <option value="MARMITAS">Marmitas e Pratos Feitos</option>
+              <option value="ENTRADAS">Entradas</option>
+              <option value="PRATOS PRINCIPAIS">Pratos Principais</option>
+              <option value="MASSAS E RISOTOS">Massas e Risotos</option>
+              <option value="CARNES E GRELHADOS">Carnes e Grelhados</option>
+              <option value="SOBREMESAS">Sobremesas</option>
+              <option value="CARTA DE VINHOS">Carta de Vinhos</option>
+              <option value="BEBIDAS">Bebidas em Geral</option>
+              <option value="ADICIONAIS EXTRAS">Acompanhamentos / Extras</option>
+          </select>
+          <input type="text" id="catNome" placeholder="Nome do Prato / Bebida" style="width:100%; margin-bottom:12px;">
+          <input type="number" id="catValor" placeholder="Preço (R$)" style="width:100%; margin-bottom:12px;">
+          <div class="img-upload-box">
+              <label>📷 FOTO DO PRODUTO (opcional)</label>
+              <input type="file" id="catImagemInput" accept="image/*" onchange="carregarImagemProdutoTemp(this)">
+              <img id="catImagemPreview" class="img-upload-preview" style="display:none;" alt="Prévia do produto">
+              <button type="button" id="btnRemoverImagemProduto" class="danger" onclick="limparImagemProdutoTemp()" style="display:none; margin-top:8px; font-size:11px; padding:8px 12px;">REMOVER FOTO</button>
+          </div>
+          <div style="background:var(--input-bg); padding:15px; border-radius:4px; margin-bottom:15px; border: 1px solid var(--border-soft);">
+              <label style="font-size:11px; color:var(--text-muted);">OBSERVAÇÕES / EXTRAS (Opcional):</label>
+              <div style="display:flex; gap:8px; margin-top:8px;">
+                  <input type="text" id="novoIngrediente" placeholder="Ex: Ao Ponto, Sem Cebola..." style="margin-bottom:0;">
+                  <button type="button" class="warning" onclick="addIngredienteTemp()" style="width:50px; font-size:16px; padding:0;">+</button>
+              </div>
+              <div id="listaIngredientesTemp" style="margin-top:12px;"></div>
+          </div>
+          <button class="success" onclick="salvarCatalogo()" style="width:100%; margin-bottom:12px;">➕ CADASTRAR ITEM</button>
+          <button class="dark" onclick="abrirGerenciarCatalogo()" style="width:100%; border-color: var(--accent); color: var(--accent);">📋 EDITAR CARDÁPIO</button>
+        </div>
+      </div>
+
+      <!-- PAINEL ACESSO EQUIPE -->
+      <div id="painel-acesso" class="painel-secao">
+        <h2 class="painel-titulo">Acesso da Equipe</h2>
+        <div class="card" style="max-width: 480px;">
+          <p style="font-size:13px; color:var(--text-muted); margin-top:0; line-height:1.5;">Crie logins para garçom, cozinha ou gerência. Cada perfil enxerga apenas o que precisa no dia a dia.</p>
+          <ul style="font-size:12px; color:var(--text-muted); margin:0 0 24px 0; padding-left:18px; line-height:1.7;">
+              <li><strong style="color:var(--text-main);">Garçom</strong> — cardápio e pedidos do salão</li>
+              <li><strong style="color:var(--text-main);">Cozinha</strong> — comandas para produção</li>
+              <li><strong style="color:var(--text-main);">Gerente</strong> — caixa e controle total</li>
+          </ul>
+          <button class="warning" onclick="abrirModalUsuario()" style="width:100%; padding:16px; font-size:14px; font-weight:700;">👥 CRIAR ACESSO DA EQUIPE</button>
         </div>
       </div>
 
@@ -819,7 +1240,8 @@
               </div>
               <div style="display:flex; align-items:center; gap:10px;">
                   <span style="font-size:10px; color:var(--text-muted); font-weight:600; letter-spacing: 1px;">PEDIDO Nº</span>
-                  <input type="number" id="numPedido" style="width:70px; text-align:center; font-weight:600; font-size:15px; padding:10px; margin:0; background: var(--input-bg); border: 1px solid #444;">
+                  <span id="numPedidoDisplay" class="num-pedido-display">0001</span>
+                  <input type="hidden" id="numPedido" value="1">
               </div>
           </div>
           <div style="background:var(--input-bg); padding:15px; border-radius:6px; margin-bottom:20px; border:1px solid var(--border-soft);">
@@ -848,6 +1270,7 @@
                   <input type="number" id="quantidade" value="1" placeholder="Qtd" style="flex:1; text-align:center;">
               </div>
               <div id="displayIngredientes" style="font-size:12px; color:var(--text-muted); margin-bottom:12px; font-style:italic; min-height:15px; padding-left: 5px;"></div>
+              <input type="hidden" id="categoriaProdutoSelecionado" value="">
               <div class="row-inputs">
                   <input type="number" id="valorUnitario" placeholder="Valor Un. (R$)" style="flex:1;">
                   <button class="warning" onclick="adicionarAoCarrinho()" style="flex:1; background: var(--accent); color: #000; font-weight: 700;">LANÇAR ITEM</button>
@@ -862,6 +1285,10 @@
               </div>
               <div style="text-align:right; font-weight:700; color:var(--text-main); font-size:24px; margin:20px 0; font-family: 'Poppins', sans-serif;">
                   Subtotal: <span id="totalCarrinhoDisplay" style="color: var(--accent);">R$ 0,00</span>
+              </div>
+              <div class="carrinho-print-actions">
+                  <button type="button" class="warning" onclick="imprimirCupomParcial('marmita')">🖨️ IMPRIMIR CUPOM — MARMITAS</button>
+                  <button type="button" class="warning" onclick="imprimirCupomParcial('mesa')">🖨️ IMPRIMIR CUPOM — MESA</button>
               </div>
               <button id="btnConcluirPedido" class="primary" onclick="concluirPedido()" style="width:100%; padding:16px; font-size:14px; letter-spacing: 1px;">CONFIRMAR PEDIDO PARA COZINHA</button>
           </div>
@@ -884,6 +1311,14 @@
               <button class="tab-btn" onclick="mudarAbaDia('Domingo', this)" style="min-width: 80px;">DOM</button>
           </div>
           <textarea id="textoCardapioDia" rows="8" placeholder="Digite os itens de hoje..." style="width:100%; padding:15px; background:var(--input-bg); color:var(--text-main); border:1px solid #444; border-radius:4px; font-family:'Poppins', sans-serif; font-size:14px; margin-bottom:15px; resize:vertical; box-sizing:border-box;"></textarea>
+          <div class="img-upload-box">
+              <label>📷 IMAGEM DO CARDÁPIO DA SEMANA (opcional — dia selecionado)</label>
+              <input type="file" id="cardapioDiaImagemInput" accept="image/*" onchange="carregarImagemCardapioDia(this)">
+              <div id="cardapioDiaImagemWrap" style="display:none;">
+                  <img id="cardapioDiaImagemPreview" class="cardapio-semana-preview" alt="Cardápio do dia">
+                  <button type="button" class="danger" onclick="removerImagemCardapioDia()" style="font-size:11px; padding:8px 14px;">REMOVER IMAGEM DESTE DIA</button>
+              </div>
+          </div>
           <div style="display:flex; gap:10px; flex-wrap: wrap;">
               <button class="success" onclick="salvarCardapioDia()" style="flex:1; min-width: 200px; font-size: 13px;">💾 SALVAR SEMANA</button>
               <button class="warning" onclick="compartilharCardapioDiaZap()" style="flex:1; min-width: 200px; font-size: 13px; font-weight: 700; color: #000;">📱 ENVIAR MENU (WHATSAPP)</button>
@@ -895,66 +1330,41 @@
       <div id="painel-config" class="painel-secao">
         <h2 class="painel-titulo">Configurações</h2>
         <div class="card">
-          <div style="display:flex; flex-wrap:wrap; gap:25px;">
-              <div style="flex:1; min-width:250px;">
-                  <h4 style="color:var(--text-main); margin-top:0;">Identidade Visual</h4>
-                  <input type="text" id="confEmpNome" placeholder="Nome do Restaurante" style="margin-bottom:10px;">
-                  <input type="text" id="confEmpEnd" placeholder="Endereço Completo" style="margin-bottom:10px;">
-                  <input type="text" id="confEmpTel" placeholder="Telefone / Reservas" style="margin-bottom:15px;">
-                  <h4 style="color:var(--text-main); margin-top:15px; margin-bottom:10px;">Taxa de Entrega</h4>
-                  <input type="number" id="confEmpTaxa" placeholder="Valor da Taxa Padrão (R$)" style="margin-bottom:15px;">
-                  <h4 style="color:var(--text-main); margin-top:15px; margin-bottom:10px;">Chave PIX</h4>
-                  <label style="font-size:11px; color:var(--text-muted); display:block;">Código PIX Copia e Cola:</label>
-                  <textarea id="confEmpPix" placeholder="Cole aqui o código PIX..." rows="3" style="width:100%; margin-bottom:10px; font-size:12px; font-family:'Poppins',sans-serif; resize:vertical; background: var(--input-bg); color: #fff; border: 1px solid #444; border-radius: 4px; padding: 10px; box-sizing:border-box;"></textarea>
-                  <label style="font-size:11px; color:var(--text-muted); display:block;">Imagem do QR Code (opcional):</label>
-                  <input type="file" id="qrInput" accept="image/*" style="margin-bottom:10px; font-size: 12px;">
-                  <div id="qrPreviewBox" style="display:none; text-align:center; margin-bottom:15px; padding:15px; background:var(--input-bg); border-radius:6px; border:1px solid var(--border-soft);">
-                      <img id="confEmpQrPreview" src="" alt="QR PIX" style="max-width:160px; max-height:160px; border:1px solid var(--accent); border-radius:4px; padding:5px;">
-                  </div>
-                  <button type="button" class="danger" onclick="removerQrPix()" style="width:100%; margin-bottom:15px; font-size:11px;">REMOVER QR PIX</button>
-                  <label style="font-size:11px; color:var(--accent); display:block; font-weight:600;">Logo do Restaurante:</label>
-                  <input type="file" id="logoInput" accept="image/*" style="margin-bottom:15px; font-size: 12px;">
-                  <button class="warning" onclick="salvarDadosEmpresa()" style="width:100%; margin-bottom:15px; font-size: 13px;">💾 SALVAR INFORMAÇÕES</button>
-                  <h4 style="color:var(--text-main); margin-top:15px; margin-bottom:10px;">Controle de Equipe</h4>
-                  <button class="dark" onclick="abrirModalUsuario()" style="width:100%;">👥 CRIAR ACESSO DA COZINHA</button>
+          <div style="max-width: 520px;">
+              <h4 style="color:var(--text-main); margin-top:0;">Identidade Visual</h4>
+              <input type="text" id="confEmpNome" placeholder="Nome do Restaurante" style="margin-bottom:10px;">
+              <input type="text" id="confEmpEnd" placeholder="Endereço Completo" style="margin-bottom:10px;">
+              <input type="text" id="confEmpTel" placeholder="Telefone / Reservas" style="margin-bottom:15px;">
+              <h4 style="color:var(--text-main); margin-top:15px; margin-bottom:10px;">Taxa de Entrega</h4>
+              <input type="number" id="confEmpTaxa" placeholder="Valor da Taxa Padrão (R$)" style="margin-bottom:15px;">
+              <h4 style="color:var(--text-main); margin-top:15px; margin-bottom:10px;">Chave PIX</h4>
+              <label style="font-size:11px; color:var(--text-muted); display:block;">Código PIX Copia e Cola:</label>
+              <textarea id="confEmpPix" placeholder="Cole aqui o código PIX..." rows="3" style="width:100%; margin-bottom:10px; font-size:12px; font-family:'Poppins',sans-serif; resize:vertical; background: var(--input-bg); color: #fff; border: 1px solid #444; border-radius: 4px; padding: 10px; box-sizing:border-box;"></textarea>
+              <label style="font-size:11px; color:var(--text-muted); display:block;">Imagem do QR Code (opcional):</label>
+              <input type="file" id="qrInput" accept="image/*" style="margin-bottom:10px; font-size: 12px;">
+              <div id="qrPreviewBox" style="display:none; text-align:center; margin-bottom:15px; padding:15px; background:var(--input-bg); border-radius:6px; border:1px solid var(--border-soft);">
+                  <img id="confEmpQrPreview" src="" alt="QR PIX" style="max-width:160px; max-height:160px; border:1px solid var(--accent); border-radius:4px; padding:5px;">
               </div>
-              <div style="flex:1; min-width:250px;">
-                  <div style="background:var(--input-bg); padding:20px; border-radius:6px; border:1px solid var(--border-soft); margin-bottom:20px;">
-                      <h4 style="color:var(--accent); margin-top:0;">Adicionar ao Menu</h4>
-                      <select id="catCategoria" style="width:100%; margin-bottom:12px;">
-                          <option value="MARMITAS">Marmitas e Pratos Feitos</option>
-                          <option value="ENTRADAS">Entradas</option>
-                          <option value="PRATOS PRINCIPAIS">Pratos Principais</option>
-                          <option value="MASSAS E RISOTOS">Massas e Risotos</option>
-                          <option value="CARNES E GRELHADOS">Carnes e Grelhados</option>
-                          <option value="SOBREMESAS">Sobremesas</option>
-                          <option value="CARTA DE VINHOS">Carta de Vinhos</option>
-                          <option value="BEBIDAS">Bebidas em Geral</option>
-                          <option value="ADICIONAIS EXTRAS">Acompanhamentos / Extras</option>
-                      </select>
-                      <input type="text" id="catNome" placeholder="Nome do Prato / Bebida" style="width:100%; margin-bottom:12px;">
-                      <input type="number" id="catValor" placeholder="Preço (R$)" style="width:100%; margin-bottom:12px;">
-                      <div style="background:var(--input-bg); padding:15px; border-radius:4px; margin-bottom:15px; border: 1px solid var(--border-soft);">
-                          <label style="font-size:11px; color:var(--text-muted);">OBSERVAÇÕES / EXTRAS (Opcional):</label>
-                          <div style="display:flex; gap:8px; margin-top:8px;">
-                              <input type="text" id="novoIngrediente" placeholder="Ex: Ao Ponto, Sem Cebola..." style="margin-bottom:0;">
-                              <button type="button" class="warning" onclick="addIngredienteTemp()" style="width:50px; font-size:16px; padding:0;">+</button>
-                          </div>
-                          <div id="listaIngredientesTemp" style="margin-top:12px;"></div>
-                      </div>
-                      <button class="success" onclick="salvarCatalogo()" style="width:100%; margin-bottom:12px;">➕ CADASTRAR ITEM</button>
-                      <button class="dark" onclick="abrirGerenciarCatalogo()" style="width:100%; border-color: var(--accent); color: var(--accent);">📋 EDITAR CARDÁPIO</button>
-                  </div>
-                  <div style="background:var(--input-bg); padding:20px; border-radius:6px; border:1px solid var(--border-soft);">
-                      <h4 style="color:var(--text-muted); margin-top:0;">Backup de Segurança</h4>
-                      <button class="dark" onclick="baixarBackup()" style="width:100%; margin-bottom:15px;">⬇️ EXPORTAR DADOS</button>
-                      <div style="border-top:1px solid #333; padding-top:15px;">
-                          <label style="font-size:11px; color:#666;">Restaurar (.json):</label>
-                          <input type="file" id="inputBackup" accept=".json" style="margin-top:5px; margin-bottom:10px; font-size: 11px;">
-                          <button class="danger" onclick="restaurarBackup()" style="width:100%;">🔄 IMPORTAR ARQUIVO</button>
-                      </div>
-                  </div>
+              <button type="button" class="danger" onclick="removerQrPix()" style="width:100%; margin-bottom:15px; font-size:11px;">REMOVER QR PIX</button>
+              <label style="font-size:11px; color:var(--accent); display:block; font-weight:600;">Logo do Restaurante:</label>
+              <input type="file" id="logoInput" accept="image/*" style="margin-bottom:15px; font-size: 12px;">
+              <button class="warning" onclick="salvarDadosEmpresa()" style="width:100%; margin-bottom:25px; font-size: 13px;">💾 SALVAR INFORMAÇÕES</button>
+              <h4 style="color:var(--text-main); margin-top:0;">Contador de Pedidos</h4>
+              <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px; line-height:1.5;">Automático: 0001, 0002, 0003… O número sobe a cada pedido confirmado.</p>
+              <div style="background:var(--input-bg); padding:14px; border-radius:6px; border:1px solid var(--border-soft); margin-bottom:12px; text-align:center;">
+                  <span style="font-size:11px; color:var(--text-muted);">Próximo pedido</span>
+                  <div id="confContadorDisplay" class="num-pedido-display" style="font-size:28px; margin-top:6px;">0001</div>
               </div>
+              <button type="button" class="warning" onclick="zerarContadorPedidos('dia')" style="width:100%; margin-bottom:8px; font-size:12px;">🔄 ZERAR CONTADOR (DIA / TURNO)</button>
+              <button type="button" class="dark" onclick="zerarContadorPedidos('mes')" style="width:100%; margin-bottom:25px; font-size:12px; border-color:var(--accent); color:var(--accent);">📅 ZERAR CONTADOR (MÊS)</button>
+              <h4 style="color:var(--text-muted); margin-top:0;">Backup de Segurança</h4>
+              <button class="dark" onclick="baixarBackup()" style="width:100%; margin-bottom:15px;">⬇️ EXPORTAR DADOS</button>
+              <div style="border-top:1px solid var(--border-soft); padding-top:15px;">
+                  <label style="font-size:11px; color:#666;">Restaurar (.json):</label>
+                  <input type="file" id="inputBackup" accept=".json" style="margin-top:5px; margin-bottom:10px; font-size: 11px;">
+                  <button class="danger" onclick="restaurarBackup()" style="width:100%;">🔄 IMPORTAR ARQUIVO</button>
+              </div>
+              <button class="danger" onclick="trocarLogin()" style="width:100%; margin-top:25px;">🚪 SAIR / TROCAR DE ACESSO</button>
           </div>
         </div>
       </div>
@@ -969,11 +1379,11 @@
     <span class="mico">🏠</span><span>Início</span>
     <span id="badgeMobileInicio" class="mobile-nav-badge" style="display:none">0</span>
   </button>
-  <button type="button" class="mobile-nav-item" data-painel="comandas" onclick="abrirPainelLateral('comandas', this)">
-    <span class="mico">📋</span><span>Comandas</span>
-  </button>
   <button type="button" class="mobile-nav-item" data-painel="pedido" onclick="abrirPainelLateral('pedido', this)">
     <span class="mico">🍽️</span><span>Pedido</span>
+  </button>
+  <button type="button" class="mobile-nav-item" data-painel="comandas" onclick="abrirPainelLateral('comandas', this)">
+    <span class="mico">📋</span><span>Comandas</span>
   </button>
   <button type="button" class="mobile-nav-item" data-painel="cardapio" onclick="abrirPainelLateral('cardapio', this)">
     <span class="mico">📅</span><span>Menu</span>
@@ -1057,6 +1467,16 @@
     </div>
 </div>
 
+<div class="modal" id="modalPedidosGarcom">
+    <div class="modal-content" style="max-width: 560px;">
+        <h3 id="tituloModalGarcom" style="color:var(--accent); margin:0 0 6px 0; font-size:18px;">Pedidos do Garçom</h3>
+        <p style="color:var(--text-muted); font-size:12px; margin:0 0 18px 0;">Pedidos aguardando visualização do caixa</p>
+        <div id="conteudoModalGarcom" style="max-height:55vh; overflow-y:auto;"></div>
+        <button class="success" onclick="marcarGarcomVisualizado()" style="width:100%; margin-top:16px; padding:14px; font-weight:700;">✓ VISUALIZADO — PARAR ALERTA</button>
+        <button class="danger" onclick="fecharModalGarcom()" style="width:100%; margin-top:10px; background:transparent; border:1px solid var(--border-soft); color:var(--text-muted);">FECHAR</button>
+    </div>
+</div>
+
 <div class="modal" id="modalPagamento">
     <div class="modal-content" style="text-align:center; max-width: 450px;">
         <h3 style="color:var(--accent); margin-bottom: 5px;">Liquidação de Conta</h3>
@@ -1099,12 +1519,13 @@
 <div class="modal" id="modalUsuario">
     <div class="modal-content" style="max-width: 400px;">
         <h3 style="color:var(--accent);">Novo Acesso de Equipe</h3>
-        <p style="font-size:12px; color:var(--text-muted); margin-bottom:20px;">Restrinja funções criando um acesso exclusivo para Produção.</p>
+        <p style="font-size:12px; color:var(--text-muted); margin-bottom:20px;">Crie acessos para garçom, cozinha ou gerência.</p>
         <input type="text" id="novoUserNome" placeholder="Nome do Colaborador" style="margin-bottom:12px;">
         <input type="email" id="novoUserEmail" placeholder="E-mail Corporativo" style="margin-bottom:12px;">
         <input type="password" id="novoUserSenha" placeholder="Senha Forte" style="margin-bottom:15px;">
         <label style="font-size:11px; color:#666; margin-bottom: 5px; display: block;">Permissão:</label>
         <select id="novoUserPerfil" style="margin-bottom:25px;">
+            <option value="garcom">🧑‍🍳 Garçom (Cardápio e Pedidos)</option>
             <option value="func">👨‍🍳 Cozinha (Apenas Comandas)</option>
             <option value="admin">🛡️ Gerente (Controle Total)</option>
         </select>
@@ -1186,9 +1607,9 @@
     </div>
 </div>
 
+<script src="firebase-env.js"></script>
 <script>
   // ================= CONFIGURAÇÃO FIREBASE =================
-  // Cole suas credenciais do Firebase aqui dentro futuramente
   const firebaseConfig = window.FIREBASE_CONFIG || {
     apiKey: "SUA_API_KEY",
     authDomain: "seu-projeto.firebaseapp.com",
@@ -1197,6 +1618,15 @@
     messagingSenderId: "123456789",
     appId: "1:123456789:web:abcdef"
   };
+
+  if (!firebaseConfiguradoPreInit()) {
+      console.warn('Firebase: configure firebase-env.js local ou os Secrets no GitHub Actions.');
+  }
+
+  function firebaseConfiguradoPreInit() {
+      return !!(firebaseConfig.apiKey && firebaseConfig.apiKey !== 'SUA_API_KEY'
+          && firebaseConfig.projectId && firebaseConfig.projectId !== 'seu-projeto');
+  }
 
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
@@ -1213,8 +1643,15 @@
   let diaSelecionado = 'Segunda';
   let logoBase64 = localStorage.getItem('logoRestaurante') || "";
   let carrinhoCompras = []; let ingredientesTemp = [];
+  let imagemProdutoTemp = '';
   let payRef = null; let caixaTotal = []; 
   let roleUsuarioAtual = 'admin'; let filtroListaAtual = 'todos';
+  let nomeGarcomLogado = '';
+  let carrinhoGarcom = [];
+  let categoriaFiltroGarcom = 'TODAS';
+  let numPedidoGarcom = 1;
+  let garcomPedidoEnviando = false;
+  let perfilLoginSelecionado = 'admin';
   let alertasAtivos = new Set(); 
   let chartInstancia = null; 
   let periodoGraficoAtual = 'hoje';
@@ -1344,6 +1781,87 @@
       return d.toLocaleString('pt-BR', opcoes);
   }
 
+  function formatarNumPedido(n) {
+      let num = Math.max(1, parseInt(n, 10) || 1);
+      return String(num).padStart(4, '0');
+  }
+
+  function obterNumPedidoAtual() {
+      let el = document.getElementById('numPedido');
+      return Math.max(1, parseInt(el?.value, 10) || numPedidoGarcom || 1);
+  }
+
+  function definirNumPedidoAtual(val) {
+      let num = Math.max(1, parseInt(val, 10) || 1);
+      let el = document.getElementById('numPedido');
+      if (el) el.value = num;
+      numPedidoGarcom = num;
+      atualizarDisplayContadorPedido();
+  }
+
+  function atualizarDisplayContadorPedido() {
+      let fmt = formatarNumPedido(obterNumPedidoAtual());
+      ['numPedidoDisplay', 'confContadorDisplay'].forEach(id => {
+          let el = document.getElementById(id);
+          if (el) el.textContent = fmt;
+      });
+      sincronizarNumPedidoGarcom();
+  }
+
+  function persistirContadorPedido(ultimoNumeroUsado) {
+      let cont = Math.max(0, parseInt(ultimoNumeroUsado, 10) || 0);
+      try { localStorage.setItem('baytigrill_contador', String(cont)); } catch (e) {}
+      if (firebaseConfigurado()) {
+          db.collection('config').doc('empresa').update({ contador: cont }).catch(() => {});
+      }
+  }
+
+  function avancarContadorAposPedido(numeroUsado) {
+      let usado = parseInt(numeroUsado, 10) || 1;
+      persistirContadorPedido(usado);
+      definirNumPedidoAtual(usado + 1);
+  }
+
+  function zerarContadorPedidos(modo) {
+      let titulo = modo === 'mes' ? 'Zerar contador do mês?' : 'Zerar contador do dia / turno?';
+      let texto = modo === 'mes'
+          ? 'O próximo pedido voltará para 0001. Use ao iniciar um novo mês.'
+          : 'O próximo pedido voltará para 0001. Use ao iniciar um novo turno ou dia.';
+      Swal.fire({
+          title: titulo,
+          text: texto,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Sim, zerar',
+          cancelButtonText: 'Cancelar',
+          background: '#3A4536',
+          color: '#F0E6D2',
+          confirmButtonColor: '#D4AF37'
+      }).then(r => {
+          if (!r.isConfirmed) return;
+          persistirContadorPedido(0);
+          definirNumPedidoAtual(1);
+          if (firebaseConfigurado()) {
+              db.collection('config').doc('empresa').update({
+                  contador: 0,
+                  contadorZeradoEm: obterDataHoraLocal(),
+                  contadorUltimoModo: modo
+              }).catch(() => {});
+          }
+          Swal.fire({
+              icon: 'success',
+              title: 'Contador zerado!',
+              text: 'Próximo pedido: 0001',
+              timer: 1800,
+              showConfirmButton: false,
+              background: '#3A4536',
+              color: '#F0E6D2'
+          });
+      });
+  }
+
+  function zerarContador() { zerarContadorPedidos('dia'); }
+
   function obterReferenciaHoraComanda(itens) {
       if (!Array.isArray(itens) || !itens.length) return null;
       let melhor = null;
@@ -1392,8 +1910,7 @@
   }
 
   function firebaseConfigurado() {
-      return !!(firebaseConfig.apiKey && firebaseConfig.apiKey !== 'SUA_API_KEY'
-          && firebaseConfig.projectId && firebaseConfig.projectId !== 'seu-projeto');
+      return firebaseConfiguradoPreInit();
   }
 
   function aplicarDadosEmpresaNoApp(dados) {
@@ -1442,6 +1959,24 @@
       let src = logoBase64 || LOGO_IMPRESSAO_URL;
       let w = larguraMm || 62;
       return `<div style="text-align:center;margin-bottom:10px;"><img src="${src}" alt="Logo" style="display:inline-block;max-width:${w}mm;width:auto;height:auto;max-height:18mm;object-fit:contain;border-radius:6px;"></div>`;
+  }
+
+  function htmlCabecalhoEmpresaImpressao(opts) {
+      opts = opts || {};
+      let nome = escaparHtml((empDados.nome || 'BAYTIGRILL').trim());
+      let end = (empDados.end || '').trim();
+      let tel = (empDados.tel || '').trim();
+      let tam = opts.tamanhoTitulo || 18;
+      let align = opts.centralizado !== false ? 'center' : 'left';
+      let html = `<h2 style="margin:0 0 4px;font-size:${tam}px;font-weight:700;text-align:${align};font-family:'Poppins',sans-serif;color:#000;">${nome}</h2>`;
+      if (end || tel) {
+          html += `<p style="font-size:11px;margin:0 0 10px;color:#444;text-align:${align};line-height:1.45;">`;
+          if (end) html += escaparHtml(end);
+          if (end && tel) html += '<br>';
+          if (tel) html += 'Tel: ' + escaparHtml(tel);
+          html += '</p>';
+      }
+      return html;
   }
 
   function limparLogoDaTela() {
@@ -1599,6 +2134,161 @@
       });
   }
 
+  function comprimirImagemFile(file, maxLado, qualidade) {
+      maxLado = maxLado || 480;
+      qualidade = qualidade || 0.82;
+      return new Promise((resolve, reject) => {
+          if (!file) return reject(new Error('no-file'));
+          let reader = new FileReader();
+          reader.onload = function(e) {
+              let dataUrl = e.target.result;
+              if (file.size < 120000 && /^image\/(png|jpeg|jpg|webp)$/i.test(file.type || '')) {
+                  resolve(dataUrl);
+                  return;
+              }
+              let img = new Image();
+              img.onload = function() {
+                  let escala = Math.min(1, maxLado / Math.max(img.width, img.height));
+                  let c = document.createElement('canvas');
+                  c.width = Math.max(1, Math.round(img.width * escala));
+                  c.height = Math.max(1, Math.round(img.height * escala));
+                  c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+                  let base64 = c.toDataURL('image/jpeg', qualidade);
+                  if (base64.length > 900000) base64 = c.toDataURL('image/jpeg', 0.65);
+                  resolve(base64);
+              };
+              img.onerror = () => reject(new Error('invalid'));
+              img.src = dataUrl;
+          };
+          reader.onerror = () => reject(new Error('read'));
+          reader.readAsDataURL(file);
+      });
+  }
+
+  function carregarImagemProdutoTemp(inputEl) {
+      let file = inputEl && inputEl.files && inputEl.files[0];
+      if (!file) return;
+      Swal.fire({ title: 'Processando foto...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+      comprimirImagemFile(file, 420, 0.8).then(base64 => {
+          imagemProdutoTemp = base64;
+          let img = document.getElementById('catImagemPreview');
+          let btn = document.getElementById('btnRemoverImagemProduto');
+          if (img) { img.src = base64; img.style.display = 'block'; }
+          if (btn) btn.style.display = 'inline-block';
+          Swal.close();
+      }).catch(() => {
+          Swal.fire('Erro', 'Não foi possível processar a imagem.', 'error');
+          limparImagemProdutoTemp();
+      });
+  }
+
+  function limparImagemProdutoTemp() {
+      imagemProdutoTemp = '';
+      let input = document.getElementById('catImagemInput');
+      let img = document.getElementById('catImagemPreview');
+      let btn = document.getElementById('btnRemoverImagemProduto');
+      if (input) input.value = '';
+      if (img) { img.src = ''; img.style.display = 'none'; }
+      if (btn) btn.style.display = 'none';
+  }
+
+  function htmlThumbProduto(imagem, tamanho) {
+      if (!imagem) return '';
+      let cls = tamanho === 'mini' ? 'produto-thumb-mini' : 'prod-thumb';
+      return `<img src="${imagem}" class="${cls}" alt="">`;
+  }
+
+  function normalizarEntradaCardapioDia(val) {
+      if (!val) return { texto: '', imagem: '' };
+      if (typeof val === 'string') return { texto: val, imagem: '' };
+      return { texto: val.texto || '', imagem: val.imagem || '' };
+  }
+
+  function normalizarCardapioSemanalCompleto() {
+      ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'].forEach(dia => {
+          cardapioDiario[dia] = normalizarEntradaCardapioDia(cardapioDiario[dia]);
+      });
+  }
+
+  function obterTextoCardapioDia(dia) {
+      return normalizarEntradaCardapioDia(cardapioDiario[dia]).texto;
+  }
+
+  function obterImagemCardapioDia(dia) {
+      return normalizarEntradaCardapioDia(cardapioDiario[dia]).imagem;
+  }
+
+  function salvarCardapioDiaAtualNaMemoria() {
+      let textoEl = document.getElementById('textoCardapioDia');
+      let texto = textoEl ? textoEl.value : '';
+      let imagem = obterImagemCardapioDia(diaSelecionado);
+      cardapioDiario[diaSelecionado] = { texto, imagem };
+  }
+
+  function atualizarPreviewImagemCardapioDia(imagem) {
+      let wrap = document.getElementById('cardapioDiaImagemWrap');
+      let img = document.getElementById('cardapioDiaImagemPreview');
+      let input = document.getElementById('cardapioDiaImagemInput');
+      if (!wrap || !img) return;
+      if (imagem) {
+          img.src = imagem;
+          wrap.style.display = 'block';
+      } else {
+          img.src = '';
+          wrap.style.display = 'none';
+          if (input) input.value = '';
+      }
+  }
+
+  function carregarImagemCardapioDia(inputEl) {
+      let file = inputEl && inputEl.files && inputEl.files[0];
+      if (!file) return;
+      comprimirImagemFile(file, 720, 0.85).then(base64 => {
+          let texto = document.getElementById('textoCardapioDia')?.value || obterTextoCardapioDia(diaSelecionado);
+          cardapioDiario[diaSelecionado] = { texto, imagem: base64 };
+          atualizarPreviewImagemCardapioDia(base64);
+          Swal.fire({ icon: 'success', title: 'Imagem carregada', text: 'Clique em Salvar Semana para guardar.', timer: 2000, showConfirmButton: false });
+      }).catch(() => Swal.fire('Erro', 'Não foi possível processar a imagem.', 'error'));
+  }
+
+  function removerImagemCardapioDia() {
+      let texto = document.getElementById('textoCardapioDia')?.value || obterTextoCardapioDia(diaSelecionado);
+      cardapioDiario[diaSelecionado] = { texto, imagem: '' };
+      let input = document.getElementById('cardapioDiaImagemInput');
+      if (input) input.value = '';
+      atualizarPreviewImagemCardapioDia('');
+  }
+
+  function alterarImagemProduto(id) {
+      let input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = () => {
+          let file = input.files && input.files[0];
+          if (!file) return;
+          comprimirImagemFile(file, 420, 0.8).then(base64 => {
+              db.collection('catalogo').doc(id).update({ imagem: base64 }).then(() => {
+                  Swal.fire({ icon: 'success', title: 'Foto atualizada!', timer: 1200, showConfirmButton: false });
+                  renderGerenciarCatalogo();
+              });
+          }).catch(() => Swal.fire('Erro', 'Não foi possível processar a imagem.', 'error'));
+      };
+      input.click();
+  }
+
+  function removerImagemProduto(id) {
+      Swal.fire({
+          title: 'Remover foto?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#B85C5C',
+          confirmButtonText: 'Remover'
+      }).then(r => {
+          if (!r.isConfirmed) return;
+          db.collection('catalogo').doc(id).update({ imagem: '' }).then(() => renderGerenciarCatalogo());
+      });
+  }
+
   function salvarImagemNaNuvem(file, campoFirebase, opts) {
       opts = opts || {};
       if (!file) return;
@@ -1735,6 +2425,13 @@
       
       document.getElementById('dataEntrada').value = obterDataHoraLocal();
       
+      let garcomSalvo = localStorage.getItem('baytigrill_garcom');
+      if (garcomSalvo && document.getElementById('inputGarcom')) {
+          document.getElementById('inputGarcom').value = garcomSalvo;
+      }
+      let selCliente = document.getElementById('clienteSelect');
+      if (selCliente) selCliente.addEventListener('change', sincronizarDadosClienteNoPedido);
+      
       try {
           const savedEmp = JSON.parse(localStorage.getItem('chef_emp_data') || 'null');
           const qrCache = localStorage.getItem('chef_qr_pix');
@@ -1748,25 +2445,79 @@
               const cardapioCache = JSON.parse(localStorage.getItem('baytigrill_cardapio_semanal') || 'null');
               if (cardapioCache) {
                   cardapioDiario = { ...cardapioDiario, ...cardapioCache };
+                  normalizarCardapioSemanalCompleto();
                   if (document.getElementById('textoCardapioDia')) {
-                      document.getElementById('textoCardapioDia').value = cardapioDiario[diaSelecionado] || '';
+                      document.getElementById('textoCardapioDia').value = obterTextoCardapioDia(diaSelecionado);
+                      atualizarPreviewImagemCardapioDia(obterImagemCardapioDia(diaSelecionado));
                   }
               }
           } catch (e) { }
       } catch (e) { }
+
+      try {
+          let cont = localStorage.getItem('baytigrill_contador');
+          if (cont !== null && !firebaseConfigurado()) definirNumPedidoAtual(Number(cont) + 1);
+          else atualizarDisplayContadorPedido();
+      } catch (e) { atualizarDisplayContadorPedido(); }
       
       carregarVisualLoginInicial();
       aplicarLogoPadrao();
       iniciarModoSemLogin();
+
+      if ('serviceWorker' in navigator) {
+          window.addEventListener('load', () => {
+              navigator.serviceWorker.register('./sw.js').catch(() => {});
+          });
+      }
   });
 
   function iniciarModoSemLogin() {
       if (LOGIN_ATIVO) return;
+      document.getElementById('loginOverlay').style.display = 'flex';
+      voltarLogin();
+  }
+
+  function entrarComPerfilLocal(perfil) {
+      roleUsuarioAtual = perfil;
+      document.body.classList.remove('role-func', 'role-garcom', 'mode-kds', 'mode-garcom');
+      if (perfil === 'func') {
+          document.getElementById('loginOverlay').style.display = 'none';
+          document.body.classList.add('role-func', 'mode-kds');
+          document.getElementById('userDisplay').innerText = 'Cozinha';
+          setTimeout(() => iniciarSync(), 300);
+          return;
+      }
+      if (perfil === 'garcom') {
+          let nomeSalvo = localStorage.getItem('baytigrill_garcom') || '';
+          Swal.fire({
+              title: 'Identifique-se',
+              text: 'Informe seu nome para os pedidos e o caixa.',
+              input: 'text',
+              inputValue: nomeSalvo,
+              inputPlaceholder: 'Seu nome',
+              confirmButtonText: 'Entrar no Salão',
+              confirmButtonColor: '#C9A23B',
+              background: '#3A4536',
+              color: '#F0E6D2',
+              showCancelButton: true,
+              cancelButtonText: 'Voltar'
+          }).then(r => {
+              if (!r.isConfirmed || !String(r.value || '').trim()) {
+                  document.getElementById('loginOverlay').style.display = 'flex';
+                  return;
+              }
+              nomeGarcomLogado = String(r.value).trim();
+              localStorage.setItem('baytigrill_garcom', nomeGarcomLogado);
+              document.getElementById('loginOverlay').style.display = 'none';
+              document.body.classList.add('role-garcom');
+              initAppGarcom();
+              setTimeout(() => iniciarSync(), 300);
+          });
+          return;
+      }
       document.getElementById('loginOverlay').style.display = 'none';
-      roleUsuarioAtual = 'admin';
-      document.body.classList.remove('role-func', 'mode-kds');
       document.getElementById('userDisplay').innerText = 'Modo Administrador';
-      setTimeout(() => iniciarSync(), 500);
+      setTimeout(() => iniciarSync(), 300);
   }
 
   if (LOGIN_ATIVO) {
@@ -1842,8 +2593,18 @@
           roleUsuarioAtual = (doc.exists) ? doc.data().perfil : 'admin';
           let nomeUser = (doc.exists && doc.data().nome) ? doc.data().nome : (user.email || 'Usuário');
           document.getElementById('userDisplay').innerText = nomeUser;
-          if(roleUsuarioAtual === 'func') document.body.classList.add('role-func', 'mode-kds');
-          else document.body.classList.remove('role-func', 'mode-kds');
+          if(roleUsuarioAtual === 'func') {
+              document.body.classList.add('role-func', 'mode-kds');
+              document.body.classList.remove('role-garcom');
+          } else if(roleUsuarioAtual === 'garcom') {
+              document.body.classList.add('role-garcom');
+              document.body.classList.remove('role-func', 'mode-kds');
+              nomeGarcomLogado = nomeUser;
+              localStorage.setItem('baytigrill_garcom', nomeGarcomLogado);
+              initAppGarcom();
+          } else {
+              document.body.classList.remove('role-func', 'role-garcom', 'mode-kds');
+          }
           document.getElementById('loginOverlay').style.display = 'none';
           iniciarSync();
       }).catch(() => {
@@ -1874,13 +2635,20 @@
               clientes.push({id: d.id, ...data});
           }); 
           if(chamouBeep) tocarBeep();
-          render(); atualizarSelect(); atualizarDashboard();
+          render(); atualizarSelect(); atualizarDashboard(); renderFaixaGarcons();
           if(document.body.classList.contains('mode-kds')) renderKDS();
+          if(document.body.classList.contains('mode-garcom')) renderPainelGarcom();
+          if(document.body.classList.contains('role-garcom')) {
+              atualizarSelectMesasGarcom();
+              renderCardapioGarcom();
+              sincronizarNumPedidoGarcom();
+          }
       }, err => { console.warn("Aviso do Firebase:", err.message); }); 
       
       db.collection("catalogo").onSnapshot((snap) => {
           catalogo = []; snap.forEach((d) => catalogo.push({id: d.id, ...d.data()}));
-          if(document.getElementById('modalGerenciarCatalogo').style.display === 'flex') renderGerenciarCatalogo();
+          if(document.getElementById('modalGerenciarCatalogo') && document.getElementById('modalGerenciarCatalogo').style.display === 'flex') renderGerenciarCatalogo();
+          if(document.body.classList.contains('role-garcom')) renderCardapioGarcom();
       }, err => {});
       
       db.collection("config").doc("empresa").onSnapshot((doc) => {
@@ -1900,7 +2668,9 @@
               else aplicarLogoPadrao();
               salvarEmpCacheLocal();
               atualizarInputsEmpresa();
-              if(d.contador !== undefined) document.getElementById('numPedido').value = d.contador + 1;
+              if(d.contador !== undefined) {
+                  definirNumPedidoAtual(Number(d.contador) + 1);
+              }
           }
       }, err => {});
       
@@ -1914,18 +2684,37 @@
           if(doc.exists) {
               let d = doc.data();
               cardapioDiario = { ...cardapioDiario, ...d };
+              normalizarCardapioSemanalCompleto();
               if (document.getElementById('textoCardapioDia')) {
-                  document.getElementById('textoCardapioDia').value = cardapioDiario[diaSelecionado] || '';
+                  document.getElementById('textoCardapioDia').value = obterTextoCardapioDia(diaSelecionado);
+                  atualizarPreviewImagemCardapioDia(obterImagemCardapioDia(diaSelecionado));
               }
           }
       }, err => {});
   }
 
+  function trocarLogin() {
+      Swal.fire({
+          title: 'Sair / Trocar acesso?',
+          text: 'Você voltará à tela de escolha de perfil (Caixa, Garçom ou Cozinha).',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#B85C5C',
+          cancelButtonColor: '#555',
+          confirmButtonText: 'Sim, trocar',
+          cancelButtonText: 'Cancelar',
+          background: '#3A4536',
+          color: '#F0E6D2'
+      }).then(r => { if (r.isConfirmed) logout(); });
+  }
+
   function logout() {
+      sessionStorage.removeItem('logado_agora');
+      syncJaIniciado = false;
+      carrinhoGarcom = [];
+      carrinhoCompras = [];
       if (LOGIN_ATIVO) {
-          sessionStorage.removeItem('logado_agora');
-          syncJaIniciado = false;
-          auth.signOut().then(() => { window.location.reload(); });
+          auth.signOut().finally(() => { window.location.reload(); });
       } else {
           window.location.reload();
       }
@@ -1985,15 +2774,19 @@
   function renderGerenciarCatalogo() {
       let html = '';
       catalogo.sort((a,b) => String(a.nome||'').localeCompare(String(b.nome||''))).forEach(p => {
+          let thumb = p.imagem ? `<img src="${p.imagem}" class="produto-thumb-mini" alt="">` : '';
           html += `
-          <div style="display:flex; justify-content:space-between; background:var(--input-bg); padding:15px; margin-bottom:8px; border-radius:4px; border:1px solid var(--border-soft); align-items:center;">
-              <div>
+          <div style="display:flex; justify-content:space-between; background:var(--input-bg); padding:15px; margin-bottom:8px; border-radius:4px; border:1px solid var(--border-soft); align-items:center; gap:12px;">
+              ${thumb}
+              <div style="flex:1;">
                   <div style="font-weight:600; font-size:14px; color:var(--text-main); font-family: 'Poppins', sans-serif;">${p.nome} <span style="font-size:10px; color:#000; background:var(--accent); padding:2px 6px; border-radius:2px; font-family: 'Poppins', sans-serif;">${p.categoria || 'EXTRAS'}</span></div>
                   <div style="font-size:11px; color:var(--text-muted); font-style:italic;">${p.ingredientes || 'Padrão da Casa'}</div>
                   <div style="color:var(--accent); font-weight:600; font-size:13px; margin-top:5px;">${formatarMoeda(p.valor)}</div>
               </div>
-              <div style="display:flex; gap:5px;">
+              <div style="display:flex; gap:5px; flex-wrap:wrap;">
+                  <button class="dark" onclick="alterarImagemProduto('${p.id}')" style="padding:8px 12px; font-size:12px;" title="Foto">📷</button>
                   <button class="dark" onclick="editarProduto('${p.id}')" style="padding:8px 12px; font-size:12px;">✏️</button>
+                  ${p.imagem ? `<button class="dark" onclick="removerImagemProduto('${p.id}')" style="padding:8px 12px; font-size:12px;" title="Remover foto">🖼️✕</button>` : ''}
                   <button class="danger" onclick="excluirProduto('${p.id}')" style="padding:8px 12px; font-size:12px;">🗑️</button>
               </div>
           </div>`;
@@ -2031,7 +2824,7 @@
               let v = Number(document.getElementById('editProdValor').value.replace(',', '.'));
               let i = document.getElementById('editProdIngred').value.trim();
               if(!n || v <= 0) { Swal.showValidationMessage('Nome e Valor são obrigatórios.'); return false; }
-              return { nome: n.toUpperCase(), categoria: c, valor: v, ingredientes: i };
+              return { nome: n.toUpperCase(), categoria: c, valor: v, ingredientes: i, imagem: p.imagem || '' };
           }
       }).then((result) => { 
           if(result.isConfirmed) {
@@ -2056,13 +2849,16 @@
       let v = Number(vStr); 
       
       if(n && v > 0){ 
-          let ingsStr = ingredientesTemp.join(', '); 
-          db.collection("catalogo").add({ nome:n.toUpperCase(), categoria: c, valor:v, ingredientes: ingsStr }); 
+          let ingsStr = ingredientesTemp.join(', ');
+          let dados = { nome:n.toUpperCase(), categoria: c, valor:v, ingredientes: ingsStr };
+          if (imagemProdutoTemp) dados.imagem = imagemProdutoTemp;
+          db.collection("catalogo").add(dados); 
           document.getElementById('catNome').value=''; 
           document.getElementById('catValor').value=''; 
           document.getElementById('novoIngrediente').value=''; 
           ingredientesTemp = []; 
-          renderIngredientesTemp(); 
+          renderIngredientesTemp();
+          limparImagemProdutoTemp();
           Swal.fire('Prato Inserido!','','success'); 
       } else { 
           Swal.fire('Preenchimento Inválido', 'Verifique o nome e valor do item.', 'error'); 
@@ -2082,7 +2878,472 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  function toggleKDS() { document.body.classList.toggle('mode-kds'); if(document.body.classList.contains('mode-kds')) renderKDS(); }
+  function toggleKDS() {
+      if (document.body.classList.contains('mode-garcom')) document.body.classList.remove('mode-garcom');
+      document.body.classList.toggle('mode-kds');
+      if (document.body.classList.contains('mode-kds')) renderKDS();
+      else renderFaixaGarcons();
+  }
+
+  // ================= PAINEL GARÇOM (CAIXA) =================
+  let garcomModalAtual = null;
+
+  function escaparHtml(str) {
+      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function coletarPedidosGarcomPendentes() {
+      let porGarcom = {};
+      clientes.forEach(c => {
+          if (!Array.isArray(c.itens)) return;
+          let batches = {};
+          c.itens.forEach((i, idx) => {
+              if (!i.pendenteCaixa) return;
+              let g = (i.metaPedido && i.metaPedido.garcom) ? String(i.metaPedido.garcom).trim() : '';
+              if (!g) return;
+              let chave = c.id + '_' + (i.numPedido != null ? i.numPedido : '0');
+              if (!batches[chave]) {
+                  batches[chave] = {
+                      cid: c.id, clienteNome: c.nome, numPedido: i.numPedido,
+                      itens: [], indices: [], horaPedido: i.horaPedido,
+                      mesa: (i.metaPedido && i.metaPedido.mesa) || '',
+                      garcom: g
+                  };
+              }
+              batches[chave].itens.push(i);
+              batches[chave].indices.push(idx);
+              if (i.horaPedido && (!batches[chave].horaPedido || parseDataHoraPedido(i.horaPedido) < parseDataHoraPedido(batches[chave].horaPedido))) {
+                  batches[chave].horaPedido = i.horaPedido;
+              }
+          });
+          Object.values(batches).forEach(b => {
+              if (!porGarcom[b.garcom]) porGarcom[b.garcom] = [];
+              porGarcom[b.garcom].push(b);
+          });
+      });
+      Object.keys(porGarcom).forEach(g => {
+          porGarcom[g].sort((a, b) => obterTimestampOrdenacaoKDS(a) - obterTimestampOrdenacaoKDS(b));
+      });
+      return porGarcom;
+  }
+
+  function montarHtmlItensGarcom(itens) {
+      return filtrarItensProducao(itens).map(i => {
+          let obs = i.ingredientes ? `<div class="obs">${escaparHtml(i.ingredientes)}</div>` : '';
+          return `<div><strong>${i.qtd}x</strong> ${escaparHtml(i.desc)}${obs}</div>`;
+      }).join('');
+  }
+
+  function renderFaixaGarcons() {
+      let el = document.getElementById('faixaGarcons');
+      if (!el) return;
+      if (document.body.classList.contains('mode-kds') || document.body.classList.contains('mode-garcom') || document.body.classList.contains('role-func') || document.body.classList.contains('role-garcom')) {
+          el.style.display = 'none';
+          el.innerHTML = '';
+          return;
+      }
+      let mapa = coletarPedidosGarcomPendentes();
+      let nomes = Object.keys(mapa);
+      if (!nomes.length) {
+          el.style.display = 'none';
+          el.innerHTML = '';
+          return;
+      }
+      el.style.display = 'flex';
+      el.innerHTML = '<span class="faixa-garcons-label">🧑‍🍳 Pedido novo:</span>' + nomes.map(n => {
+          let qtd = mapa[n].length;
+          return `<button type="button" class="garcom-chip pendente" onclick="abrirPedidosGarcom(${JSON.stringify(n)})">${escaparHtml(n)} <span class="garcom-chip-qtd">${qtd}</span></button>`;
+      }).join('');
+  }
+
+  function toggleGarcom() {
+      if (document.body.classList.contains('mode-kds')) document.body.classList.remove('mode-kds');
+      document.body.classList.toggle('mode-garcom');
+      if (document.body.classList.contains('mode-garcom')) renderPainelGarcom();
+      else renderFaixaGarcons();
+  }
+
+  function renderPainelGarcom() {
+      const p = document.getElementById('painelGarcom');
+      if (!p) return;
+      p.innerHTML = '';
+      let mapa = coletarPedidosGarcomPendentes();
+      let nomes = Object.keys(mapa).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+      if (!nomes.length) {
+          p.innerHTML = '<span style="grid-column:1/-1;display:block;text-align:center;padding:50px;"><h2 style="color:var(--text-main);font-size:24px;">Nenhum pedido aguardando o caixa.</h2><p style="color:var(--text-muted);">Quando um garçom confirmar uma comanda, o nome dele aparecerá aqui piscando.</p></span>';
+          return;
+      }
+      nomes.forEach(nome => {
+          let pedidos = mapa[nome];
+          let totalItens = pedidos.reduce((acc, ped) => acc + filtrarItensProducao(ped.itens).length, 0);
+          p.innerHTML += `
+              <div class="kds-card garcom-card-pendente" style="background:#FAFAFA; color:#111; cursor:pointer;" onclick="abrirPedidosGarcom(${JSON.stringify(nome)})">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                      <div style="font-size:20px; font-weight:700; color:var(--primary); font-family:'Poppins',sans-serif;">🧑‍🍳 ${escaparHtml(nome)}</div>
+                      <span class="garcom-chip-qtd" style="font-size:14px; min-width:28px; height:28px; border-radius:14px;">${pedidos.length}</span>
+                  </div>
+                  <p style="margin:0 0 8px; font-size:13px; color:#555;">${pedidos.length} pedido(s) • ${totalItens} item(ns) aguardando caixa</p>
+                  <p style="margin:0; font-size:12px; color:#888;">Clique para ver os pedidos</p>
+              </div>`;
+      });
+  }
+
+  function abrirPedidosGarcom(nomeGarcom) {
+      if (!nomeGarcom) return;
+      garcomModalAtual = nomeGarcom;
+      let mapa = coletarPedidosGarcomPendentes();
+      let pedidos = mapa[nomeGarcom] || [];
+      document.getElementById('tituloModalGarcom').innerText = '🧑‍🍳 ' + nomeGarcom;
+      let box = document.getElementById('conteudoModalGarcom');
+      if (!pedidos.length) {
+          box.innerHTML = '<p style="color:var(--text-muted); text-align:center;">Nenhum pedido pendente para este garçom.</p>';
+      } else {
+          box.innerHTML = pedidos.map(ped => {
+              let horaTxt = formatarHoraPedido(ped.horaPedido) || '—';
+              let itensHtml = montarHtmlItensGarcom(ped.itens);
+              return `
+                  <div class="garcom-pedido-bloco">
+                      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; gap:10px;">
+                          <div>
+                              <div style="font-weight:700; font-size:15px; color:var(--text-main);">${escaparHtml(ped.clienteNome)}</div>
+                              <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">${ped.mesa ? 'Mesa: ' + escaparHtml(ped.mesa) + ' • ' : ''}Pedido #${ped.numPedido || '—'} • 🕐 ${horaTxt}</div>
+                          </div>
+                          <button type="button" class="dark" style="font-size:10px; padding:6px 10px; white-space:nowrap;" onclick="event.stopPropagation(); abrirComandaDoInicio('${ped.cid}')">ABRIR COMANDA</button>
+                      </div>
+                      <div class="garcom-pedido-itens">${itensHtml || '<span style="color:var(--text-muted);">Sem itens de produção</span>'}</div>
+                  </div>`;
+          }).join('');
+      }
+      document.getElementById('modalPedidosGarcom').style.display = 'flex';
+  }
+
+  function fecharModalGarcom() {
+      document.getElementById('modalPedidosGarcom').style.display = 'none';
+      garcomModalAtual = null;
+  }
+
+  function marcarGarcomVisualizado() {
+      let nomeGarcom = garcomModalAtual;
+      if (!nomeGarcom) return;
+      let atualizacoes = [];
+      clientes.forEach(c => {
+          if (!Array.isArray(c.itens)) return;
+          let changed = false;
+          let itens = c.itens.map(i => {
+              if (i.pendenteCaixa && i.metaPedido && String(i.metaPedido.garcom).trim() === nomeGarcom) {
+                  changed = true;
+                  return { ...i, pendenteCaixa: false };
+              }
+              return i;
+          });
+          if (changed) {
+              c.itens = itens;
+              atualizacoes.push({ id: c.id, itens });
+          }
+      });
+      const finalizar = () => {
+          fecharModalGarcom();
+          render();
+          if (document.body.classList.contains('mode-garcom')) renderPainelGarcom();
+      };
+      if (!atualizacoes.length) { finalizar(); return; }
+      if (!firebaseConfigurado()) { finalizar(); return; }
+      Promise.all(atualizacoes.map(u => db.collection('clientes').doc(u.id).update({ itens: u.itens })))
+          .then(finalizar)
+          .catch(err => {
+              console.error('Erro ao marcar visualizado:', err);
+              Swal.fire('Erro', 'Não foi possível marcar como visualizado.', 'error');
+          });
+  }
+
+  // ================= APP GARÇOM (TELA EXCLUSIVA) =================
+  const CATEGORIAS_GARCOM = ['TODAS', 'MARMITAS', 'ENTRADAS', 'PRATOS PRINCIPAIS', 'MASSAS E RISOTOS', 'CARNES E GRELHADOS', 'SOBREMESAS', 'CARTA DE VINHOS', 'BEBIDAS', 'ADICIONAIS EXTRAS'];
+
+  function initAppGarcom() {
+      let elNome = document.getElementById('garcomNomeDisplay');
+      if (elNome) elNome.textContent = nomeGarcomLogado || 'Garçom';
+      sincronizarNumPedidoGarcom();
+      renderCategoriasGarcom();
+      renderCardapioGarcom();
+      atualizarSelectMesasGarcom();
+  }
+
+  function sincronizarNumPedidoGarcom() {
+      let el = document.getElementById('garcomNumPedidoDisplay');
+      if (el) el.textContent = 'PEDIDO #' + formatarNumPedido(numPedidoGarcom || obterNumPedidoAtual());
+  }
+
+  function renderCategoriasGarcom() {
+      let bar = document.getElementById('garcomCategorias');
+      if (!bar) return;
+      bar.innerHTML = CATEGORIAS_GARCOM.map(c =>
+          `<button type="button" class="garcom-cat-btn${categoriaFiltroGarcom === c ? ' active' : ''}" onclick="setCategoriaGarcom('${c}')">${c}</button>`
+      ).join('');
+  }
+
+  function setCategoriaGarcom(cat) {
+      categoriaFiltroGarcom = cat;
+      renderCategoriasGarcom();
+      renderCardapioGarcom();
+  }
+
+  function renderCardapioGarcom() {
+      let grid = document.getElementById('garcomGridProdutos');
+      if (!grid) return;
+      let termo = (document.getElementById('garcomBuscaProduto')?.value || '').toLowerCase();
+      let lista = catalogo.filter(p => {
+          let matchNome = String(p.nome || '').toLowerCase().includes(termo);
+          let matchCat = categoriaFiltroGarcom === 'TODAS' || p.categoria === categoriaFiltroGarcom || (!p.categoria && categoriaFiltroGarcom === 'TODAS');
+          return matchNome && matchCat;
+      });
+      if (!lista.length) {
+          grid.innerHTML = '<p class="garcom-vazio">Nenhum item no cardápio. O gerente deve cadastrar produtos.</p>';
+          return;
+      }
+      grid.innerHTML = lista.map(p => {
+          let idEsc = String(p.id).replace(/'/g, "\\'");
+          let thumb = p.imagem ? `<img src="${p.imagem}" class="prod-thumb" alt="">` : '';
+          return `<div class="garcom-prod-card" onclick="iniciarSelecaoProdutoGarcom('${idEsc}')">
+              ${thumb}
+              <div class="cat">${escaparHtml(p.categoria || 'Cardápio')}</div>
+              <div class="nome">${escaparHtml(p.nome)}</div>
+              <div class="preco">${formatarMoeda(p.valor)}</div>
+              <div class="add-hint">Toque para adicionar</div>
+          </div>`;
+      }).join('');
+  }
+
+  function iniciarSelecaoProdutoGarcom(id) {
+      let p = catalogo.find(x => x.id === id);
+      if (!p) return;
+      if (!produtoPermiteAdicionaisExtras(p)) {
+          adicionarItemCarrinhoGarcom(p.nome, Number(p.valor) || 0, p.ingredientes || '');
+          return;
+      }
+      let precoBase = Number(p.valor) || 0;
+      let imgHtml = p.imagem ? `<img src="${p.imagem}" style="width:100%;max-height:160px;object-fit:cover;border-radius:8px;margin-bottom:12px;" alt="">` : '';
+      Swal.fire({
+          title: p.nome,
+          html: imgHtml + '<p style="text-align:left;font-size:12px;color:var(--text-muted);margin-bottom:15px;font-style:italic;">' + escaparHtml(p.ingredientes || '') + '</p>'
+              + '<p style="font-weight:700;font-size:20px;color:var(--text-main);margin-bottom:12px;">Valor Base: <span style="color:var(--accent);">' + formatarMoeda(p.valor) + '</span></p>'
+              + '<p style="text-align:left;font-weight:600;font-size:13px;margin:15px 0 8px;color:#aaa;">ADICIONAIS E ACOMPANHAMENTOS:</p>'
+              + '<div style="max-height:200px;overflow-y:auto;padding-right:5px;">' + montarHtmlCheckboxesAdicionaisCaixa() + '</div>'
+              + '<span id="totalModalAdicCaixa" style="display:block;text-align:center;margin:15px 0;"></span>',
+          showCancelButton: true,
+          background: '#3A4536',
+          color: '#F0E6D2',
+          confirmButtonColor: '#C9A23B',
+          cancelButtonColor: '#444',
+          confirmButtonText: 'Adicionar à comanda',
+          cancelButtonText: 'Cancelar',
+          didOpen: () => { precoBaseModalAdicCaixa = precoBase; atualizarTotalModalAdicionaisCaixa(); },
+          preConfirm: () => ({ adicionais: lerAdicionaisSelecionadosCaixa() })
+      }).then((result) => {
+          if (!result.isConfirmed) return;
+          let adic = result.value.adicionais || [];
+          let unit = precoBase + adic.reduce((s, a) => s + a.valor, 0);
+          adicionarItemCarrinhoGarcom(p.nome, unit, textoIngredientesComAdicionais(p.ingredientes, adic));
+      });
+  }
+
+  function adicionarItemCarrinhoGarcom(desc, valorUnit, ingredientes) {
+      carrinhoGarcom.push({
+          itemId: gerarIdItem(),
+          desc: desc,
+          qtd: 1,
+          valor: valorUnit,
+          tipo: 'presencial',
+          ingredientes: ingredientes || '',
+          numPedido: numPedidoGarcom,
+          pago: false,
+          pagoValor: 0,
+          pronto: false,
+          notificadoAdmin: true
+      });
+      renderCarrinhoGarcom();
+  }
+
+  function renderCarrinhoGarcom() {
+      let box = document.getElementById('garcomListaCarrinho');
+      let totalEl = document.getElementById('garcomTotalDisplay');
+      if (!box) return;
+      if (!carrinhoGarcom.length) {
+          box.innerHTML = '<p class="garcom-vazio" style="padding:20px;margin:0;">Toque no cardápio para adicionar pratos</p>';
+          if (totalEl) totalEl.textContent = formatarMoeda(0);
+          return;
+      }
+      box.innerHTML = carrinhoGarcom.map((i, idx) => `
+          <div class="garcom-carrinho-item">
+              <div style="flex:1;">
+                  <div class="nome">${i.qtd}x ${escaparHtml(i.desc)}</div>
+                  ${i.ingredientes ? '<div class="obs">' + escaparHtml(i.ingredientes) + '</div>' : ''}
+                  <button type="button" onclick="removerItemCarrinhoGarcom(${idx})">Remover</button>
+              </div>
+              <div class="preco">${formatarMoeda(i.valor)}</div>
+          </div>`).join('');
+      let total = carrinhoGarcom.reduce((s, i) => s + (Number(i.valor) || 0), 0);
+      if (totalEl) totalEl.textContent = formatarMoeda(total);
+  }
+
+  function removerItemCarrinhoGarcom(idx) {
+      carrinhoGarcom.splice(idx, 1);
+      renderCarrinhoGarcom();
+  }
+
+  function atualizarSelectMesasGarcom() {
+      let sel = document.getElementById('garcomSelectMesa');
+      if (!sel) return;
+      let atual = sel.value;
+      sel.innerHTML = '<option value="">— Nova mesa / digitar acima —</option>';
+      clientes
+          .filter(c => c.tipoCadastro === 'mesa' || (!c.tipoCadastro && !c.telefone))
+          .sort((a, b) => String(a.nome || '').localeCompare(String(b.nome || ''), 'pt-BR'))
+          .forEach(c => {
+              sel.innerHTML += `<option value="${c.id}">${escaparHtml(c.nome)}</option>`;
+          });
+      if (atual && clientes.some(c => c.id === atual)) sel.value = atual;
+  }
+
+  function selecionarMesaGarcomExistente() {
+      let id = document.getElementById('garcomSelectMesa')?.value;
+      if (!id) return;
+      let c = clientes.find(x => x.id === id);
+      if (!c) return;
+      document.getElementById('garcomInputMesa').value = c.nome || '';
+  }
+
+  function sincronizarMesaGarcom() {
+      let mesa = (document.getElementById('garcomInputMesa')?.value || '').trim().toUpperCase();
+      let sel = document.getElementById('garcomSelectMesa');
+      if (!sel || !mesa) return;
+      let found = clientes.find(c => String(c.nome || '').toUpperCase() === mesa);
+      sel.value = found ? found.id : '';
+  }
+
+  function montarNomeComandaGarcom(mesa, clienteNome) {
+      let m = (mesa || '').trim().toUpperCase();
+      let cli = (clienteNome || '').trim();
+      if (!m) return '';
+      if (!cli) return m;
+      return m + ' — ' + cli.toUpperCase();
+  }
+
+  function obterMetaPedidoGarcom(numPedido) {
+      let mesa = (document.getElementById('garcomInputMesa')?.value || '').trim();
+      let clienteNome = (document.getElementById('garcomInputCliente')?.value || '').trim();
+      let agora = obterDataHoraLocal();
+      return {
+          garcom: nomeGarcomLogado || localStorage.getItem('baytigrill_garcom') || '',
+          mesa: mesa,
+          cliente: montarNomeComandaGarcom(mesa, clienteNome) || mesa,
+          pessoas: Number(document.getElementById('garcomInputPessoas')?.value) || 0,
+          copos: Number(document.getElementById('garcomInputCopos')?.value) || 0,
+          pratos: Number(document.getElementById('garcomInputPratos')?.value) || 0,
+          numPedido: numPedido,
+          data: agora,
+          horaPedido: agora
+      };
+  }
+
+  function resolverClienteIdGarcom(nomeComanda) {
+      return new Promise((resolve, reject) => {
+          let existente = clientes.find(c => String(c.nome || '').toUpperCase() === nomeComanda.toUpperCase());
+          if (existente) { resolve(existente.id); return; }
+          let dados = { nome: nomeComanda.toUpperCase(), itens: [], tipoCadastro: 'mesa' };
+          if (!firebaseConfigurado()) {
+              let idLocal = 'local_' + Date.now();
+              clientes.push({ id: idLocal, ...dados });
+              resolve(idLocal);
+              return;
+          }
+          db.collection('clientes').add(dados).then(ref => resolve(ref.id)).catch(reject);
+      });
+  }
+
+  function limparFormularioGarcom() {
+      carrinhoGarcom = [];
+      document.getElementById('garcomInputCliente').value = '';
+      document.getElementById('garcomInputPessoas').value = '';
+      document.getElementById('garcomInputCopos').value = '';
+      document.getElementById('garcomInputPratos').value = '';
+      renderCarrinhoGarcom();
+  }
+
+  function concluirPedidoGarcom() {
+      if (garcomPedidoEnviando) return;
+      let mesa = (document.getElementById('garcomInputMesa')?.value || '').trim();
+      if (!mesa) return Swal.fire('Mesa obrigatória', 'Informe a mesa ou local do atendimento.', 'warning');
+      if (!carrinhoGarcom.length) return Swal.fire('Comanda vazia', 'Adicione itens do cardápio antes de enviar.', 'warning');
+      if (!nomeGarcomLogado) return Swal.fire('Identificação', 'Saia e entre novamente informando seu nome.', 'warning');
+
+      let clienteNome = (document.getElementById('garcomInputCliente')?.value || '').trim();
+      let nomeComanda = montarNomeComandaGarcom(mesa, clienteNome);
+      let numPedido = obterNumPedidoAtual();
+      let meta = obterMetaPedidoGarcom(numPedido);
+      let agora = obterDataHoraLocal();
+      let pendenteCaixa = true;
+
+      garcomPedidoEnviando = true;
+      let btn = document.getElementById('btnEnviarPedidoGarcom');
+      if (btn) { btn.disabled = true; btn.textContent = 'ENVIANDO...'; }
+
+      const montarItens = () => carrinhoGarcom.map(i => ({
+          ...i,
+          data: agora,
+          horaPedido: agora,
+          metaPedido: { ...meta },
+          pendenteCaixa,
+          numPedido: numPedido
+      }));
+
+      const finalizarSucesso = (idCliente, itensFinais) => {
+          let c = clientes.find(x => x.id === idCliente);
+          if (c) c.itens = itensFinais;
+          let itensCupom = filtrarItensProducao(montarItens());
+          garcomPedidoEnviando = false;
+          if (btn) { btn.disabled = false; btn.textContent = 'ENVIAR PARA COZINHA E CAIXA'; }
+          if (c && itensCupom.length) abrirImpressaoCupomProducao(c, itensCupom, meta);
+          limparFormularioGarcom();
+          avancarContadorAposPedido(numPedido);
+          atualizarSelectMesasGarcom();
+          Swal.fire({
+              icon: 'success',
+              title: 'Pedido enviado!',
+              text: 'Cozinha e caixa foram notificados.',
+              timer: 2200,
+              showConfirmButton: false,
+              background: '#3A4536',
+              color: '#F0E6D2'
+          });
+      };
+
+      const finalizarErro = (msg) => {
+          garcomPedidoEnviando = false;
+          if (btn) { btn.disabled = false; btn.textContent = 'ENVIAR PARA COZINHA E CAIXA'; }
+          Swal.fire('Não foi possível enviar', msg || 'Tente novamente.', 'error');
+      };
+
+      resolverClienteIdGarcom(nomeComanda).then(idCliente => {
+          let clienteAtual = clientes.find(c => c.id === idCliente);
+          let itensAtuais = Array.isArray(clienteAtual?.itens) ? [...clienteAtual.itens] : [];
+          let itensNovos = montarItens();
+          let itensFinais = [...itensAtuais, ...itensNovos];
+          if (!firebaseConfigurado()) {
+              if (clienteAtual) clienteAtual.itens = itensFinais;
+              finalizarSucesso(idCliente, itensFinais);
+              return;
+          }
+          db.collection('clientes').doc(idCliente).update({ itens: itensFinais })
+              .then(() => finalizarSucesso(idCliente, itensFinais))
+              .catch(err => {
+                  console.error('Erro pedido garçom:', err);
+                  finalizarErro('Falha ao salvar. Aguarde e tente uma vez.');
+              });
+      }).catch(err => {
+          console.error('Erro cliente garçom:', err);
+          finalizarErro('Não foi possível abrir a comanda da mesa.');
+      });
+  }
 
   function htmlCozinhaVaziaKDS() {
       return '<span style="grid-column:1/-1;display:block;text-align:center;padding:50px;"><h2 style="color:var(--text-main);font-size:28px;font-style:italic;">Nenhuma comanda pendente.</h2></span>';
@@ -2403,7 +3664,7 @@
                   <tr>
                       <td style="width:20px;"><input type="checkbox" class="sel-${c.id}" value="${idx}" style="width:16px; height:16px; cursor:pointer;"></td>
                       <td>
-                          <div class="item-desc"><span style="color:var(--text-muted); font-weight: 400; font-size:12px;">#${i.numPedido || '-'}</span> ${i.desc} ${badge} ${badgePronto}</div>
+                          <div class="item-desc"><span style="color:var(--text-muted); font-weight: 400; font-size:12px;">#${i.numPedido != null ? formatarNumPedido(i.numPedido) : '-'}</span> ${i.desc} ${badge} ${badgePronto}</div>
                           ${i.ingredientes ? `<div class="item-ingred">${i.ingredientes}</div>` : ''}
                           <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">${i.qtd}x unidades • ${formatarDataHoraBR(i.horaPedido || i.data)}</div>
                       </td>
@@ -2430,7 +3691,7 @@
               <div class="action-buttons">
                   <button class="btn-action act-edit" onclick="editarDadosCliente('${c.id}')"><span>📝</span>AJUSTAR DADOS</button>
                   <button class="btn-action act-print" onclick="imprimirSelecionados('${c.id}')"><span>🧾</span>NOTA CLIENTE</button>
-                  <button class="btn-action act-print" style="color:var(--warning); border-color: #4a3e15;" onclick="imprimirComandaProducao('${c.id}')"><span>🖨️</span>TICKET MARMITA/PRATO</button>
+                  <button class="btn-action act-print" style="color:var(--warning); border-color: #4a3e15;" onclick="imprimirComandaProducao('${c.id}')"><span>🖨️</span>CUPOM COZINHA</button>
                   <button class="btn-action act-share" onclick="compartilharZap('${c.id}')"><span>📱</span>ENVIAR ZAP</button>
                   <button class="btn-action" style="color:var(--danger); border-color: #4a1515;" onclick="cancelarPedido('${c.id}')"><span>🚫</span>CANCELAR TUDO</button>
                   <button class="btn-action" style="color:var(--accent); border-color: #4a3e15;" onclick="limparMesa('${c.id}')"><span>🍽️</span>LIBERAR MESA</button>
@@ -2449,62 +3710,181 @@
           paginacaoBox.innerHTML = botoesHtml;
       }
       renderComandasInicio();
+      renderFaixaGarcons();
   }
 
-  // --- NOVA FUNÇÃO DE IMPRESSÃO EXCLUSIVA PARA MARMITAS/COZINHA (SEM PREÇOS) ---
-  function imprimirComandaProducao(id) {
-      let c = clientes.find(x => x.id === id); if(!c) return;
-      
-      let itensProducao = (Array.isArray(c.itens) ? c.itens : []).filter(i => !String(i.desc||'').includes('🛵 TAXA DE ENTREGA') && !String(i.desc||'').includes('🔻 DESCONTO'));
-      
-      if(itensProducao.length === 0) return Swal.fire('Aviso', 'Nenhum prato na comanda para ser preparado.', 'info');
+  // --- CUPOM COZINHA / GARÇOM ---
+  function itemEhProducao(i) {
+      let d = String(i.desc || '');
+      return !d.includes('🛵 TAXA DE ENTREGA') && !d.includes('🔻 DESCONTO');
+  }
 
-      let itensHtml = itensProducao.map(i => `
-          <tr>
-              <td style="text-align:left; border-bottom:1px dashed #000; padding:12px 0; font-size:16px; font-weight:700; color:#000;">
-                  [ ] ${i.qtd}x ${i.desc} 
-                  ${i.ingredientes ? `<br><span style="font-weight:normal; font-size:12px; color: #333; font-style:italic;">(Obs: ${i.ingredientes})</span>` : ''}
-              </td>
-          </tr>`).join('');
-      
+  function filtrarItensProducao(itens) {
+      return (Array.isArray(itens) ? itens : []).filter(itemEhProducao);
+  }
+
+  function itemEhMarmita(i) {
+      let cat = String(i.categoria || '').toUpperCase();
+      if (cat === 'MARMITAS') return true;
+      let desc = String(i.desc || '').toUpperCase();
+      if (desc.includes('MARMITA')) return true;
+      let prod = catalogo.find(p => String(p.nome || '').toUpperCase() === desc);
+      return prod && String(prod.categoria || '').toUpperCase() === 'MARMITAS';
+  }
+
+  function filtrarItensPorTipoCupom(itens, tipo) {
+      let prod = filtrarItensProducao(itens);
+      if (tipo === 'marmita') return prod.filter(itemEhMarmita);
+      return prod.filter(i => !itemEhMarmita(i));
+  }
+
+  function obterClienteParaCupomParcial() {
+      let id = document.getElementById('clienteSelect')?.value;
+      if (id) {
+          let c = clientes.find(x => x.id === id);
+          if (c) return c;
+      }
+      let mesa = (document.getElementById('inputMesaPedido')?.value || '').trim();
+      return { nome: mesa || 'BALCÃO', tipoCadastro: 'mesa', endereco: '' };
+  }
+
+  function montarMetaCupomParcial() {
+      let meta = obterMetaPedidoForm();
+      meta.numPedido = obterNumPedidoAtual();
+      meta.data = obterDataHoraLocal();
+      meta.horaPedido = meta.data;
+      let idCli = document.getElementById('clienteSelect')?.value;
+      let cli = clientes.find(c => c.id === idCli);
+      if (cli) {
+          meta.cliente = cli.nome;
+          if (!meta.mesa) meta.mesa = cli.tipoCadastro === 'mesa' ? cli.nome : (meta.mesa || 'BALCÃO');
+      } else {
+          meta.cliente = meta.mesa || 'BALCÃO';
+          if (!meta.mesa) meta.mesa = 'BALCÃO';
+      }
+      return meta;
+  }
+
+  function imprimirCupomParcial(tipo) {
+      if (!carrinhoCompras.length) return Swal.fire('Comanda vazia', 'Adicione itens antes de imprimir.', 'info');
+      let itens = filtrarItensPorTipoCupom(carrinhoCompras, tipo);
+      if (!itens.length) {
+          return Swal.fire('Aviso', tipo === 'marmita'
+              ? 'Nenhuma marmita na comanda parcial para imprimir.'
+              : 'Nenhum item de mesa/salão na comanda parcial para imprimir.', 'info');
+      }
+      let c = obterClienteParaCupomParcial();
+      let meta = montarMetaCupomParcial();
+      meta.tipoCupom = tipo;
+      abrirImpressaoCupomProducao(c, itens, meta);
+  }
+
+  function obterMetaPedidoForm() {
+      return {
+          garcom: (document.getElementById('inputGarcom')?.value || '').trim(),
+          mesa: (document.getElementById('inputMesaPedido')?.value || '').trim(),
+          pessoas: Number(document.getElementById('inputQtdPessoas')?.value) || 0,
+          copos: Number(document.getElementById('inputQtdCopos')?.value) || 0,
+          pratos: Number(document.getElementById('inputQtdPratos')?.value) || 0
+      };
+  }
+
+  function sincronizarDadosClienteNoPedido() {
+      let id = document.getElementById('clienteSelect')?.value;
+      let c = clientes.find(x => x.id === id);
+      let mesaEl = document.getElementById('inputMesaPedido');
+      if (!c || !mesaEl) return;
+      if (c.tipoCadastro === 'mesa' || (c.tipoCadastro !== 'delivery' && c.nome)) {
+          mesaEl.value = c.nome || '';
+      } else if (c.tipoCadastro === 'delivery') {
+          mesaEl.value = c.endereco ? `DELIVERY - ${c.endereco}` : 'DELIVERY';
+      }
+  }
+
+  function resolverMetaCupom(c, itens, metaOverride) {
+      let base = {};
+      (itens || []).forEach(i => { if (i.metaPedido) base = { ...base, ...i.metaPedido }; });
+      let merged = { ...base, ...(metaOverride || {}) };
+      let horaRef = merged.horaPedido || obterReferenciaHoraComanda(itens);
+      let d = parseDataHoraPedido(horaRef || merged.data || obterDataHoraLocal());
+      let ehDelivery = c && (c.tipoCadastro === 'delivery' || !c.tipoCadastro);
+      return {
+          data: d ? d.toLocaleDateString('pt-BR') : '—',
+          hora: d ? d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '—',
+          numPedido: merged.numPedido || (itens[0] && itens[0].numPedido) || '—',
+          cliente: merged.cliente || (c && c.nome) || '—',
+          garcom: merged.garcom || localStorage.getItem('baytigrill_garcom') || '—',
+          mesa: merged.mesa || (c && c.tipoCadastro === 'mesa' ? c.nome : '') || '—',
+          pessoas: merged.pessoas || 0,
+          copos: merged.copos || 0,
+          pratos: merged.pratos || 0,
+          ehDelivery: ehDelivery,
+          telefone: (c && c.telefone) || '',
+          endereco: (c && c.endereco) || ''
+      };
+  }
+
+  function montarHtmlCupomProducao(c, itensProducao, metaOverride) {
+      let meta = resolverMetaCupom(c, itensProducao, metaOverride);
+      let tituloCupom = 'COMANDA — COZINHA / GARÇOM';
+      if (metaOverride && metaOverride.tipoCupom === 'marmita') tituloCupom = 'COMANDA — MARMITAS / BALCÃO';
+      else if (metaOverride && metaOverride.tipoCupom === 'mesa') tituloCupom = 'COMANDA — MESA / SALÃO';
       let logoHtml = htmlLogoImpressao(58);
-      let infoExtra = c.tipoCadastro === 'delivery' || !c.tipoCadastro ? `ENTREGA: ${c.endereco || ''}` : `LOCAL: Salão / Balcão`;
-      let dataHoraPedido = obterReferenciaHoraComanda(itensProducao);
-      let textoDataHora = dataHoraPedido
-          ? dataHoraPedido.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' })
-          : formatarDataHoraBR(obterDataHoraLocal(), true);
-      let numsPedido = [...new Set(itensProducao.map(i => i.numPedido).filter(Boolean))];
-      let numPedidoTxt = numsPedido.length ? `Pedido nº ${numsPedido.join(', ')}` : '';
+      let linhaLocal = meta.ehDelivery
+          ? `Entrega: ${meta.endereco || '—'}${meta.telefone ? '<br>Tel: ' + meta.telefone : ''}`
+          : `Mesa / Local: ${meta.mesa || '—'}`;
 
-      document.getElementById('printContent').innerHTML = `
-      <div style="width: 76mm; margin: 0 auto; font-family: 'Poppins', sans-serif; text-align: center; color:#000; background:#fff; padding-bottom:30px;">
+      let itensHtml = itensProducao.map(i => {
+          let obs = i.ingredientes ? `<div style="font-size:12px;font-weight:600;margin-top:4px;color:#333;">▸ ${i.ingredientes}</div>` : '';
+          return `<tr><td style="text-align:left;border-bottom:1px dashed #000;padding:10px 0;font-size:15px;color:#000;">
+              <div style="font-weight:800;font-size:16px;">[ ] ${i.qtd}x ${i.desc}</div>${obs}
+          </td></tr>`;
+      }).join('');
+
+      return `<div style="width:76mm;margin:0 auto;font-family:'Poppins',sans-serif;color:#000;background:#fff;padding:12px 8px 24px;box-sizing:border-box;">
           ${logoHtml}
-          <h2 style="margin:0 0 5px 0; font-size:18px; font-weight:700; font-family: 'Poppins', sans-serif;">COMANDA DE MONTAGEM</h2>
-          <div style="font-size:12px; margin-bottom:4px; font-weight:700;">${textoDataHora}</div>
-          ${numPedidoTxt ? `<div style="font-size:11px; margin-bottom:10px; color:#444;">${numPedidoTxt}</div>` : '<div style="margin-bottom:10px;"></div>'}
-          
-          <div style="border-top:2px dashed #000; margin: 15px 0;"></div>
-          
-          <div style="text-align:left; font-size:16px; line-height: 1.5; font-weight: bold;">
-              CONTA: ${c.nome}<br>
-              ${infoExtra}
-          </div>
-          
-          <div style="border-top:2px dashed #000; margin: 15px 0;"></div>
-          
-          <table style="width:100%; border-collapse: collapse;">
-              ${itensHtml}
+          ${htmlCabecalhoEmpresaImpressao({ tamanhoTitulo: 17 })}
+          <h3 style="margin:0 0 8px;font-size:14px;font-weight:800;text-align:center;border-bottom:1px dashed #000;padding-bottom:8px;">${tituloCupom}</h3>
+          <table style="width:100%;font-size:12px;border-collapse:collapse;margin-bottom:8px;">
+              <tr><td style="padding:3px 0;font-weight:700;">Data:</td><td style="text-align:right;">${meta.data}</td></tr>
+              <tr><td style="padding:3px 0;font-weight:700;">Hora:</td><td style="text-align:right;">${meta.hora}</td></tr>
+              <tr><td style="padding:3px 0;font-weight:700;">Pedido nº:</td><td style="text-align:right;font-size:14px;font-weight:800;">${formatarNumPedido(meta.numPedido)}</td></tr>
           </table>
-          
-          <div style="border-top:2px dashed #000; margin: 20px 0;"></div>
-          
-          <div style="margin-top:10px; font-size:16px; font-weight:700; font-family: 'Poppins', sans-serif;">
-              Preparo / Cozinha / Garçom
+          <div style="border-top:2px dashed #000;margin:10px 0;"></div>
+          <div style="text-align:left;font-size:13px;line-height:1.55;font-weight:600;">
+              <div><b>Cliente:</b> ${meta.cliente}</div>
+              <div><b>Garçom:</b> ${meta.garcom}</div>
+              <div>${linhaLocal}</div>
           </div>
+          <div style="border:1px solid #000;border-radius:4px;padding:8px;margin:12px 0;font-size:12px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;text-align:center;">
+              <span><b>Pessoas:</b> ${meta.pessoas || '—'}</span>
+              <span><b>Copos:</b> ${meta.copos || '—'}</span>
+              <span><b>Pratos:</b> ${meta.pratos || '—'}</span>
+          </div>
+          <div style="border-top:2px dashed #000;margin:10px 0;"></div>
+          <div style="text-align:left;font-size:12px;font-weight:800;margin-bottom:6px;letter-spacing:0.5px;">ITENS DO PEDIDO</div>
+          <table style="width:100%;border-collapse:collapse;">${itensHtml}</table>
+          <div style="border-top:2px dashed #000;margin:14px 0 8px;"></div>
+          <div style="font-size:11px;text-align:center;font-weight:600;color:#444;">Conferir itens antes de entregar à mesa</div>
       </div>`;
-      
-      document.getElementById('printOverlay').style.display = 'flex'; 
+  }
+
+  function abrirImpressaoCupomProducao(c, itensProducao, metaOverride) {
+      if (!itensProducao || !itensProducao.length) return;
+      document.getElementById('printContent').innerHTML = montarHtmlCupomProducao(c, itensProducao, metaOverride);
+      document.getElementById('printOverlay').style.display = 'flex';
       setTimeout(() => window.print(), 500);
+  }
+
+  function imprimirComandaProducao(id) {
+      let c = clientes.find(x => x.id === id);
+      if (!c) return;
+      let todos = filtrarItensProducao(c.itens);
+      if (!todos.length) return Swal.fire('Aviso', 'Nenhum prato na comanda para ser preparado.', 'info');
+      let nums = todos.map(i => Number(i.numPedido) || 0);
+      let ultimoNum = Math.max(...nums);
+      let itensUltimo = todos.filter(i => Number(i.numPedido) === ultimoNum);
+      abrirImpressaoCupomProducao(c, itensUltimo);
   }
 
   function adicionarCliente(){ 
@@ -2550,7 +3930,8 @@
           s.innerHTML += `<option value="${c.id}">${c.nome}</option>`; 
       }); 
       
-      if(atual && lista.some(c => c.id === atual)) s.value = atual; 
+      if(atual && lista.some(c => c.id === atual)) s.value = atual;
+      sincronizarDadosClienteNoPedido();
   }
 
   function aplicarTaxaPadrao() {
@@ -2568,9 +3949,13 @@
   function adicionarAoCarrinho() {
       let desc = document.getElementById('descricao').value; let qtd = Number(document.getElementById('quantidade').value); let valStr = document.getElementById('valorUnitario').value.replace(',','.'); let val = Number(valStr);
       if(!desc || val <= 0) return Swal.fire('Atenção', 'Selecione um prato/bebida antes de lançar.', 'warning');
-      
-      let item = { itemId: gerarIdItem(), desc: desc, qtd: qtd, valor: val * qtd, tipo: document.querySelector('input[name="tipoPedido"]:checked').value, ingredientes: document.getElementById('displayIngredientes').innerText, numPedido: document.getElementById('numPedido').value || 1, pago: false, pagoValor: 0, pronto: false, notificadoAdmin: true }; 
-      carrinhoCompras.push(item); renderCarrinho(); document.getElementById('descricao').value = ''; document.getElementById('quantidade').value = '1'; document.getElementById('valorUnitario').value = ''; document.getElementById('displayIngredientes').innerText = '';
+      let cat = (document.getElementById('categoriaProdutoSelecionado')?.value || '').trim();
+      if (!cat) {
+          let prod = catalogo.find(p => String(p.nome || '').toUpperCase() === String(desc).toUpperCase());
+          if (prod) cat = prod.categoria || '';
+      }
+      let item = { itemId: gerarIdItem(), desc: desc, qtd: qtd, valor: val * qtd, categoria: cat, tipo: document.querySelector('input[name="tipoPedido"]:checked').value, ingredientes: document.getElementById('displayIngredientes').innerText, numPedido: obterNumPedidoAtual(), pago: false, pagoValor: 0, pronto: false, notificadoAdmin: true }; 
+      carrinhoCompras.push(item); renderCarrinho(); document.getElementById('descricao').value = ''; document.getElementById('quantidade').value = '1'; document.getElementById('valorUnitario').value = ''; document.getElementById('displayIngredientes').innerText = ''; document.getElementById('categoriaProdutoSelecionado').value = '';
   }
 
   function atualizarTotalCarrinho() {
@@ -2602,9 +3987,18 @@
       document.getElementById('quantidade').value = '1';
       document.getElementById('valorUnitario').value = '';
       document.getElementById('displayIngredientes').innerText = '';
+      document.getElementById('categoriaProdutoSelecionado').value = '';
       document.querySelector('input[name="tipoPedido"][value="presencial"]').checked = true;
       aplicarTaxaPadrao();
       document.getElementById('dataEntrada').value = obterDataHoraLocal();
+      let mesaEl = document.getElementById('inputMesaPedido');
+      let pessoasEl = document.getElementById('inputQtdPessoas');
+      let coposEl = document.getElementById('inputQtdCopos');
+      let pratosEl = document.getElementById('inputQtdPratos');
+      if (mesaEl) mesaEl.value = '';
+      if (pessoasEl) pessoasEl.value = '';
+      if (coposEl) coposEl.value = '';
+      if (pratosEl) pratosEl.value = '';
       renderCarrinho();
   }
 
@@ -2612,24 +4006,36 @@
       let taxa = Number(document.getElementById('inputTaxa').value) || 0;
       let descVal = Number(document.getElementById('inputDesconto').value) || 0;
       let tipoPedido = document.querySelector('input[name="tipoPedido"]:checked').value;
-      let numPedido = document.getElementById('numPedido').value || 1;
+      let numPedido = obterNumPedidoAtual();
       let agora = obterDataHoraLocal();
-      let itensNovos = carrinhoCompras.map(i => ({ ...i, data: agora, horaPedido: agora }));
+      let meta = obterMetaPedidoForm();
+      meta.numPedido = numPedido;
+      meta.data = agora;
+      meta.horaPedido = agora;
+      let idCli = document.getElementById('clienteSelect').value;
+      let cli = clientes.find(c => c.id === idCli);
+      if (cli) {
+          meta.cliente = cli.nome;
+          if (!meta.mesa) meta.mesa = cli.tipoCadastro === 'mesa' ? cli.nome : meta.mesa;
+      }
+      if (meta.garcom) try { localStorage.setItem('baytigrill_garcom', meta.garcom); } catch (e) {}
+      let pendenteCaixa = !!(meta.garcom && String(meta.garcom).trim());
+      let itensNovos = carrinhoCompras.map(i => ({ ...i, data: agora, horaPedido: agora, metaPedido: { ...meta }, pendenteCaixa }));
       if (taxa > 0) {
           itensNovos.push({
               itemId: gerarIdItem(), desc: "🛵 TAXA DE ENTREGA / SERVIÇO", qtd: 1, valor: taxa,
               data: agora, tipo: tipoPedido, pronto: true, pago: false, notificadoAdmin: true,
-              numPedido: numPedido, horaPedido: agora
+              numPedido: numPedido, horaPedido: agora, metaPedido: { ...meta }, pendenteCaixa
           });
       }
       if (descVal > 0) {
           itensNovos.push({
               itemId: gerarIdItem(), desc: "🔻 DESCONTO CONCEDIDO", qtd: 1, valor: -descVal,
               data: agora, tipo: tipoPedido, pronto: true, pago: false, notificadoAdmin: true,
-              numPedido: numPedido, horaPedido: agora
+              numPedido: numPedido, horaPedido: agora, metaPedido: { ...meta }, pendenteCaixa
           });
       }
-      return { itensNovos, numPedido };
+      return { itensNovos, numPedido, meta };
   }
 
   function concluirPedido() {
@@ -2642,7 +4048,7 @@
       let clienteAtual = clientes.find(c => c.id === id);
       if (!clienteAtual) return Swal.fire('Erro', 'Cliente/mesa não encontrado. Atualize a lista e tente novamente.', 'error');
 
-      let { itensNovos, numPedido } = montarItensPedidoParaEnvio();
+      let { itensNovos, numPedido, meta } = montarItensPedidoParaEnvio();
       let itensAtuais = Array.isArray(clienteAtual.itens) ? [...clienteAtual.itens] : [];
       let itensFinais = [...itensAtuais, ...itensNovos];
 
@@ -2655,9 +4061,10 @@
           if (c) c.itens = itensFinais;
           pedidoEnviando = false;
           if (btn) { btn.disabled = false; btn.textContent = 'CONFIRMAR PEDIDO PARA COZINHA'; btn.style.opacity = '1'; }
+          let itensCupom = filtrarItensProducao(itensNovos);
+          if (c && itensCupom.length) abrirImpressaoCupomProducao(c, itensCupom, meta);
           limparFormularioPedido();
-          let proxNum = Number(numPedido) + 1;
-          document.getElementById('numPedido').value = proxNum;
+          avancarContadorAposPedido(numPedido);
           render();
           atualizarSelect();
           abrirPainelLateral('comandas');
@@ -2670,9 +4077,6 @@
               background: '#3A4536',
               color: '#F0E6D2'
           });
-          if (firebaseConfigurado()) {
-              db.collection("config").doc("empresa").update({ contador: Number(numPedido) }).catch(() => {});
-          }
       };
 
       const concluirComErro = (msg) => {
@@ -2717,7 +4121,8 @@
           let matchCat = categoriaFiltroModal === 'TODAS' || p.categoria === categoriaFiltroModal || (!p.categoria && categoriaFiltroModal === 'TODAS');
           return matchNome && matchCat;
       }).forEach(p => { 
-          html += `<div style="display:flex; justify-content:space-between; background:var(--input-bg); padding:15px; margin-bottom:8px; border-radius:4px; border:1px solid var(--border-soft); align-items:center;"><div><div style="font-weight:700; font-size:15px; color:var(--text-main); font-family: 'Poppins', sans-serif;">${p.nome}</div><div style="font-size:11px; color:#666; font-style:italic;">${p.ingredientes || ''}</div><div style="color:var(--accent); font-weight:600; font-size:14px; margin-top:5px;">${formatarMoeda(p.valor)}</div></div><button class="warning" onclick="iniciarSelecaoProdutoCaixa('${p.id}')" style="padding:10px 15px; font-size:14px;">+ ADD</button></div>`; 
+          let thumb = p.imagem ? `<img src="${p.imagem}" class="produto-thumb-mini" alt="">` : '';
+          html += `<div style="display:flex; justify-content:space-between; background:var(--input-bg); padding:15px; margin-bottom:8px; border-radius:4px; border:1px solid var(--border-soft); align-items:center; gap:12px;">${thumb}<div style="flex:1;"><div style="font-weight:700; font-size:15px; color:var(--text-main); font-family: 'Poppins', sans-serif;">${p.nome}</div><div style="font-size:11px; color:#666; font-style:italic;">${p.ingredientes || ''}</div><div style="color:var(--accent); font-weight:600; font-size:14px; margin-top:5px;">${formatarMoeda(p.valor)}</div></div><button class="warning" onclick="iniciarSelecaoProdutoCaixa('${p.id}')" style="padding:10px 15px; font-size:14px;">+ ADD</button></div>`; 
       }); 
       document.getElementById('listaProdutosModal').innerHTML = html || '<div style="text-align:center; color:#666; padding:20px; font-style: italic;">Nenhum item localizado no Menu.</div>'; 
   }
@@ -2765,10 +4170,11 @@
       if (el) el.innerHTML = '<strong style="color:var(--accent);font-size:18px;">Total: ' + formatarMoeda(precoBaseModalAdicCaixa + extra) + '</strong>';
   }
 
-  function selecionarProduto(n, v, i) {
+  function selecionarProduto(n, v, i, cat) {
       document.getElementById('descricao').value = n;
       document.getElementById('valorUnitario').value = v;
       document.getElementById('displayIngredientes').innerText = i;
+      document.getElementById('categoriaProdutoSelecionado').value = cat || '';
       document.getElementById('modalSelecaoProdutos').style.display = 'none';
   }
 
@@ -2776,7 +4182,7 @@
       let p = catalogo.find(x => x.id === id);
       if (!p) return;
       if (!produtoPermiteAdicionaisExtras(p)) {
-          selecionarProduto(p.nome, p.valor, p.ingredientes || '');
+          selecionarProduto(p.nome, p.valor, p.ingredientes || '', p.categoria || '');
           return;
       }
       precoBaseModalAdicCaixa = Number(p.valor) || 0;
@@ -2803,6 +4209,7 @@
           document.getElementById('descricao').value = p.nome;
           document.getElementById('valorUnitario').value = unit;
           document.getElementById('displayIngredientes').innerText = textoIngredientesComAdicionais(p.ingredientes, adic);
+          document.getElementById('categoriaProdutoSelecionado').value = p.categoria || '';
           document.getElementById('modalSelecaoProdutos').style.display = 'none';
       });
   }
@@ -2956,7 +4363,7 @@
           <div style="width: 100%; font-family: 'Poppins', sans-serif; color: #000; background: #fff; padding: 20px; box-sizing: border-box;">
               <div style="text-align:center;">
                   ${logoHtml}
-                  <h2 style="font-size:20px; font-weight:700; margin-bottom: 5px; font-family: 'Poppins', sans-serif;">${empDados.nome}</h2>
+                  ${htmlCabecalhoEmpresaImpressao({ tamanhoTitulo: 20 })}
                   <h3 style="font-size:14px; border-bottom: 1px solid #000; padding-bottom: 10px; margin-top:0; color: #333;">${periodoStr}</h3>
               </div>
 
@@ -3341,8 +4748,6 @@
       setTimeout(() => { gerarGraficoProdutos('hoje'); }, 50);
   }
 
-  function zerarContador() { if(confirm('Zerar contador de comandas?')) { db.collection("config").doc("empresa").update({"contador": 0}); document.getElementById('numPedido').value = 1; } }
-
   function imprimirSelecionados(id) {
       let c = clientes.find(x => x.id === id); if(!c || !Array.isArray(c.itens)) return;
       let total = c.itens.reduce((acc, i) => acc + (i.valor || 0), 0);
@@ -3351,6 +4756,10 @@
       let textoDataHora = dataHoraRef
           ? dataHoraRef.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
           : formatarDataHoraBR(obterDataHoraLocal());
+      let numsPedido = [...new Set(c.itens.map(i => i.numPedido).filter(n => n != null && n !== ''))];
+      let linhaPedido = numsPedido.length
+          ? 'Pedido(s) nº: ' + numsPedido.map(n => formatarNumPedido(n)).join(' / ')
+          : 'Pedido: ' + textoDataHora;
       let itensHtml = c.itens.map(i => `<tr><td style="text-align:left; border-bottom:1px solid #ddd; padding:8px 0; font-size:12px; font-weight:600; color:#000;">${i.qtd}x ${i.desc} ${i.ingredientes ? `<br><span style="font-weight:normal; font-size:10px; color: #555;">(${i.ingredientes})</span>` : ''}${(i.horaPedido || i.data) ? `<br><span style="font-weight:normal; font-size:10px; color:#666;">${formatarDataHoraBR(i.horaPedido || i.data)}</span>` : ''}</td><td style="text-align:right; border-bottom:1px solid #ddd; padding:8px 0; font-size:12px; font-weight:600; color:#000;">${formatarMoeda(i.valor)}</td></tr>`).join('');
       
       let pagTexto = c.pagamento || '';
@@ -3362,7 +4771,7 @@
           trocoHtml = `<div style="margin-top:15px; text-align:center; font-size:14px; border: 1px dashed #000; padding: 12px; font-family: 'Poppins', sans-serif;">Atenção: Levar troco para<br><span style="font-size:22px; font-weight:700;">${valorTroco}</span></div>`;
       }
 
-      document.getElementById('printContent').innerHTML = `<div style="width: 76mm; margin: 0 auto; font-family: 'Poppins', sans-serif; text-align: center; color:#000; background:#fff; padding-bottom:30px;">${logoHtml}<h2 style="margin:0 0 5px 0; font-size:18px; font-weight:700; font-family: 'Poppins', sans-serif;">${empDados.nome}</h2><p style="font-size:11px; margin:0 0 8px 0; color:#444;">${empDados.end}<br>Contato: ${empDados.tel}</p><div style="font-size:11px; font-weight:700; margin-bottom:12px;">Pedido: ${textoDataHora}</div><div style="border-top:1px dashed #000; margin: 15px 0;"></div><div style="text-align:left; font-size:12px; line-height: 1.5;"><b>CONTA:</b> ${c.nome}<br>${c.telefone ? `<b>TEL:</b> ${c.telefone}<br>` : ''}<b>MESA/END.:</b> ${c.endereco || 'Salão / Balcão'}<br>${pagTexto ? `<b>PGTO:</b> ${pagTexto}` : ''}</div><div style="border-top:1px dashed #000; margin: 15px 0;"></div><table style="width:100%; border-collapse: collapse;">${itensHtml}</table><div style="margin-top:20px; text-align:right; font-size:18px; font-weight:700; font-family: 'Poppins', sans-serif;">TOTAL: ${formatarMoeda(total)}</div>${trocoHtml}<div style="border-top:1px dashed #000; margin: 20px 0;"></div><div style="margin-top:10px; font-size:12px; font-weight:600; font-family: 'Poppins', sans-serif; font-style: italic;">Agradecemos a preferência.<br>Volte sempre!</div></div>`;
+      document.getElementById('printContent').innerHTML = `<div style="width: 76mm; margin: 0 auto; font-family: 'Poppins', sans-serif; text-align: center; color:#000; background:#fff; padding-bottom:30px;">${logoHtml}${htmlCabecalhoEmpresaImpressao()}<div style="font-size:11px; font-weight:700; margin-bottom:12px;">${linhaPedido}<br><span style="font-weight:400;color:#555;">${textoDataHora}</span></div><div style="border-top:1px dashed #000; margin: 15px 0;"></div><div style="text-align:left; font-size:12px; line-height: 1.5;"><b>CONTA:</b> ${c.nome}<br>${c.telefone ? `<b>TEL:</b> ${c.telefone}<br>` : ''}<b>MESA/END.:</b> ${c.endereco || 'Salão / Balcão'}<br>${pagTexto ? `<b>PGTO:</b> ${pagTexto}` : ''}</div><div style="border-top:1px dashed #000; margin: 15px 0;"></div><table style="width:100%; border-collapse: collapse;">${itensHtml}</table><div style="margin-top:20px; text-align:right; font-size:18px; font-weight:700; font-family: 'Poppins', sans-serif;">TOTAL: ${formatarMoeda(total)}</div>${trocoHtml}<div style="border-top:1px dashed #000; margin: 20px 0;"></div><div style="margin-top:10px; font-size:12px; font-weight:600; font-family: 'Poppins', sans-serif; font-style: italic;">Agradecemos a preferência.<br>Volte sempre!</div></div>`;
       document.getElementById('printOverlay').style.display = 'flex'; setTimeout(() => window.print(), 500);
   }
   function fecharImpressao() { document.getElementById('printOverlay').style.display = 'none'; document.getElementById('printContent').innerHTML = ''; }
@@ -3501,6 +4910,7 @@
               document.getElementById('confEmpPix').value = empDados.pixCopiaCola || '';
           }
           atualizarPreviewQrConfig();
+          atualizarDisplayContadorPedido();
       } 
   }
   
@@ -3520,6 +4930,11 @@
   });
 
   function selecionarPerfil(p) {
+      perfilLoginSelecionado = p;
+      if (!LOGIN_ATIVO) {
+          entrarComPerfilLocal(p);
+          return;
+      }
       document.getElementById('step-1').style.display='none';
       document.getElementById('step-2').style.display='block';
       document.getElementById('msgLogin').innerText='';
@@ -3624,22 +5039,18 @@
 
   // ================= FUNÇÕES DO CARDÁPIO DIÁRIO =================
   function mudarAbaDia(dia, btn) {
-      // Salva o texto digitado na memória antes de trocar de aba
-      cardapioDiario[diaSelecionado] = document.getElementById('textoCardapioDia').value;
-      
-      // Atualiza o dia selecionado
+      salvarCardapioDiaAtualNaMemoria();
       diaSelecionado = dia;
-      
-      // Altera o visual dos botões
       document.querySelectorAll('#cardapioTabs .tab-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      
-      // Carrega o texto salvo do dia selecionado
-      document.getElementById('textoCardapioDia').value = cardapioDiario[dia] || '';
+      document.getElementById('textoCardapioDia').value = obterTextoCardapioDia(dia);
+      let inputImg = document.getElementById('cardapioDiaImagemInput');
+      if (inputImg) inputImg.value = '';
+      atualizarPreviewImagemCardapioDia(obterImagemCardapioDia(dia));
   }
 
   function salvarCardapioDia() {
-      cardapioDiario[diaSelecionado] = document.getElementById('textoCardapioDia').value;
+      salvarCardapioDiaAtualNaMemoria();
       try { localStorage.setItem('baytigrill_cardapio_semanal', JSON.stringify(cardapioDiario)); } catch (e) { }
 
       if (!firebaseConfigurado()) {
@@ -3680,21 +5091,20 @@
   }
 
   function compartilharCardapioDiaZap() {
-      // Atualiza a memória com o que está na caixa de texto
-      cardapioDiario[diaSelecionado] = document.getElementById('textoCardapioDia').value;
-      
-      let texto = cardapioDiario[diaSelecionado].trim();
+      salvarCardapioDiaAtualNaMemoria();
+      let texto = obterTextoCardapioDia(diaSelecionado).trim();
       if (!texto) {
           return Swal.fire('Aviso', `O cardápio de ${diaSelecionado} está vazio. Escreva algo antes de enviar.`, 'warning');
       }
 
-      // Monta o cabeçalho e o rodapé da mensagem
       let nomeRestaurante = empDados.nome || "BAYTIGRILL";
       let msg = `*🍽️ MENU DO DIA | ${diaSelecionado.toUpperCase()}*\n📍 _${nomeRestaurante}_\n\n`;
       msg += `${texto}\n\n`;
+      if (obterImagemCardapioDia(diaSelecionado)) {
+          msg += `📷 _Cardápio com imagem salvo no sistema — envie a foto manualmente se desejar._\n\n`;
+      }
       msg += `🛵 *Faça seu pedido agora!*\nResponda esta mensagem para garantir seu prato.`;
 
-      // Abre o WhatsApp permitindo escolher o contato ou grupo (ou usar em listas de transmissão)
       let url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
       window.open(url, '_blank');
   }
