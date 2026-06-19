@@ -1636,7 +1636,7 @@
   const LOGO_PADRAO_URL = 'logo-baytigrill-sistema.png?v=2';
   const LOGO_IMPRESSAO_URL = 'logo-baytigrill-sistema.png?v=2';
   const LOGO_VERSAO_CACHE = 'sistema-v2';
-  const LOGIN_ATIVO = false; // true quando Firebase Auth estiver configurado
+  const LOGIN_ATIVO = firebaseConfiguradoPreInit(); // login por e-mail quando Firebase estiver configurado
 
   let empDados = { nome: "BAYTIGRILL", end: "", tel: "", qrCodeBase64: "", pixCopiaCola: "", taxaEntrega: 0, statusLoja: 'aberto' };
   let cardapioDiario = { 'Segunda': '', 'Terça': '', 'Quarta': '', 'Quinta': '', 'Sexta': '', 'Sábado': '', 'Domingo': '' };
@@ -5023,18 +5023,76 @@
 
   function excluirCliente(cid) { Swal.fire({title:'Excluir Registro?', text:'O cadastro da mesa/cliente será fechado permanentemente.', icon:'error', showCancelButton:true, confirmButtonColor:'#C62828', confirmButtonText: 'Excluir Definitivamente'}).then((r) => { if(r.isConfirmed) db.collection("clientes").doc(cid).delete(); }); }
   
-  function criarUsuario() {
-      const nome = document.getElementById('novoUserNome').value.trim(); const email = document.getElementById('novoUserEmail').value.trim();
-      const senha = document.getElementById('novoUserSenha').value; const perfil = document.getElementById('novoUserPerfil').value;
-      if(!nome || !email || senha.length < 6) return Swal.fire('Formato Inválido', 'Certifique-se de preencher todos os dados e usar uma senha com no mínimo 6 caracteres.', 'error');
+  function destruirAppTempUsuario() {
+      try { firebase.app('TempAppUser').delete(); } catch (e) { /* app ainda não existe */ }
+  }
 
-      Swal.fire({title: 'Processando acesso...', didOpen: () => Swal.showLoading()});
-      const tempApp = firebase.initializeApp(firebaseConfig, "TempAppUser");
-      tempApp.auth().createUserWithEmailAndPassword(email, senha).then((userCredential) => {
-              db.collection("usuarios").doc(userCredential.user.uid).set({nome: nome, email: email, perfil: perfil}).then(() => {
-                  tempApp.delete(); document.getElementById('modalUsuario').style.display = 'none'; Swal.fire('Liberado', 'Acesso criado com êxito!', 'success');
+  function obterAppTempUsuario() {
+      try { return firebase.app('TempAppUser'); } catch (e) {
+          return firebase.initializeApp(firebaseConfig, 'TempAppUser');
+      }
+  }
+
+  function traduzirErroFirebase(code, message) {
+      const map = {
+          'auth/email-already-in-use': 'Este e-mail já está cadastrado no Firebase.',
+          'auth/invalid-email': 'E-mail inválido.',
+          'auth/weak-password': 'Senha fraca. Use no mínimo 6 caracteres.',
+          'auth/operation-not-allowed': 'Ative "E-mail/Senha" no Firebase: Authentication → Sign-in method → E-mail/Senha → Ativar.',
+          'auth/network-request-failed': 'Sem internet ou domínio não autorizado. No Firebase, adicione netikis.github.io em Authentication → Authorized domains.',
+          'permission-denied': 'Firestore bloqueou o cadastro. No Firebase Console → Firestore → Regras, publique as regras do arquivo firebase-regras-exemplo.txt.'
+      };
+      if (code && map[code]) return map[code];
+      if (message && /permission/i.test(message)) return map['permission-denied'];
+      return message || 'Não foi possível criar o usuário.';
+  }
+
+  function criarUsuario() {
+      const nome = document.getElementById('novoUserNome').value.trim();
+      const email = document.getElementById('novoUserEmail').value.trim();
+      const senha = document.getElementById('novoUserSenha').value;
+      const perfil = document.getElementById('novoUserPerfil').value;
+      if (!nome || !email || senha.length < 6) {
+          return Swal.fire('Formato Inválido', 'Preencha todos os dados e use senha com no mínimo 6 caracteres.', 'error');
+      }
+      if (!firebaseConfigurado()) {
+          return Swal.fire('Firebase', 'O site precisa estar conectado ao Firebase (chaves configuradas).', 'warning');
+      }
+
+      Swal.fire({ title: 'Processando acesso...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+      destruirAppTempUsuario();
+      const tempApp = obterAppTempUsuario();
+      let uidCriado = null;
+
+      tempApp.auth().createUserWithEmailAndPassword(email, senha)
+          .then((userCredential) => {
+              uidCriado = userCredential.user.uid;
+              return db.collection('usuarios').doc(uidCriado).set({ nome: nome, email: email, perfil: perfil });
+          })
+          .then(() => {
+              destruirAppTempUsuario();
+              document.getElementById('modalUsuario').style.display = 'none';
+              document.getElementById('novoUserNome').value = '';
+              document.getElementById('novoUserEmail').value = '';
+              document.getElementById('novoUserSenha').value = '';
+              Swal.fire({
+                  icon: 'success',
+                  title: 'Acesso criado!',
+                  html: 'Perfil: <b>' + (perfil === 'garcom' ? 'Garçom' : perfil === 'func' ? 'Cozinha' : 'Gerente') + '</b><br>O colaborador entra com o e-mail e a senha cadastrados.',
+                  background: '#3A4536',
+                  color: '#F0E6D2'
               });
-          }).catch((e) => { tempApp.delete(); Swal.fire('Falha na Criação', e.message, 'error'); });
+          })
+          .catch((e) => {
+              console.error('criarUsuario:', e);
+              if (uidCriado) {
+                  tempApp.auth().signInWithEmailAndPassword(email, senha)
+                      .then(() => tempApp.auth().currentUser.delete())
+                      .catch(() => {});
+              }
+              destruirAppTempUsuario();
+              Swal.fire('Falha na Criação', traduzirErroFirebase(e.code, e.message), 'error');
+          });
   }
 
   // ================= FUNÇÕES DO CARDÁPIO DIÁRIO =================
