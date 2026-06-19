@@ -1021,6 +1021,39 @@
   .cardapio-arte-preview-wrap h4 { margin: 0 0 10px; font-size: 12px; color: var(--accent); font-weight: 600; letter-spacing: 0.5px; }
   .cardapio-arte-preview-wrap img { max-width: 100%; max-height: 380px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.35); }
   .cardapio-arte-preview-wrap .cardapio-arte-hint { font-size: 11px; color: var(--text-muted); margin: 10px 0 0; line-height: 1.5; }
+  .cardapio-editor-toolbar {
+      display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+      padding: 10px 12px; background: var(--input-bg); border: 1px solid var(--border-soft);
+      border-radius: 8px 8px 0 0; border-bottom: none;
+  }
+  .cardapio-editor-toolbar button {
+      min-width: 36px; height: 36px; padding: 0 10px; border-radius: 6px;
+      border: 1px solid var(--border-soft); background: var(--card-elevated);
+      color: var(--text-main); cursor: pointer; font-size: 14px; font-weight: 600;
+  }
+  .cardapio-editor-toolbar button:hover { border-color: var(--accent); color: var(--accent); }
+  .cardapio-editor-toolbar button.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .cardapio-editor-toolbar select {
+      height: 36px; padding: 0 10px; border-radius: 6px; border: 1px solid var(--border-soft);
+      background: var(--card-elevated); color: var(--text-main); font-size: 12px; min-width: 110px;
+  }
+  .cardapio-editor-toolbar .toolbar-label { font-size: 10px; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; margin-right: 4px; }
+  .cardapio-editor {
+      min-height: 180px; max-height: 320px; overflow-y: auto;
+      width: 100%; padding: 15px; box-sizing: border-box;
+      background: var(--input-bg); color: var(--text-main);
+      border: 1px solid #444; border-radius: 0 0 8px 8px;
+      font-family: Georgia, 'Times New Roman', serif; font-size: 16px; line-height: 1.55;
+      margin-bottom: 15px; outline: none;
+  }
+  .cardapio-editor:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(201, 162, 59, 0.15); }
+  .cardapio-editor div, .cardapio-editor p { margin: 0 0 6px; min-height: 1.2em; }
+  .cardapio-editor:empty::before {
+      content: attr(data-placeholder);
+      color: var(--text-muted);
+      font-style: italic;
+      pointer-events: none;
+  }
   .garcom-vazio { text-align: center; color: var(--text-muted); padding: 40px 20px; font-style: italic; grid-column: 1 / -1; }
 
   @media (max-width: 900px) {
@@ -1489,7 +1522,7 @@
       <div id="painel-cardapio" class="painel-secao">
         <h2 class="painel-titulo">Menu do Dia</h2>
         <div class="card">
-          <p style="font-size:12px; color:var(--text-muted); margin-top:0; margin-bottom:15px;">Digite o menu do dia — o texto entra automaticamente na arte BAYTIGRILL. Ao enviar no WhatsApp, vai como <strong>imagem</strong> para os clientes.</p>
+          <p style="font-size:12px; color:var(--text-muted); margin-top:0; margin-bottom:15px;">Digite o menu e use a barra de formatação (negrito, centralizar, tamanho). O texto entra na arte BAYTIGRILL <strong>abaixo do risco do dia</strong>.</p>
           <div id="cardapioTabs" style="display:flex; gap:8px; overflow-x:auto; margin-bottom:15px; padding-bottom:8px;">
               <button class="tab-btn active" onclick="mudarAbaDia('Segunda', this)" style="min-width: 80px;">SEG</button>
               <button class="tab-btn" onclick="mudarAbaDia('Terça', this)" style="min-width: 80px;">TER</button>
@@ -1499,7 +1532,20 @@
               <button class="tab-btn" onclick="mudarAbaDia('Sábado', this)" style="min-width: 80px;">SÁB</button>
               <button class="tab-btn" onclick="mudarAbaDia('Domingo', this)" style="min-width: 80px;">DOM</button>
           </div>
-          <textarea id="textoCardapioDia" rows="8" placeholder="Exemplo:&#10;• Feijoada completa — R$ 45&#10;• Salada verde&#10;• Suco natural&#10;• Sobremesa do dia" oninput="agendarPreviewCardapioArte()" style="width:100%; padding:15px; background:var(--input-bg); color:var(--text-main); border:1px solid #444; border-radius:4px; font-family:'Poppins', sans-serif; font-size:14px; margin-bottom:15px; resize:vertical; box-sizing:border-box;"></textarea>
+          <div class="cardapio-editor-toolbar" id="cardapioEditorToolbar">
+              <span class="toolbar-label">FORMATAÇÃO:</span>
+              <button type="button" title="Negrito (Ctrl+B)" onclick="cmdCardapio('bold')"><b>N</b></button>
+              <button type="button" title="Centralizar" onclick="cmdCardapio('justifyCenter')">☰</button>
+              <button type="button" title="Alinhar à esquerda" onclick="cmdCardapio('justifyLeft')">☱</button>
+              <select id="cardapioFonteSelect" onchange="cmdCardapioFonte(this.value); this.selectedIndex=0;" title="Tamanho da fonte — selecione o texto antes">
+                  <option value="">Tamanho…</option>
+                  <option value="pequeno">Pequeno</option>
+                  <option value="medio">Médio</option>
+                  <option value="grande">Grande</option>
+                  <option value="extra">Extra grande</option>
+              </select>
+          </div>
+          <div id="textoCardapioDia" contenteditable="true" class="cardapio-editor" data-placeholder="Digite os itens do menu…" oninput="agendarPreviewCardapioArte()" onkeydown="if(event.ctrlKey&&event.key==='b'){event.preventDefault();cmdCardapio('bold');}"></div>
           <div class="cardapio-arte-preview-wrap" id="cardapioArtePreviewWrap">
               <h4>PRÉVIA — CARDÁPIO NA ARTE</h4>
               <img id="cardapioArtePreview" alt="Prévia do cardápio na moldura BAYTIGRILL">
@@ -2442,8 +2488,26 @@
 
   function salvarCardapioDiaAtualNaMemoria() {
       let textoEl = document.getElementById('textoCardapioDia');
-      let texto = textoEl ? textoEl.value : '';
+      let texto = textoEl ? textoEl.innerHTML : '';
       cardapioDiario[diaSelecionado] = { texto, imagem: '' };
+  }
+
+  function setEditorCardapioHtml(html) {
+      let el = document.getElementById('textoCardapioDia');
+      if (!el) return;
+      if (!html) { el.innerHTML = ''; return; }
+      if (String(html).includes('<')) el.innerHTML = html;
+      else el.innerHTML = String(html).split('\n').map(l => `<div>${escaparHtml(l)}</div>`).join('');
+  }
+
+  function obterHtmlEditorCardapio() {
+      let el = document.getElementById('textoCardapioDia');
+      return el ? el.innerHTML : '';
+  }
+
+  function obterTextoPlanoCardapioEditor() {
+      let el = document.getElementById('textoCardapioDia');
+      return el ? el.innerText.replace(/\u00a0/g, ' ').trim() : '';
   }
 
   function alterarImagemProduto(id) {
@@ -2634,7 +2698,7 @@
                   cardapioDiario = { ...cardapioDiario, ...cardapioCache };
                   normalizarCardapioSemanalCompleto();
                   if (document.getElementById('textoCardapioDia')) {
-                      document.getElementById('textoCardapioDia').value = obterTextoCardapioDia(diaSelecionado);
+                      setEditorCardapioHtml(obterTextoCardapioDia(diaSelecionado));
                       agendarPreviewCardapioArte();
                   }
               }
@@ -2899,7 +2963,7 @@
               cardapioDiario = { ...cardapioDiario, ...d };
               normalizarCardapioSemanalCompleto();
               if (document.getElementById('textoCardapioDia')) {
-                  document.getElementById('textoCardapioDia').value = obterTextoCardapioDia(diaSelecionado);
+                  setEditorCardapioHtml(obterTextoCardapioDia(diaSelecionado));
                   agendarPreviewCardapioArte();
               }
           }
@@ -6022,53 +6086,213 @@
       return moldeCardapioCarregando;
   }
 
-  function medirAlturaTextoCardapio(ctx, texto, x, maxWidth, lineHeight) {
-      let linhas = String(texto || '').split('\n');
-      let y = 0;
-      linhas.forEach(linha => {
-          let bruta = linha.trim();
-          if (!bruta) { y += lineHeight * 0.65; return; }
-          let palavras = bruta.split(/\s+/);
-          let atual = '';
-          palavras.forEach(p => {
-              let teste = atual ? atual + ' ' + p : p;
-              if (ctx.measureText(teste).width > maxWidth && atual) {
-                  y += lineHeight;
-                  atual = p;
-              } else {
-                  atual = teste;
-              }
-          });
-          if (atual) y += lineHeight;
-      });
-      return y;
+  function cmdCardapio(comando) {
+      let el = document.getElementById('textoCardapioDia');
+      if (!el) return;
+      el.focus();
+      document.execCommand(comando, false, null);
+      agendarPreviewCardapioArte();
   }
 
-  function desenharTextoCardapio(ctx, texto, x, y, maxWidth, lineHeight) {
-      let cy = y;
-      String(texto || '').split('\n').forEach(linha => {
-          let bruta = linha.trim();
-          if (!bruta) { cy += lineHeight * 0.65; return; }
-          let palavras = bruta.split(/\s+/);
-          let atual = '';
-          palavras.forEach(p => {
-              let teste = atual ? atual + ' ' + p : p;
-              if (ctx.measureText(teste).width > maxWidth && atual) {
-                  ctx.fillText(atual, x, cy);
-                  cy += lineHeight;
-                  atual = p;
-              } else {
-                  atual = teste;
+  function cmdCardapioFonte(tamanho) {
+      if (!tamanho) return;
+      let el = document.getElementById('textoCardapioDia');
+      if (!el) return;
+      el.focus();
+      let mapa = { pequeno: '20px', medio: '26px', grande: '32px', extra: '42px' };
+      let px = mapa[tamanho] || mapa.medio;
+      let sel = window.getSelection();
+      if (!sel || !sel.rangeCount || sel.isCollapsed) {
+          return Swal.fire({ icon: 'info', title: 'Selecione o texto', text: 'Marque as palavras ou linhas antes de escolher o tamanho.', timer: 2200, showConfirmButton: false, background: '#3A4536', color: '#F0E6D2' });
+      }
+      let trecho = sel.toString();
+      if (!trecho.trim()) return;
+      document.execCommand('insertHTML', false, `<span style="font-size:${px}">${escaparHtml(trecho)}</span>`);
+      agendarPreviewCardapioArte();
+  }
+
+  function parseHtmlCardapioParaBlocos(html) {
+      if (!html || !String(html).trim()) return [];
+      let bruto = String(html).trim();
+      if (!bruto.includes('<')) {
+          return bruto.split('\n').map(l => ({ align: 'left', runs: [{ text: l, bold: false, sizePx: null }] }));
+      }
+      let container = document.createElement('div');
+      container.innerHTML = bruto;
+      let blocos = [];
+
+      function runsDoNo(no, estilo) {
+          let runs = [];
+          no.childNodes.forEach(filho => {
+              if (filho.nodeType === 3) {
+                  if (filho.textContent) runs.push({ text: filho.textContent, bold: estilo.bold, sizePx: estilo.sizePx });
+                  return;
               }
+              if (filho.nodeType !== 1) return;
+              let tag = filho.tagName.toLowerCase();
+              let est = { bold: estilo.bold, sizePx: estilo.sizePx };
+              if (tag === 'b' || tag === 'strong') est.bold = true;
+              if (filho.style && filho.style.fontWeight && (filho.style.fontWeight === 'bold' || parseInt(filho.style.fontWeight, 10) >= 600)) est.bold = true;
+              if (filho.style && filho.style.fontSize) est.sizePx = parseInt(filho.style.fontSize, 10) || est.sizePx;
+              if (tag === 'font' && filho.size) {
+                  let mapaFont = { 1: 16, 2: 18, 3: 20, 4: 24, 5: 28, 6: 34, 7: 42 };
+                  est.sizePx = mapaFont[filho.size] || est.sizePx;
+              }
+              if (tag === 'br') runs.push({ text: '\n', br: true, bold: est.bold, sizePx: est.sizePx });
+              else runs.push(...runsDoNo(filho, est));
           });
-          if (atual) { ctx.fillText(atual, x, cy); cy += lineHeight; }
+          return runs;
+      }
+
+      function alinharBloco(el) {
+          if (!el || el.nodeType !== 1) return 'left';
+          let al = (el.style && el.style.textAlign) || el.getAttribute('align') || '';
+          if (al === 'center') return 'center';
+          if (al === 'right') return 'right';
+          return 'left';
+      }
+
+      container.childNodes.forEach(no => {
+          if (no.nodeType === 3) {
+              String(no.textContent).split('\n').forEach(l => blocos.push({ align: 'left', runs: [{ text: l, bold: false, sizePx: null }] }));
+              return;
+          }
+          if (no.nodeType !== 1) return;
+          let tag = no.tagName.toLowerCase();
+          if (tag === 'br') {
+              blocos.push({ align: 'left', runs: [{ text: '', bold: false, sizePx: null }] });
+              return;
+          }
+          blocos.push({ align: alinharBloco(no), runs: runsDoNo(no, { bold: false, sizePx: null }) });
+      });
+      return blocos.filter(b => b.runs.length);
+  }
+
+  function fonteRunCardapio(ctx, run, bodySize, escala, corTexto) {
+      let px = run.sizePx ? Math.round(run.sizePx * escala) : bodySize;
+      let peso = run.bold ? '700' : '400';
+      ctx.font = `${peso} ${px}px Georgia, 'Times New Roman', serif`;
+      ctx.fillStyle = corTexto;
+      return { px, lineH: px * 1.38 };
+  }
+
+  function quebrarRunsEmLinhas(ctx, runs, maxWidth, bodySize, escala) {
+      let linhas = [];
+      let linhaAtual = [];
+      let larguraAtual = 0;
+
+      function flush() {
+          if (linhaAtual.length) { linhas.push([...linhaAtual]); linhaAtual = []; larguraAtual = 0; }
+      }
+
+      runs.forEach(run => {
+          if (run.br || run.text === '\n') { flush(); return; }
+          let partes = String(run.text).split('\n');
+          partes.forEach((parte, idx) => {
+              if (idx > 0) flush();
+              if (!parte) return;
+              let palavras = parte.split(/(\s+)/);
+              palavras.forEach(p => {
+                  if (!p) return;
+                  let f = fonteRunCardapio(ctx, run, bodySize, escala);
+                  let w = ctx.measureText(p).width;
+                  if (larguraAtual + w > maxWidth && linhaAtual.length) {
+                      flush();
+                      f = fonteRunCardapio(ctx, run, bodySize, escala);
+                      w = ctx.measureText(p).width;
+                  }
+                  linhaAtual.push({ text: p, run });
+                  larguraAtual += w;
+              });
+          });
+      });
+      flush();
+      return linhas;
+  }
+
+  function medirAlturaHtmlCardapio(ctx, html, padX, areaW, bodySize, escala) {
+      let blocos = parseHtmlCardapioParaBlocos(html);
+      let altura = 0;
+      blocos.forEach(bloco => {
+          let linhas = quebrarRunsEmLinhas(ctx, bloco.runs, areaW, bodySize, escala);
+          if (!linhas.length) { altura += bodySize * 0.5; return; }
+          linhas.forEach(linha => {
+              let maxPx = bodySize;
+              linha.forEach(seg => {
+                  let px = seg.run.sizePx ? Math.round(seg.run.sizePx * escala) : bodySize;
+                  if (px > maxPx) maxPx = px;
+              });
+              altura += maxPx * 1.38;
+          });
+          altura += bodySize * 0.12;
+      });
+      return altura;
+  }
+
+  function desenharHtmlCardapio(ctx, html, padX, yInicio, areaW, bodySize, escala, corTexto, W) {
+      let blocos = parseHtmlCardapioParaBlocos(html);
+      let cy = yInicio;
+      blocos.forEach(bloco => {
+          let linhas = quebrarRunsEmLinhas(ctx, bloco.runs, areaW, bodySize, escala);
+          if (!linhas.length) { cy += bodySize * 0.5; return; }
+          linhas.forEach(linha => {
+              let maxPx = bodySize;
+              linha.forEach(seg => {
+                  let px = seg.run.sizePx ? Math.round(seg.run.sizePx * escala) : bodySize;
+                  if (px > maxPx) maxPx = px;
+              });
+              let lineH = maxPx * 1.38;
+              let larguraLinha = 0;
+              linha.forEach(seg => {
+                  fonteRunCardapio(ctx, seg.run, bodySize, escala, corTexto);
+                  larguraLinha += ctx.measureText(seg.text).width;
+              });
+              let x = padX;
+              if (bloco.align === 'center') x = padX + (areaW - larguraLinha) / 2;
+              else if (bloco.align === 'right') x = padX + areaW - larguraLinha;
+              let cx = x;
+              linha.forEach(seg => {
+                  fonteRunCardapio(ctx, seg.run, bodySize, escala, corTexto);
+                  ctx.textAlign = 'left';
+                  ctx.textBaseline = 'alphabetic';
+                  ctx.fillText(seg.text, cx, cy);
+                  cx += ctx.measureText(seg.text).width;
+              });
+              cy += lineH;
+          });
+          cy += bodySize * 0.12;
       });
       return cy;
   }
 
-  async function gerarImagemCardapioDia(dia, textoOpt) {
+  function desenharCabecalhoDiaCardapio(ctx, W, padX, areaW, padTop, diaUsar, escala) {
+      let corTexto = '#3E2723';
+      let tituloSize = Math.round(44 * escala);
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'alphabetic';
+      ctx.fillStyle = corTexto;
+      ctx.font = `700 ${tituloSize}px Georgia, 'Times New Roman', serif`;
+      let yDia = padTop + tituloSize;
+      ctx.fillText(diaUsar.toUpperCase(), W / 2, yDia);
+      let yLinha = yDia + tituloSize * 0.18;
+      ctx.strokeStyle = 'rgba(62, 39, 35, 0.4)';
+      ctx.lineWidth = Math.max(1.5, escala * 1.2);
+      ctx.beginPath();
+      ctx.moveTo(padX + areaW * 0.08, yLinha);
+      ctx.lineTo(padX + areaW * 0.92, yLinha);
+      ctx.stroke();
+      return { yCorpo: yLinha + tituloSize * 0.42, yLinha };
+  }
+
+  async function gerarImagemCardapioDia(dia, htmlOpt) {
       let diaUsar = dia || diaSelecionado;
-      let texto = (textoOpt != null ? textoOpt : obterTextoCardapioDia(diaUsar)).trim();
+      let html = htmlOpt != null ? htmlOpt : obterTextoCardapioDia(diaUsar);
+      let textoPlano = '';
+      if (html) {
+          let tmp = document.createElement('div');
+          tmp.innerHTML = html;
+          textoPlano = tmp.innerText.replace(/\u00a0/g, ' ').trim();
+      }
       let molde = await carregarMoldeCardapio();
       let W = molde.naturalWidth || 1200;
       let H = molde.naturalHeight || 630;
@@ -6080,73 +6304,33 @@
       ctx.drawImage(molde, 0, 0, W, H);
 
       let padX = W * 0.10;
-      let padTop = H * 0.19;
-      let padBottom = H * 0.15;
+      let padTop = H * 0.175;
+      let padBottom = H * 0.14;
       let areaW = W - padX * 2;
       let areaH = H - padTop - padBottom;
       let escala = W / 1200;
       let corTexto = '#3E2723';
-      let corDestaque = '#5D4037';
-
-      let tituloDia = diaUsar.toUpperCase();
-      let subtitulo = 'MENU DO DIA';
-      let tituloSize = Math.round(38 * escala);
-      let subtSize = Math.round(20 * escala);
       let bodySize = Math.round(28 * escala);
-      let lineH = bodySize * 1.38;
-      let yCorpo = padTop + tituloSize + lineH * 1.1;
 
       while (bodySize >= Math.round(14 * escala)) {
-          ctx.textAlign = 'center';
-          ctx.fillStyle = corDestaque;
-          ctx.font = `700 ${subtSize}px Georgia, 'Times New Roman', serif`;
-          ctx.fillText(subtitulo, W / 2, padTop + subtSize);
-
-          ctx.fillStyle = corTexto;
-          ctx.font = `700 ${tituloSize}px Georgia, 'Times New Roman', serif`;
-          ctx.fillText(tituloDia, W / 2, padTop + subtSize + lineH * 0.85);
-
-          ctx.strokeStyle = 'rgba(62, 39, 35, 0.35)';
-          ctx.lineWidth = Math.max(1, escala);
-          ctx.beginPath();
-          ctx.moveTo(padX + areaW * 0.12, yCorpo - lineH * 0.45);
-          ctx.lineTo(padX + areaW * 0.88, yCorpo - lineH * 0.45);
-          ctx.stroke();
-
-          ctx.textAlign = 'left';
-          ctx.font = `400 ${bodySize}px Georgia, 'Times New Roman', serif`;
-          let altura = medirAlturaTextoCardapio(ctx, texto || ' ', padX, areaW, lineH);
-          if (altura <= areaH - (yCorpo - padTop)) break;
-          bodySize -= 2;
-          lineH = bodySize * 1.38;
-          yCorpo = padTop + tituloSize + lineH * 1.1;
-          ctx.clearRect(0, 0, W, H);
           ctx.drawImage(molde, 0, 0, W, H);
+          let cab = desenharCabecalhoDiaCardapio(ctx, W, padX, areaW, padTop, diaUsar, escala);
+          ctx.font = `400 ${bodySize}px Georgia, 'Times New Roman', serif`;
+          let altura = medirAlturaHtmlCardapio(ctx, html, padX, areaW, bodySize, escala);
+          if (altura <= areaH - (cab.yCorpo - padTop)) break;
+          bodySize -= 2;
+          ctx.clearRect(0, 0, W, H);
       }
 
-      ctx.textAlign = 'center';
-      ctx.fillStyle = corDestaque;
-      ctx.font = `700 ${subtSize}px Georgia, 'Times New Roman', serif`;
-      ctx.fillText(subtitulo, W / 2, padTop + subtSize);
-      ctx.fillStyle = corTexto;
-      ctx.font = `700 ${tituloSize}px Georgia, 'Times New Roman', serif`;
-      ctx.fillText(tituloDia, W / 2, padTop + subtSize + lineH * 0.85);
-      ctx.strokeStyle = 'rgba(62, 39, 35, 0.35)';
-      ctx.lineWidth = Math.max(1, escala);
-      ctx.beginPath();
-      ctx.moveTo(padX + areaW * 0.12, yCorpo - lineH * 0.45);
-      ctx.lineTo(padX + areaW * 0.88, yCorpo - lineH * 0.45);
-      ctx.stroke();
-
-      ctx.textAlign = 'left';
-      ctx.fillStyle = corTexto;
-      ctx.font = `400 ${bodySize}px Georgia, 'Times New Roman', serif`;
-      if (texto) desenharTextoCardapio(ctx, texto, padX, yCorpo, areaW, lineH);
-      else {
+      ctx.drawImage(molde, 0, 0, W, H);
+      let cab = desenharCabecalhoDiaCardapio(ctx, W, padX, areaW, padTop, diaUsar, escala);
+      if (textoPlano) {
+          desenharHtmlCardapio(ctx, html, padX, cab.yCorpo, areaW, bodySize, escala, corTexto, W);
+      } else {
           ctx.textAlign = 'center';
           ctx.fillStyle = 'rgba(62, 39, 35, 0.45)';
           ctx.font = `italic 400 ${Math.round(bodySize * 0.85)}px Georgia, serif`;
-          ctx.fillText('Digite o menu acima…', W / 2, yCorpo + lineH);
+          ctx.fillText('Digite o menu acima…', W / 2, cab.yCorpo + bodySize);
       }
 
       let dataUrl = canvas.toDataURL('image/png');
@@ -6162,9 +6346,9 @@
   async function atualizarPreviewCardapioArte() {
       let imgEl = document.getElementById('cardapioArtePreview');
       if (!imgEl) return;
-      let texto = document.getElementById('textoCardapioDia')?.value || obterTextoCardapioDia(diaSelecionado);
+      let html = obterHtmlEditorCardapio() || obterTextoCardapioDia(diaSelecionado);
       try {
-          let { dataUrl } = await gerarImagemCardapioDia(diaSelecionado, texto);
+          let { dataUrl } = await gerarImagemCardapioDia(diaSelecionado, html);
           imgEl.src = dataUrl;
       } catch (e) {
           imgEl.alt = 'Erro ao carregar moldura — verifique assets/molde-cardapio.png';
@@ -6194,7 +6378,7 @@
       diaSelecionado = dia;
       document.querySelectorAll('#cardapioTabs .tab-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      document.getElementById('textoCardapioDia').value = obterTextoCardapioDia(dia);
+      setEditorCardapioHtml(obterTextoCardapioDia(dia));
       agendarPreviewCardapioArte();
   }
 
@@ -6241,18 +6425,17 @@
 
   async function compartilharCardapioDiaZap() {
       salvarCardapioDiaAtualNaMemoria();
-      let texto = obterTextoCardapioDia(diaSelecionado).trim();
-      if (!texto) {
+      if (!obterTextoPlanoCardapioEditor()) {
           return Swal.fire('Aviso', `O cardápio de ${diaSelecionado} está vazio. Escreva algo antes de enviar.`, 'warning');
       }
-
+      let html = obterHtmlEditorCardapio();
       let nomeRestaurante = empDados.nome || 'BAYTIGRILL';
       let msgCurta = `🍽️ *MENU DO DIA | ${diaSelecionado.toUpperCase()}* — ${nomeRestaurante}\n\nConfira nosso cardápio na imagem! 🛵 Faça seu pedido agora.`;
 
       Swal.fire({ title: 'Gerando imagem...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
       try {
-          let { blob, dataUrl } = await gerarImagemCardapioDia(diaSelecionado, texto);
+          let { blob, dataUrl } = await gerarImagemCardapioDia(diaSelecionado, html);
           if (!blob) throw new Error('Imagem vazia');
           let nomeArquivo = nomeArquivoCardapio(diaSelecionado);
           let file = new File([blob], nomeArquivo, { type: 'image/png' });
