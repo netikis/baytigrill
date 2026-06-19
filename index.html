@@ -1006,11 +1006,14 @@
     </div>
     <h2 class="titulo" style="font-size:22px; margin-bottom:5px; color:#fff; letter-spacing:3px;">BAYTIGRILL</h2>
     <div id="step-1" style="margin-top:20px;">
-        <button class="primary" onclick="selecionarPerfil('admin')" style="width:100%; margin-bottom:10px; padding:15px; font-size:14px;">🛡️ GERÊNCIA (CAIXA)</button>
+        <button class="primary" onclick="selecionarPerfil('admin')" style="width:100%; margin-bottom:10px; padding:15px; font-size:14px;">🛡️ GERÊNCIA (CAIXA) — Entrada direta</button>
         <button class="warning" onclick="selecionarPerfil('garcom')" style="width:100%; margin-bottom:10px; padding:15px; font-size:14px;">🧑‍🍳 GARÇOM (SALÃO)</button>
         <button class="dark" onclick="selecionarPerfil('func')" style="width:100%; padding:15px; font-size:14px;">👨‍🍳 COZINHA (PRODUÇÃO)</button>
+        <p style="font-size:11px; color:var(--text-muted); margin-top:14px; line-height:1.5;">O caixa entra sem senha. Garçom e cozinha usam o e-mail e a senha criados em <strong style="color:var(--accent);">Acesso Equipe</strong>.</p>
+        <button type="button" onclick="selecionarPerfilComLogin('admin')" style="width:100%; margin-top:12px; padding:8px; font-size:11px; background:transparent; color:var(--text-muted); border:1px dashed var(--border-soft);">Já tenho login de gerente cadastrado</button>
     </div>
     <div id="step-2" style="display:none; margin-top:20px;">
+        <p id="loginPerfilHint" style="font-size:12px; color:var(--accent); margin:0 0 12px; font-weight:600;"></p>
         <form onsubmit="fazerLogin(event)">
             <input type="email" id="emailInput" placeholder="E-mail" required style="margin-bottom:10px; text-align:center;">
             <input type="password" id="senhaInput" placeholder="Senha" required style="margin-bottom:15px; text-align:center;">
@@ -1246,13 +1249,14 @@
       <div id="painel-acesso" class="painel-secao">
         <h2 class="painel-titulo">Acesso da Equipe</h2>
         <div class="card" style="max-width: 480px;">
-          <p style="font-size:13px; color:var(--text-muted); margin-top:0; line-height:1.5;">Crie logins para garçom, cozinha ou gerência. Cada perfil enxerga apenas o que precisa no dia a dia.</p>
-          <ul style="font-size:12px; color:var(--text-muted); margin:0 0 24px 0; padding-left:18px; line-height:1.7;">
+          <p style="font-size:13px; color:var(--text-muted); margin-top:0; line-height:1.5;">O <strong style="color:var(--text-main);">caixa entra direto</strong>, sem senha. Aqui você cria os logins da equipe — o sistema gera e-mail e senha aleatórios e salva no Firebase.</p>
+          <ul style="font-size:12px; color:var(--text-muted); margin:0 0 20px 0; padding-left:18px; line-height:1.7;">
               <li><strong style="color:var(--text-main);">Garçom</strong> — cardápio e pedidos do salão</li>
               <li><strong style="color:var(--text-main);">Cozinha</strong> — comandas para produção</li>
-              <li><strong style="color:var(--text-main);">Gerente</strong> — caixa e controle total</li>
+              <li><strong style="color:var(--text-main);">Gerente extra</strong> — outro caixa com login (opcional)</li>
           </ul>
           <button class="warning" onclick="abrirModalUsuario()" style="width:100%; padding:16px; font-size:14px; font-weight:700;">👥 CRIAR ACESSO DA EQUIPE</button>
+          <div id="listaUsuariosEquipe" style="margin-top:24px; font-size:12px; color:var(--text-muted);"></div>
         </div>
       </div>
 
@@ -1623,17 +1627,18 @@
 <div class="modal" id="modalUsuario">
     <div class="modal-content" style="max-width: 400px;">
         <h3 style="color:var(--accent);">Novo Acesso de Equipe</h3>
-        <p style="font-size:12px; color:var(--text-muted); margin-bottom:20px;">Crie acessos para garçom, cozinha ou gerência.</p>
+        <p style="font-size:12px; color:var(--text-muted); margin-bottom:16px;">Informe o nome e o perfil. O sistema gera e-mail e senha e cadastra no Firebase.</p>
         <input type="text" id="novoUserNome" placeholder="Nome do Colaborador" style="margin-bottom:12px;">
-        <input type="email" id="novoUserEmail" placeholder="E-mail Corporativo" style="margin-bottom:12px;">
-        <input type="password" id="novoUserSenha" placeholder="Senha Forte" style="margin-bottom:15px;">
         <label style="font-size:11px; color:#666; margin-bottom: 5px; display: block;">Permissão:</label>
-        <select id="novoUserPerfil" style="margin-bottom:25px;">
+        <select id="novoUserPerfil" onchange="gerarCredenciaisUsuario()" style="margin-bottom:12px;">
             <option value="garcom">🧑‍🍳 Garçom (Cardápio e Pedidos)</option>
             <option value="func">👨‍🍳 Cozinha (Apenas Comandas)</option>
-            <option value="admin">🛡️ Gerente (Controle Total)</option>
+            <option value="admin">🛡️ Gerente extra (Login no caixa)</option>
         </select>
-        <button class="warning" onclick="criarUsuario()" style="width:100%;">SALVAR USUÁRIO</button>
+        <button type="button" class="dark" onclick="gerarCredenciaisUsuario()" style="width:100%; margin-bottom:12px; border-color:var(--accent); color:var(--accent);">🎲 GERAR E-MAIL E SENHA ALEATÓRIOS</button>
+        <input type="email" id="novoUserEmail" placeholder="E-mail gerado" readonly style="margin-bottom:12px; opacity:0.95;">
+        <input type="text" id="novoUserSenha" placeholder="Senha gerada" readonly style="margin-bottom:15px; opacity:0.95; font-family:monospace; letter-spacing:1px;">
+        <button class="warning" onclick="criarUsuario()" style="width:100%;">SALVAR NO FIREBASE</button>
         <button class="danger" onclick="document.getElementById('modalUsuario').style.display='none'" style="width:100%; margin-top:10px; background: transparent;">CANCELAR</button>
     </div>
 </div>
@@ -1740,7 +1745,7 @@
   const LOGO_PADRAO_URL = 'logo-baytigrill-sistema.png?v=2';
   const LOGO_IMPRESSAO_URL = 'logo-baytigrill-sistema.png?v=2';
   const LOGO_VERSAO_CACHE = 'sistema-v2';
-  const LOGIN_ATIVO = firebaseConfiguradoPreInit(); // login por e-mail quando Firebase estiver configurado
+  const LOGIN_ATIVO = firebaseConfiguradoPreInit(); // login por e-mail só para garçom/cozinha (caixa entra direto)
 
   let empDados = { nome: "BAYTIGRILL", end: "", tel: "", qrCodeBase64: "", pixCopiaCola: "", taxaEntrega: 0, statusLoja: 'aberto' };
   let cardapioDiario = { 'Segunda': '', 'Terça': '', 'Quarta': '', 'Quinta': '', 'Sexta': '', 'Sábado': '', 'Domingo': '' };
@@ -2683,10 +2688,9 @@
           sessionStorage.removeItem("logado_agora");
           isLogadoNestaSessao = null;
           msgBox.style.color = "var(--danger)";
-          let msg = "Senha incorreta ou e-mail não encontrado.";
+          let msg = traduzirErroFirebase(err.code, err.message);
           if (err.code === 'auth/network-request-failed') msg = "Sem internet ou Firebase bloqueado. Abra por http://localhost, não pelo arquivo local.";
           else if (err.code === 'auth/too-many-requests') msg = "Muitas tentativas. Aguarde alguns minutos.";
-          else if (err.message) msg = err.message;
           msgBox.innerText = msg;
       });
   }
@@ -2697,8 +2701,27 @@
           return;
       }
       db.collection("usuarios").doc(user.uid).get().then((doc) => {
-          roleUsuarioAtual = (doc.exists) ? doc.data().perfil : 'admin';
-          let nomeUser = (doc.exists && doc.data().nome) ? doc.data().nome : (user.email || 'Usuário');
+          if (!doc.exists) {
+              auth.signOut();
+              sessionStorage.removeItem("logado_agora");
+              isLogadoNestaSessao = null;
+              document.getElementById('loginOverlay').style.display = 'flex';
+              voltarLogin();
+              Swal.fire('Acesso não encontrado', 'Peça ao caixa para criar seu login em Acesso Equipe.', 'warning');
+              return;
+          }
+          roleUsuarioAtual = doc.data().perfil || 'garcom';
+          if (roleUsuarioAtual !== perfilLoginSelecionado) {
+              auth.signOut();
+              sessionStorage.removeItem("logado_agora");
+              isLogadoNestaSessao = null;
+              document.getElementById('loginOverlay').style.display = 'flex';
+              voltarLogin();
+              const nomes = { garcom: 'Garçom', func: 'Cozinha', admin: 'Gerente' };
+              Swal.fire('Perfil incorreto', 'Este login é de ' + (nomes[roleUsuarioAtual] || roleUsuarioAtual) + '. Escolha o perfil certo na tela inicial.', 'warning');
+              return;
+          }
+          let nomeUser = doc.data().nome || user.email || 'Usuário';
           document.getElementById('userDisplay').innerText = nomeUser;
           if(roleUsuarioAtual === 'func') {
               document.body.classList.add('role-func', 'mode-kds');
@@ -2715,9 +2738,12 @@
           document.getElementById('loginOverlay').style.display = 'none';
           iniciarSync();
       }).catch(() => {
-          roleUsuarioAtual = 'admin';
-          document.getElementById('loginOverlay').style.display = 'none';
-          iniciarSync();
+          auth.signOut();
+          sessionStorage.removeItem("logado_agora");
+          isLogadoNestaSessao = null;
+          document.getElementById('loginOverlay').style.display = 'flex';
+          voltarLogin();
+          Swal.fire('Erro', 'Não foi possível validar o acesso. Tente novamente.', 'error');
       });
   }
 
@@ -2877,10 +2903,50 @@
       });
   }
 
+  function gerarCredenciaisUsuario() {
+      const perfil = document.getElementById('novoUserPerfil').value;
+      const prefixo = perfil === 'garcom' ? 'garcom' : perfil === 'func' ? 'cozinha' : 'caixa';
+      const sufixo = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+      const email = prefixo + '.' + sufixo + '@equipe.baytigrill';
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+      let senha = '';
+      for (let i = 0; i < 10; i++) senha += chars.charAt(Math.floor(Math.random() * chars.length));
+      document.getElementById('novoUserEmail').value = email;
+      document.getElementById('novoUserSenha').value = senha;
+  }
+
+  function carregarListaUsuariosEquipe() {
+      const el = document.getElementById('listaUsuariosEquipe');
+      if (!el) return;
+      if (!firebaseConfigurado()) {
+          el.innerHTML = '<p style="margin:0;">Configure o Firebase para criar logins da equipe.</p>';
+          return;
+      }
+      el.innerHTML = '<p style="margin:0;">Carregando acessos...</p>';
+      db.collection('usuarios').get().then(snap => {
+          if (snap.empty) {
+              el.innerHTML = '<p style="margin:0;">Nenhum acesso criado ainda. Clique em <strong>Criar Acesso da Equipe</strong>.</p>';
+              return;
+          }
+          const nomes = { garcom: 'Garçom', func: 'Cozinha', admin: 'Gerente' };
+          let html = '<h4 style="color:var(--accent); margin:0 0 10px; font-size:13px;">Acessos cadastrados</h4>';
+          snap.forEach(d => {
+              const u = d.data();
+              html += '<div style="padding:10px 0; border-bottom:1px solid var(--border-soft); line-height:1.5;">'
+                  + '<strong style="color:var(--text-main);">' + escaparHtml(u.nome || '—') + '</strong>'
+                  + ' <span style="color:var(--accent);">(' + (nomes[u.perfil] || u.perfil) + ')</span><br>'
+                  + '<span style="font-size:11px;">' + escaparHtml(u.email || '') + '</span></div>';
+          });
+          el.innerHTML = html;
+      }).catch(() => {
+          el.innerHTML = '<p style="margin:0;">Não foi possível carregar a lista. Verifique as regras do Firestore.</p>';
+      });
+  }
+
   function abrirModalUsuario() {
       document.getElementById('novoUserNome').value = '';
-      document.getElementById('novoUserEmail').value = '';
-      document.getElementById('novoUserSenha').value = '';
+      document.getElementById('novoUserPerfil').value = 'garcom';
+      gerarCredenciaisUsuario();
       document.getElementById('modalUsuario').style.display = 'flex';
   }
 
@@ -2992,6 +3058,7 @@
           document.querySelectorAll('.sidebar-item[data-painel="' + id + '"], .mobile-nav-item[data-painel="' + id + '"]').forEach(btn => btn.classList.add('active'));
       }
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (id === 'acesso') carregarListaUsuariosEquipe();
   }
 
   function toggleKDS() {
@@ -5386,15 +5453,37 @@
       salvarImagemNaNuvem(file, 'qrCode', { tituloOk: 'Chave QR PIX definida!', inputEl: e.target });
   });
 
-  function selecionarPerfil(p) {
+  function selecionarPerfilComLogin(p) {
       perfilLoginSelecionado = p;
       if (!LOGIN_ATIVO) {
           entrarComPerfilLocal(p);
           return;
       }
-      document.getElementById('step-1').style.display='none';
-      document.getElementById('step-2').style.display='block';
-      document.getElementById('msgLogin').innerText='';
+      const hints = {
+          garcom: '🧑‍🍳 Garçom — use o e-mail e senha criados em Acesso Equipe',
+          func: '👨‍🍳 Cozinha — use o e-mail e senha criados em Acesso Equipe',
+          admin: '🛡️ Gerente — use o e-mail e senha criados em Acesso Equipe'
+      };
+      document.getElementById('loginPerfilHint').innerText = hints[p] || '';
+      document.getElementById('step-1').style.display = 'none';
+      document.getElementById('step-2').style.display = 'block';
+      document.getElementById('msgLogin').innerText = '';
+      const lembrado = localStorage.getItem('chef_email_login');
+      document.getElementById('emailInput').value = lembrado || '';
+      document.getElementById('senhaInput').value = '';
+  }
+
+  function selecionarPerfil(p) {
+      perfilLoginSelecionado = p;
+      if (p === 'admin') {
+          entrarComPerfilLocal('admin');
+          return;
+      }
+      if (!LOGIN_ATIVO) {
+          entrarComPerfilLocal(p);
+          return;
+      }
+      selecionarPerfilComLogin(p);
   }
   function voltarLogin() {
       document.getElementById('step-1').style.display='block';
@@ -5497,20 +5586,32 @@
           'auth/weak-password': 'Senha fraca. Use no mínimo 6 caracteres.',
           'auth/operation-not-allowed': 'Ative "E-mail/Senha" no Firebase: Authentication → Sign-in method → E-mail/Senha → Ativar.',
           'auth/network-request-failed': 'Sem internet ou domínio não autorizado. No Firebase, adicione netikis.github.io em Authentication → Authorized domains.',
+          'auth/wrong-password': 'Senha incorreta. Peça ao caixa para criar um novo acesso.',
+          'auth/user-not-found': 'E-mail não encontrado. Peça ao caixa para criar em Acesso Equipe.',
+          'auth/invalid-credential': 'E-mail ou senha incorretos. Peça ao caixa um acesso em Acesso Equipe.',
           'permission-denied': 'Firestore bloqueou o cadastro. No Firebase Console → Firestore → Regras, publique as regras do arquivo firebase-regras-exemplo.txt.'
       };
       if (code && map[code]) return map[code];
+      if (message && /INVALID_LOGIN_CREDENTIALS|invalid.?credential/i.test(message)) return map['auth/invalid-credential'];
       if (message && /permission/i.test(message)) return map['permission-denied'];
       return message || 'Não foi possível criar o usuário.';
   }
 
   function criarUsuario() {
       const nome = document.getElementById('novoUserNome').value.trim();
-      const email = document.getElementById('novoUserEmail').value.trim();
-      const senha = document.getElementById('novoUserSenha').value;
+      let email = document.getElementById('novoUserEmail').value.trim();
+      let senha = document.getElementById('novoUserSenha').value;
       const perfil = document.getElementById('novoUserPerfil').value;
-      if (!nome || !email || senha.length < 6) {
-          return Swal.fire('Formato Inválido', 'Preencha todos os dados e use senha com no mínimo 6 caracteres.', 'error');
+      if (!nome) {
+          return Swal.fire('Nome obrigatório', 'Informe o nome do colaborador.', 'error');
+      }
+      if (!email || senha.length < 6) {
+          gerarCredenciaisUsuario();
+          email = document.getElementById('novoUserEmail').value.trim();
+          senha = document.getElementById('novoUserSenha').value;
+      }
+      if (!email || senha.length < 6) {
+          return Swal.fire('Erro', 'Não foi possível gerar e-mail e senha. Tente novamente.', 'error');
       }
       if (!firebaseConfigurado()) {
           return Swal.fire('Firebase', 'O site precisa estar conectado ao Firebase (chaves configuradas).', 'warning');
@@ -5530,15 +5631,29 @@
               destruirAppTempUsuario();
               document.getElementById('modalUsuario').style.display = 'none';
               document.getElementById('novoUserNome').value = '';
-              document.getElementById('novoUserEmail').value = '';
-              document.getElementById('novoUserSenha').value = '';
+              const perfilLabel = perfil === 'garcom' ? 'Garçom' : perfil === 'func' ? 'Cozinha' : 'Gerente';
+              const credenciaisTxt = 'E-mail: ' + email + '\nSenha: ' + senha;
               Swal.fire({
                   icon: 'success',
-                  title: 'Acesso criado!',
-                  html: 'Perfil: <b>' + (perfil === 'garcom' ? 'Garçom' : perfil === 'func' ? 'Cozinha' : 'Gerente') + '</b><br>O colaborador entra com o e-mail e a senha cadastrados.',
+                  title: 'Acesso criado no Firebase!',
+                  html: '<div style="text-align:left;font-size:13px;line-height:1.6;">'
+                      + '<p><b>Perfil:</b> ' + perfilLabel + '</p>'
+                      + '<p><b>E-mail:</b><br><code style="color:#F5B041;word-break:break-all;">' + escaparHtml(email) + '</code></p>'
+                      + '<p><b>Senha:</b><br><code style="color:#F5B041;font-size:15px;">' + escaparHtml(senha) + '</code></p>'
+                      + '<p style="font-size:11px;color:#aaa;">Anote ou envie ao colaborador. A senha não aparece de novo.</p></div>',
+                  confirmButtonText: 'Copiar e-mail e senha',
+                  showCancelButton: true,
+                  cancelButtonText: 'Fechar',
                   background: '#3A4536',
                   color: '#F0E6D2'
+              }).then(r => {
+                  if (r.isConfirmed && navigator.clipboard) {
+                      navigator.clipboard.writeText(credenciaisTxt).then(() => {
+                          Swal.fire({ icon: 'success', title: 'Copiado!', timer: 1200, showConfirmButton: false, background: '#3A4536', color: '#F0E6D2' });
+                      });
+                  }
               });
+              carregarListaUsuariosEquipe();
           })
           .catch((e) => {
               console.error('criarUsuario:', e);
