@@ -6073,7 +6073,7 @@
       return base + caminho;
   }
 
-  const MOLDE_CARDAPIO_VER = 7;
+  const MOLDE_CARDAPIO_VER = 8;
   const CARDAPIO_CANVAS_W = 900;
   const CARDAPIO_CANVAS_H = 1350;
 
@@ -6083,7 +6083,8 @@
       let escala = Math.max(W / mW, H / mH);
       let dw = mW * escala;
       let dh = mH * escala;
-      ctx.drawImage(molde, (W - dw) / 2, (H - dh) / 2, dw, dh);
+      let offsetY = -H * 0.06;
+      ctx.drawImage(molde, (W - dw) / 2, (H - dh) / 2 + offsetY, dw, dh);
   }
 
   function nomeDiaCardapio(dia) {
@@ -6103,9 +6104,9 @@
           padBottom: H * 0.13,
           tituloSize: Math.round(34 * escala),
           bodyBase: Math.round(25 * escala),
-          yDia: H * 0.318,
-          gapLinha: escala * 9,
-          gapCorpo: Math.max(H * 0.042, escala * 26)
+          yDia: H * 0.43,
+          gapLinha: escala * 10,
+          gapCorpo: Math.max(H * 0.048, escala * 28)
       };
   }
 
