@@ -322,6 +322,51 @@
   .comanda-inicio-footer strong { font-size: 18px; color: var(--danger); font-family: 'Poppins', sans-serif; }
   .comanda-inicio-btn { width: 100%; padding: 10px; font-size: 12px; font-weight: 700; }
   .comandas-inicio-vazio { text-align: center; color: var(--text-muted); padding: 28px 16px; font-size: 14px; }
+
+  /* --- TABELA DO DIA (BALCÃO) --- */
+  .tabela-dia-section { padding: 0; overflow: hidden; }
+  .tabela-dia-header {
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 12px; padding: 18px 20px;
+      border-bottom: 1px solid var(--border-soft);
+  }
+  .tabela-dia-header h3 { margin: 0; font-size: 16px; color: var(--text-main); }
+  .tabela-dia-acoes-topo { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tabela-dia-scroll { overflow-x: auto; }
+  .tabela-dia {
+      width: 100%; border-collapse: collapse; font-size: 13px; min-width: 720px;
+  }
+  .tabela-dia th {
+      text-align: left; padding: 12px 14px; font-size: 10px; letter-spacing: 0.5px;
+      color: var(--accent); font-weight: 700; background: var(--input-bg);
+      border-bottom: 1px solid var(--border-soft); white-space: nowrap;
+  }
+  .tabela-dia td {
+      padding: 12px 14px; border-bottom: 1px solid var(--border-soft);
+      color: var(--text-main); vertical-align: top;
+  }
+  .tabela-dia tr:hover td { background: rgba(201, 162, 59, 0.06); }
+  .tabela-dia .col-valor { text-align: right; font-weight: 600; color: var(--accent); white-space: nowrap; }
+  .tabela-dia .col-acoes { white-space: nowrap; }
+  .tabela-dia .badge-pago { background: var(--success); color: #fff; font-size: 10px; padding: 3px 8px; border-radius: 4px; font-weight: 600; }
+  .tabela-dia .badge-aberto { background: var(--danger); color: #fff; font-size: 10px; padding: 3px 8px; border-radius: 4px; font-weight: 600; }
+  .tabela-dia-acoes-btn {
+      padding: 5px 8px; font-size: 10px; margin: 2px; border-radius: 4px;
+      border: 1px solid var(--border-soft); background: var(--card-elevated); color: var(--text-main); cursor: pointer;
+  }
+  .tabela-dia-acoes-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .tabela-dia-totais {
+      display: flex; justify-content: flex-end; gap: 24px; flex-wrap: wrap;
+      padding: 14px 20px; background: var(--input-bg); border-top: 1px solid var(--border-soft);
+      font-size: 13px;
+  }
+  .tabela-dia-totais strong { color: var(--accent); font-size: 16px; }
+  .tabela-dia-vazio { text-align: center; padding: 32px 16px; color: var(--text-muted); font-style: italic; }
+  .balcao-itens-lista { max-height: 200px; overflow-y: auto; margin: 12px 0; }
+  .balcao-item-linha {
+      display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap;
+  }
+  .balcao-item-linha input, .balcao-item-linha select { flex: 1; min-width: 80px; margin: 0; padding: 10px; font-size: 12px; }
   #btnToggleSidebar {
       display: none; position: fixed; bottom: 16px; left: 16px; z-index: 200;
       background: var(--primary); color: #fff; border: 1px solid var(--accent);
@@ -1105,6 +1150,37 @@
             <button id="btnStatusLoja" class="success" onclick="toggleStatusLoja()" style="flex:1; font-size:11px; border-radius:6px; min-width:100px; border: 1px solid #4CAF50;">🟢 DELIVERY<br>ABERTO</button>
         </div>
 
+        <div class="card tabela-dia-section">
+            <div class="tabela-dia-header">
+                <h3>📒 Tabela do Dia — Balcão</h3>
+                <div class="tabela-dia-acoes-topo">
+                    <button type="button" class="danger" onclick="zerarDiaBalcao()" style="font-size:11px; padding:10px 14px;">🗑️ ZERAR DIA</button>
+                    <button type="button" class="warning" onclick="abrirModalBalcaoDia()" style="font-size:11px; padding:10px 14px; font-weight:700;">➕ ADICIONAR CLIENTE</button>
+                </div>
+            </div>
+            <div class="tabela-dia-scroll">
+                <table class="tabela-dia">
+                    <thead>
+                        <tr>
+                            <th>CLIENTE</th>
+                            <th>CONTATO</th>
+                            <th>PRODUTOS</th>
+                            <th style="text-align:right;">TOTAL</th>
+                            <th>PAGAMENTO</th>
+                            <th style="text-align:right;">AÇÕES</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpoTabelaDia">
+                        <tr><td colspan="6" class="tabela-dia-vazio">Nenhum lançamento hoje. Clique em Adicionar Cliente.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="tabela-dia-totais" id="totaisTabelaDia">
+                <span>Em aberto: <strong id="balcaoTotalAberto">R$ 0,00</strong></span>
+                <span>Recebido hoje: <strong id="balcaoTotalRecebido">R$ 0,00</strong></span>
+            </div>
+        </div>
+
         <div class="card comandas-inicio-section">
             <div class="comandas-inicio-header">
                 <h3>📋 Comandas Aguardando Caixa</h3>
@@ -1516,6 +1592,34 @@
     </div>
 </div>
 
+<div class="modal" id="modalBalcaoDia">
+    <div class="modal-content" style="max-width: 560px; max-height: 90vh; overflow-y: auto;">
+        <h3 id="tituloModalBalcao" style="color:var(--accent); margin-top:0;">Novo Cliente — Balcão</h3>
+        <input type="text" id="balcaoNome" placeholder="Nome do cliente" style="margin-bottom:10px;">
+        <input type="text" id="balcaoTelefone" placeholder="Telefone" style="margin-bottom:10px;">
+        <input type="text" id="balcaoEndereco" placeholder="Endereço (opcional)" style="margin-bottom:15px;">
+        <label style="font-size:11px; color:var(--accent); font-weight:600; display:block; margin-bottom:8px;">PRODUTOS / VALORES</label>
+        <div class="balcao-item-linha">
+            <select id="balcaoProdutoSelect" style="flex:2;">
+                <option value="">— Escolher do cardápio —</option>
+            </select>
+            <input type="number" id="balcaoItemQtd" value="1" min="1" placeholder="Qtd" style="width:60px; flex:none;">
+            <button type="button" class="warning" onclick="adicionarItemBalcaoModal()" style="flex:none; padding:10px 14px;">+</button>
+        </div>
+        <div class="balcao-item-linha">
+            <input type="text" id="balcaoItemDescManual" placeholder="Ou digite o produto..." style="flex:2;">
+            <input type="number" id="balcaoItemValorManual" placeholder="R$" step="0.01" style="width:90px; flex:none;">
+            <button type="button" class="dark" onclick="adicionarItemBalcaoManual()" style="flex:none; padding:10px 12px; font-size:11px;">+ MANUAL</button>
+        </div>
+        <div class="balcao-itens-lista" id="balcaoItensLista"></div>
+        <div style="text-align:right; font-size:20px; font-weight:700; color:var(--accent); margin:16px 0;">
+            Total: <span id="balcaoModalTotal">R$ 0,00</span>
+        </div>
+        <button type="button" class="success" onclick="salvarBalcaoDia()" style="width:100%; padding:14px;">💾 SALVAR LANÇAMENTO</button>
+        <button type="button" class="danger" onclick="fecharModalBalcaoDia()" style="width:100%; margin-top:10px; background:transparent; border:1px solid var(--border-soft); color:var(--text-muted);">CANCELAR</button>
+    </div>
+</div>
+
 <div class="modal" id="modalUsuario">
     <div class="modal-content" style="max-width: 400px;">
         <h3 style="color:var(--accent);">Novo Acesso de Equipe</h3>
@@ -1644,7 +1748,10 @@
   let logoBase64 = localStorage.getItem('logoRestaurante') || "";
   let carrinhoCompras = []; let ingredientesTemp = [];
   let imagemProdutoTemp = '';
-  let payRef = null; let caixaTotal = []; 
+  let payRef = null; let caixaTotal = [];
+  let balcaoDiaLista = [];
+  let balcaoDiaEditId = null;
+  let balcaoDiaItensTemp = [];
   let roleUsuarioAtual = 'admin'; let filtroListaAtual = 'todos';
   let nomeGarcomLogado = '';
   let carrinhoGarcom = [];
@@ -2649,6 +2756,7 @@
           catalogo = []; snap.forEach((d) => catalogo.push({id: d.id, ...d.data()}));
           if(document.getElementById('modalGerenciarCatalogo') && document.getElementById('modalGerenciarCatalogo').style.display === 'flex') renderGerenciarCatalogo();
           if(document.body.classList.contains('role-garcom')) renderCardapioGarcom();
+          atualizarSelectProdutosBalcao();
       }, err => {});
       
       db.collection("config").doc("empresa").onSnapshot((doc) => {
@@ -2691,6 +2799,14 @@
               }
           }
       }, err => {});
+
+      db.collection('balcao_dia').where('dia', '==', obterDataLocal()).onSnapshot(snap => {
+          balcaoDiaLista = [];
+          snap.forEach(d => balcaoDiaLista.push({ id: d.id, ...d.data() }));
+          balcaoDiaLista.sort((a, b) => String(a.criadoEm || '').localeCompare(String(b.criadoEm || '')));
+          renderTabelaDia();
+          atualizarDashboard();
+      }, err => { console.warn('balcao_dia:', err.message); carregarBalcaoLocal(); });
   }
 
   function trocarLogin() {
@@ -3500,6 +3616,342 @@
       return itens.reduce((acc, i) => acc + (Number(i.valor) || 0) - (Number(i.pagoValor) || 0), 0);
   }
 
+  // ================= TABELA DO DIA (BALCÃO) =================
+  function obterChaveBalcaoLocal() {
+      return 'baytigrill_balcao_' + obterDataLocal();
+  }
+
+  function carregarBalcaoLocal() {
+      try {
+          balcaoDiaLista = JSON.parse(localStorage.getItem(obterChaveBalcaoLocal()) || '[]');
+      } catch (e) { balcaoDiaLista = []; }
+      renderTabelaDia();
+  }
+
+  function salvarBalcaoLocal() {
+      try { localStorage.setItem(obterChaveBalcaoLocal(), JSON.stringify(balcaoDiaLista)); } catch (e) {}
+  }
+
+  function calcularTotalBalcao(reg) {
+      let itens = Array.isArray(reg.itens) ? reg.itens : [];
+      return itens.reduce((s, i) => s + (Number(i.valor) || 0), 0);
+  }
+
+  function atualizarSelectProdutosBalcao() {
+      let sel = document.getElementById('balcaoProdutoSelect');
+      if (!sel) return;
+      let atual = sel.value;
+      sel.innerHTML = '<option value="">— Escolher do cardápio —</option>';
+      catalogo.forEach(p => {
+          sel.innerHTML += `<option value="${p.id}">${p.nome} — ${formatarMoeda(p.valor)}</option>`;
+      });
+      if (atual) sel.value = atual;
+  }
+
+  function renderItensBalcaoModal() {
+      let box = document.getElementById('balcaoItensLista');
+      if (!box) return;
+      if (!balcaoDiaItensTemp.length) {
+          box.innerHTML = '<p style="font-size:12px;color:var(--text-muted);font-style:italic;margin:0;">Nenhum produto adicionado.</p>';
+      } else {
+          box.innerHTML = balcaoDiaItensTemp.map((i, idx) => `
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border-soft);font-size:12px;">
+                  <span><b>${i.qtd}x</b> ${escaparHtml(i.desc)}</span>
+                  <span style="display:flex;align-items:center;gap:8px;">
+                      <strong style="color:var(--accent);">${formatarMoeda(i.valor)}</strong>
+                      <button type="button" class="tabela-dia-acoes-btn" onclick="removerItemBalcaoModal(${idx})">✕</button>
+                  </span>
+              </div>`).join('');
+      }
+      let el = document.getElementById('balcaoModalTotal');
+      if (el) el.textContent = formatarMoeda(balcaoDiaItensTemp.reduce((s, i) => s + (Number(i.valor) || 0), 0));
+  }
+
+  function adicionarItemBalcaoModal() {
+      let id = document.getElementById('balcaoProdutoSelect')?.value;
+      let qtd = Math.max(1, Number(document.getElementById('balcaoItemQtd')?.value) || 1);
+      if (!id) return Swal.fire('Aviso', 'Selecione um produto do cardápio.', 'info');
+      let p = catalogo.find(x => x.id === id);
+      if (!p) return;
+      balcaoDiaItensTemp.push({ desc: p.nome, qtd: qtd, valor: (Number(p.valor) || 0) * qtd });
+      document.getElementById('balcaoItemQtd').value = '1';
+      renderItensBalcaoModal();
+  }
+
+  function adicionarItemBalcaoManual() {
+      let desc = (document.getElementById('balcaoItemDescManual')?.value || '').trim();
+      let val = Number(String(document.getElementById('balcaoItemValorManual')?.value || '').replace(',', '.'));
+      if (!desc || val <= 0) return Swal.fire('Aviso', 'Informe nome e valor do produto.', 'warning');
+      balcaoDiaItensTemp.push({ desc: desc, qtd: 1, valor: val });
+      document.getElementById('balcaoItemDescManual').value = '';
+      document.getElementById('balcaoItemValorManual').value = '';
+      renderItensBalcaoModal();
+  }
+
+  function removerItemBalcaoModal(idx) {
+      balcaoDiaItensTemp.splice(idx, 1);
+      renderItensBalcaoModal();
+  }
+
+  function abrirModalBalcaoDia(id) {
+      balcaoDiaEditId = id || null;
+      balcaoDiaItensTemp = [];
+      document.getElementById('tituloModalBalcao').textContent = id ? 'Editar Cliente — Balcão' : 'Novo Cliente — Balcão';
+      if (id) {
+          let reg = balcaoDiaLista.find(x => x.id === id);
+          if (reg) {
+              document.getElementById('balcaoNome').value = reg.nome || '';
+              document.getElementById('balcaoTelefone').value = reg.telefone || '';
+              document.getElementById('balcaoEndereco').value = reg.endereco || '';
+              balcaoDiaItensTemp = (reg.itens || []).map(i => ({ ...i }));
+          }
+      } else {
+          document.getElementById('balcaoNome').value = '';
+          document.getElementById('balcaoTelefone').value = '';
+          document.getElementById('balcaoEndereco').value = '';
+      }
+      atualizarSelectProdutosBalcao();
+      renderItensBalcaoModal();
+      document.getElementById('modalBalcaoDia').style.display = 'flex';
+  }
+
+  function fecharModalBalcaoDia() {
+      document.getElementById('modalBalcaoDia').style.display = 'none';
+      balcaoDiaEditId = null;
+      balcaoDiaItensTemp = [];
+  }
+
+  function salvarBalcaoDia() {
+      let nome = (document.getElementById('balcaoNome')?.value || '').trim();
+      if (!nome) return Swal.fire('Aviso', 'Informe o nome do cliente.', 'warning');
+      if (!balcaoDiaItensTemp.length) return Swal.fire('Aviso', 'Adicione pelo menos um produto.', 'warning');
+      let dados = {
+          nome: nome.toUpperCase(),
+          telefone: (document.getElementById('balcaoTelefone')?.value || '').trim(),
+          endereco: (document.getElementById('balcaoEndereco')?.value || '').trim(),
+          itens: balcaoDiaItensTemp.map(i => ({ ...i })),
+          total: calcularTotalBalcao({ itens: balcaoDiaItensTemp }),
+          dia: obterDataLocal(),
+          criadoEm: obterDataHoraLocal(),
+          pago: false,
+          pagamento: ''
+      };
+      if (balcaoDiaEditId) {
+          let antigo = balcaoDiaLista.find(x => x.id === balcaoDiaEditId);
+          if (antigo) {
+              dados.pago = antigo.pago;
+              dados.pagamento = antigo.pagamento || '';
+              dados.criadoEm = antigo.criadoEm || dados.criadoEm;
+          }
+      }
+      if (!firebaseConfigurado()) {
+          if (balcaoDiaEditId) {
+              let idx = balcaoDiaLista.findIndex(x => x.id === balcaoDiaEditId);
+              if (idx >= 0) balcaoDiaLista[idx] = { ...dados, id: balcaoDiaEditId };
+          } else {
+              balcaoDiaLista.push({ ...dados, id: 'local_' + Date.now() });
+          }
+          salvarBalcaoLocal();
+          fecharModalBalcaoDia();
+          renderTabelaDia();
+          return Swal.fire({ icon: 'success', title: 'Salvo!', timer: 1500, showConfirmButton: false });
+      }
+      Swal.fire({ title: 'Salvando...', didOpen: () => Swal.showLoading() });
+      let prom = balcaoDiaEditId
+          ? db.collection('balcao_dia').doc(balcaoDiaEditId).set(dados, { merge: true })
+          : db.collection('balcao_dia').add(dados);
+      prom.then(() => {
+          Swal.close();
+          fecharModalBalcaoDia();
+          Swal.fire({ icon: 'success', title: 'Lançamento salvo!', timer: 1600, showConfirmButton: false, background: '#3A4536', color: '#F0E6D2' });
+      }).catch(err => Swal.fire('Erro', err.message || 'Não foi possível salvar.', 'error'));
+  }
+
+  function renderTabelaDia() {
+      let tb = document.getElementById('corpoTabelaDia');
+      if (!tb) return;
+      if (!balcaoDiaLista.length) {
+          tb.innerHTML = '<tr><td colspan="6" class="tabela-dia-vazio">Nenhum lançamento hoje. Clique em <b>Adicionar Cliente</b>.</td></tr>';
+      } else {
+          tb.innerHTML = balcaoDiaLista.map(reg => {
+              let total = calcularTotalBalcao(reg);
+              let itensTxt = (reg.itens || []).map(i => `${i.qtd}x ${i.desc}`).join('<br>');
+              let pag = reg.pago
+                  ? `<span class="badge-pago">${escaparHtml(reg.pagamento || 'PAGO')}</span>`
+                  : '<span class="badge-aberto">EM ABERTO</span>';
+              let contato = [reg.telefone, reg.endereco].filter(Boolean).map(escaparHtml).join('<br>') || '—';
+              let acoesReceber = reg.pago ? '' : `<button type="button" class="tabela-dia-acoes-btn" style="color:var(--success);border-color:var(--success);" onclick="receberBalcaoDia('${reg.id}')">💳 Receber</button>`;
+              return `<tr>
+                  <td><strong>${escaparHtml(reg.nome)}</strong></td>
+                  <td style="font-size:11px;color:var(--text-muted);">${contato}</td>
+                  <td style="font-size:11px;line-height:1.5;">${itensTxt || '—'}</td>
+                  <td class="col-valor">${formatarMoeda(total)}</td>
+                  <td>${pag}</td>
+                  <td class="col-acoes">
+                      <button type="button" class="tabela-dia-acoes-btn" onclick="abrirModalBalcaoDia('${reg.id}')">✏️ Editar</button>
+                      <button type="button" class="tabela-dia-acoes-btn" onclick="imprimirBalcaoDia('${reg.id}')">🖨️ Imprimir</button>
+                      ${acoesReceber}
+                      <button type="button" class="tabela-dia-acoes-btn" style="color:var(--danger);border-color:var(--danger);" onclick="excluirBalcaoDia('${reg.id}')">🗑️</button>
+                  </td>
+              </tr>`;
+          }).join('');
+      }
+      let aberto = 0, recebido = 0;
+      balcaoDiaLista.forEach(r => {
+          let t = calcularTotalBalcao(r);
+          if (r.pago) recebido += t; else aberto += t;
+      });
+      let elA = document.getElementById('balcaoTotalAberto');
+      let elR = document.getElementById('balcaoTotalRecebido');
+      if (elA) elA.textContent = formatarMoeda(aberto);
+      if (elR) elR.textContent = formatarMoeda(recebido);
+  }
+
+  function excluirBalcaoDia(id) {
+      Swal.fire({
+          title: 'Excluir lançamento?',
+          text: 'Esta ação não pode ser desfeita.',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#B85C5C',
+          confirmButtonText: 'Excluir',
+          cancelButtonText: 'Cancelar',
+          background: '#3A4536',
+          color: '#F0E6D2'
+      }).then(r => {
+          if (!r.isConfirmed) return;
+          if (!firebaseConfigurado()) {
+              balcaoDiaLista = balcaoDiaLista.filter(x => x.id !== id);
+              salvarBalcaoLocal();
+              renderTabelaDia();
+              return;
+          }
+          db.collection('balcao_dia').doc(id).delete()
+              .then(() => Swal.fire({ icon: 'success', title: 'Excluído', timer: 1200, showConfirmButton: false }))
+              .catch(err => Swal.fire('Erro', err.message, 'error'));
+      });
+  }
+
+  function receberBalcaoDia(id) {
+      let reg = balcaoDiaLista.find(x => x.id === id);
+      if (!reg || reg.pago) return;
+      let total = calcularTotalBalcao(reg);
+      Swal.fire({
+          title: 'Receber ' + formatarMoeda(total),
+          html: `<p style="font-size:13px;margin-bottom:12px;">${escaparHtml(reg.nome)}</p>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <button type="button" class="swal2-confirm swal2-styled" style="margin:0;font-size:12px;" onclick="confirmarRecebimentoBalcao('${id}','DINHEIRO')">DINHEIRO</button>
+              <button type="button" class="swal2-confirm swal2-styled" style="margin:0;font-size:12px;background:#4a6741;" onclick="confirmarRecebimentoBalcao('${id}','PIX')">PIX</button>
+              <button type="button" class="swal2-confirm swal2-styled" style="margin:0;font-size:12px;background:#555;" onclick="confirmarRecebimentoBalcao('${id}','CARTAO')">CARTÃO</button>
+              <button type="button" class="swal2-confirm swal2-styled" style="margin:0;font-size:12px;background:#444;" onclick="confirmarRecebimentoBalcao('${id}','QRCODE')">QR CODE</button>
+              </div>`,
+          showConfirmButton: false,
+          showCancelButton: true,
+          cancelButtonText: 'Cancelar',
+          background: '#3A4536',
+          color: '#F0E6D2'
+      });
+  }
+
+  function confirmarRecebimentoBalcao(id, metodo) {
+      Swal.close();
+      let reg = balcaoDiaLista.find(x => x.id === id);
+      if (!reg) return;
+      let total = calcularTotalBalcao(reg);
+      let atualizar = { pago: true, pagamento: metodo, dataPagamento: obterDataHoraLocal() };
+      const finalizar = () => {
+          Swal.fire({ icon: 'success', title: 'Pagamento registrado!', timer: 1600, showConfirmButton: false, background: '#3A4536', color: '#F0E6D2' });
+      };
+      if (!firebaseConfigurado()) {
+          Object.assign(reg, atualizar);
+          salvarBalcaoLocal();
+          renderTabelaDia();
+          return finalizar();
+      }
+      db.collection('balcao_dia').doc(id).update(atualizar).then(() =>
+          db.collection('caixa').add({
+              tipo: 'ENTRADA',
+              metodo: metodo,
+              valor: total,
+              data: obterDataHoraLocal(),
+              obs: 'Balcão — ' + reg.nome,
+              refBalcao: id
+          })
+      ).then(finalizar).catch(err => Swal.fire('Erro', err.message, 'error'));
+  }
+
+  function imprimirBalcaoDia(id) {
+      let reg = balcaoDiaLista.find(x => x.id === id);
+      if (!reg) return;
+      let total = calcularTotalBalcao(reg);
+      let logoHtml = htmlLogoImpressao(65);
+      let itensHtml = (reg.itens || []).map(i =>
+          `<tr><td style="text-align:left;border-bottom:1px solid #ddd;padding:8px 0;font-size:12px;font-weight:600;">${i.qtd}x ${i.desc}</td>
+          <td style="text-align:right;border-bottom:1px solid #ddd;padding:8px 0;font-size:12px;">${formatarMoeda(i.valor)}</td></tr>`
+      ).join('');
+      let pagTxt = reg.pago ? (reg.pagamento || 'PAGO') : 'EM ABERTO';
+      document.getElementById('printContent').innerHTML = `
+          <div style="width:76mm;margin:0 auto;font-family:'Poppins',sans-serif;text-align:center;color:#000;background:#fff;padding-bottom:24px;">
+              ${logoHtml}
+              ${htmlCabecalhoEmpresaImpressao()}
+              <div style="font-size:11px;font-weight:700;margin:12px 0;">Comprovante — Balcão</div>
+              <div style="border-top:1px dashed #000;margin:12px 0;"></div>
+              <div style="text-align:left;font-size:12px;line-height:1.6;">
+                  <b>Cliente:</b> ${escaparHtml(reg.nome)}<br>
+                  ${reg.telefone ? '<b>Tel:</b> ' + escaparHtml(reg.telefone) + '<br>' : ''}
+                  ${reg.endereco ? '<b>End.:</b> ' + escaparHtml(reg.endereco) + '<br>' : ''}
+                  <b>Data:</b> ${formatarDataHoraBR(reg.criadoEm || obterDataHoraLocal())}<br>
+                  <b>Pagamento:</b> ${pagTxt}
+              </div>
+              <div style="border-top:1px dashed #000;margin:12px 0;"></div>
+              <table style="width:100%;border-collapse:collapse;">${itensHtml}</table>
+              <div style="margin-top:16px;text-align:right;font-size:18px;font-weight:700;">TOTAL: ${formatarMoeda(total)}</div>
+              <div style="border-top:1px dashed #000;margin:16px 0 8px;"></div>
+              <div style="font-size:11px;font-style:italic;">Obrigado pela preferência!</div>
+          </div>`;
+      document.getElementById('printOverlay').style.display = 'flex';
+      setTimeout(() => window.print(), 500);
+  }
+
+  function zerarDiaBalcao() {
+      Swal.fire({
+          title: 'Zerar o dia?',
+          html: 'Apaga <b>todos os lançamentos de hoje</b> na tabela do balcão.<br><small style="color:#aaa;">Não apaga comandas da cozinha.</small>',
+          icon: 'warning',
+          showCancelButton: true,
+          showDenyButton: true,
+          confirmButtonText: 'Zerar tabela',
+          denyButtonText: 'Zerar tabela + contador',
+          cancelButtonText: 'Cancelar',
+          confirmButtonColor: '#B85C5C',
+          denyButtonColor: '#C9A23B',
+          background: '#3A4536',
+          color: '#F0E6D2'
+      }).then(r => {
+          if (!r.isConfirmed && !r.isDenied) return;
+          const apagarLista = () => {
+              if (!firebaseConfigurado()) {
+                  balcaoDiaLista = [];
+                  salvarBalcaoLocal();
+                  renderTabelaDia();
+                  if (r.isDenied) zerarContadorPedidos('dia');
+                  else Swal.fire({ icon: 'success', title: 'Dia zerado!', timer: 1800, showConfirmButton: false, background: '#3A4536', color: '#F0E6D2' });
+                  return;
+              }
+              let dia = obterDataLocal();
+              db.collection('balcao_dia').where('dia', '==', dia).get().then(snap => {
+                  let batch = db.batch();
+                  snap.forEach(doc => batch.delete(doc.ref));
+                  return batch.commit();
+              }).then(() => {
+                  if (r.isDenied) zerarContadorPedidos('dia');
+                  Swal.fire({ icon: 'success', title: 'Dia zerado!', text: r.isDenied ? 'Tabela e contador de pedidos resetados.' : 'Tabela do balcão limpa.', timer: 2200, showConfirmButton: false, background: '#3A4536', color: '#F0E6D2' });
+              }).catch(err => Swal.fire('Erro', err.message, 'error'));
+          };
+          apagarLista();
+      });
+  }
+
   function obterComandasAbertasCaixa() {
       return clientes.filter(c => {
           let itens = Array.isArray(c.itens) ? c.itens : [];
@@ -4248,6 +4700,11 @@
           if(m.arquivado) return; // IGNORA ARQUIVADOS
           let dataCaixa = normalizarData(m.data);
           if(dataCaixa.startsWith(hoje) && m.tipo === 'ENTRADA') tRecebido += m.valor; 
+      });
+      balcaoDiaLista.forEach(r => {
+          let t = calcularTotalBalcao(r);
+          tVenda += t;
+          if (!r.pago) { /* aberto já contado em tVenda */ }
       }); 
       document.getElementById('dashTotal').innerText = formatarMoeda(tVenda); 
       document.getElementById('dashRecebido').innerText = formatarMoeda(tRecebido); 
