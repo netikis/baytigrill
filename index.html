@@ -6265,23 +6265,24 @@
       return cy;
   }
 
-  function desenharCabecalhoDiaCardapio(ctx, W, padX, areaW, padTop, diaUsar, escala) {
+  function desenharCabecalhoDiaCardapio(ctx, W, H, padX, areaW, diaUsar, escala) {
       let corTexto = '#3E2723';
-      let tituloSize = Math.round(44 * escala);
+      let tituloSize = Math.round(34 * escala);
+      /* Abaixo do banner BAYTIGRILL — baseline do nome do dia */
+      let yDia = H * 0.365;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'alphabetic';
       ctx.fillStyle = corTexto;
       ctx.font = `700 ${tituloSize}px Georgia, 'Times New Roman', serif`;
-      let yDia = padTop + tituloSize;
       ctx.fillText(diaUsar.toUpperCase(), W / 2, yDia);
-      let yLinha = yDia + tituloSize * 0.18;
+      let yLinha = yDia + tituloSize * 0.32;
       ctx.strokeStyle = 'rgba(62, 39, 35, 0.4)';
       ctx.lineWidth = Math.max(1.5, escala * 1.2);
       ctx.beginPath();
       ctx.moveTo(padX + areaW * 0.08, yLinha);
       ctx.lineTo(padX + areaW * 0.92, yLinha);
       ctx.stroke();
-      return { yCorpo: yLinha + tituloSize * 0.42, yLinha };
+      return { yCorpo: yLinha + tituloSize * 0.48, yLinha, yDia };
   }
 
   async function gerarImagemCardapioDia(dia, htmlOpt) {
@@ -6304,26 +6305,25 @@
       ctx.drawImage(molde, 0, 0, W, H);
 
       let padX = W * 0.10;
-      let padTop = H * 0.175;
-      let padBottom = H * 0.14;
+      let padBottom = H * 0.12;
       let areaW = W - padX * 2;
-      let areaH = H - padTop - padBottom;
       let escala = W / 1200;
       let corTexto = '#3E2723';
       let bodySize = Math.round(28 * escala);
 
       while (bodySize >= Math.round(14 * escala)) {
           ctx.drawImage(molde, 0, 0, W, H);
-          let cab = desenharCabecalhoDiaCardapio(ctx, W, padX, areaW, padTop, diaUsar, escala);
+          let cab = desenharCabecalhoDiaCardapio(ctx, W, H, padX, areaW, diaUsar, escala);
           ctx.font = `400 ${bodySize}px Georgia, 'Times New Roman', serif`;
           let altura = medirAlturaHtmlCardapio(ctx, html, padX, areaW, bodySize, escala);
-          if (altura <= areaH - (cab.yCorpo - padTop)) break;
+          let areaCorpoH = H - padBottom - cab.yCorpo;
+          if (altura <= areaCorpoH) break;
           bodySize -= 2;
           ctx.clearRect(0, 0, W, H);
       }
 
       ctx.drawImage(molde, 0, 0, W, H);
-      let cab = desenharCabecalhoDiaCardapio(ctx, W, padX, areaW, padTop, diaUsar, escala);
+      let cab = desenharCabecalhoDiaCardapio(ctx, W, H, padX, areaW, diaUsar, escala);
       if (textoPlano) {
           desenharHtmlCardapio(ctx, html, padX, cab.yCorpo, areaW, bodySize, escala, corTexto, W);
       } else {
