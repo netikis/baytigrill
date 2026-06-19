@@ -1019,7 +1019,7 @@
       padding: 14px; margin-bottom: 16px; text-align: center;
   }
   .cardapio-arte-preview-wrap h4 { margin: 0 0 10px; font-size: 12px; color: var(--accent); font-weight: 600; letter-spacing: 0.5px; }
-  .cardapio-arte-preview-wrap img { max-width: 100%; max-height: 380px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.35); }
+  .cardapio-arte-preview-wrap img { max-width: 100%; max-height: 520px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.35); object-fit: contain; }
   .cardapio-arte-preview-wrap .cardapio-arte-hint { font-size: 11px; color: var(--text-muted); margin: 10px 0 0; line-height: 1.5; }
   .cardapio-editor-toolbar {
       display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
@@ -1522,7 +1522,7 @@
       <div id="painel-cardapio" class="painel-secao">
         <h2 class="painel-titulo">Menu do Dia</h2>
         <div class="card">
-          <p style="font-size:12px; color:var(--text-muted); margin-top:0; margin-bottom:15px;">Digite o menu e use a barra de formatação (negrito, centralizar, tamanho). O texto entra na arte BAYTIGRILL <strong>abaixo do risco do dia</strong>.</p>
+          <p style="font-size:12px; color:var(--text-muted); margin-top:0; margin-bottom:15px;">Digite o menu e use a formatação acima. Teste no PC com <strong>TESTAR-LOCAL.bat</strong> antes de subir ao GitHub — troque a moldura em <code style="font-size:11px;">assets/molde-cardapio.png</code> e recarregue (F5).</p>
           <div id="cardapioTabs" style="display:flex; gap:8px; overflow-x:auto; margin-bottom:15px; padding-bottom:8px;">
               <button class="tab-btn active" onclick="mudarAbaDia('Segunda', this)" style="min-width: 80px;">SEG</button>
               <button class="tab-btn" onclick="mudarAbaDia('Terça', this)" style="min-width: 80px;">TER</button>
@@ -6074,14 +6074,52 @@
       return base + caminho;
   }
 
-  function carregarMoldeCardapio() {
-      if (moldeCardapioImg && moldeCardapioImg.complete) return Promise.resolve(moldeCardapioImg);
-      if (moldeCardapioCarregando) return moldeCardapioCarregando;
+  const MOLDE_CARDAPIO_VER = 3;
+
+  function nomeDiaCardapio(dia) {
+      const mapa = {
+          'Segunda': 'SEGUNDA-FEIRA', 'Terça': 'TERÇA-FEIRA', 'Quarta': 'QUARTA-FEIRA',
+          'Quinta': 'QUINTA-FEIRA', 'Sexta': 'SEXTA-FEIRA', 'Sábado': 'SÁBADO', 'Domingo': 'DOMINGO'
+      };
+      return mapa[dia] || String(dia || '').toUpperCase();
+  }
+
+  function calcularMetricasMoldeCardapio(W, H) {
+      let retrato = H > W * 1.05;
+      let escala = retrato ? (H / 1350) : (W / 1200);
+      return {
+          retrato,
+          escala,
+          padX: W * (retrato ? 0.088 : 0.10),
+          padBottom: H * (retrato ? 0.17 : 0.12),
+          tituloSize: Math.round((retrato ? 36 : 32) * escala),
+          bodyBase: Math.round((retrato ? 26 : 28) * escala),
+          /* retrato: dia logo abaixo do banner; paisagem: um pouco mais baixo */
+          yDia: H * (retrato ? 0.228 : 0.288),
+          gapLinha: escala * (retrato ? 8 : 10),
+          gapCorpo: Math.max(H * (retrato ? 0.028 : 0.022), escala * 20)
+      };
+  }
+
+  function moldeCardapioUrl() {
+      let bust = MOLDE_CARDAPIO_VER;
+      if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+          bust = MOLDE_CARDAPIO_VER + '-' + (window.__moldeCardapioBust || (window.__moldeCardapioBust = Date.now()));
+      }
+      return urlAssetCardapio('assets/molde-cardapio.png?v=' + bust);
+  }
+
+  function carregarMoldeCardapio(forcar) {
+      let urlAtual = moldeCardapioUrl();
+      if (!forcar && moldeCardapioImg && moldeCardapioImg.complete && moldeCardapioImg._src === urlAtual) {
+          return Promise.resolve(moldeCardapioImg);
+      }
+      moldeCardapioImg = null;
       moldeCardapioCarregando = new Promise((resolve, reject) => {
           let img = new Image();
-          img.onload = () => { moldeCardapioImg = img; resolve(img); };
-          img.onerror = () => reject(new Error('Não foi possível carregar a moldura do cardápio.'));
-          img.src = urlAssetCardapio('assets/molde-cardapio.png');
+          img.onload = () => { img._src = urlAtual; moldeCardapioImg = img; resolve(img); };
+          img.onerror = () => reject(new Error('Não foi possível carregar assets/molde-cardapio.png'));
+          img.src = urlAtual;
       });
       return moldeCardapioCarregando;
   }
@@ -6265,24 +6303,29 @@
       return cy;
   }
 
-  function desenharCabecalhoDiaCardapio(ctx, W, H, padX, areaW, diaUsar, escala) {
+  function desenharCabecalhoDiaCardapio(ctx, W, H, padX, areaW, diaUsar, met) {
       let corTexto = '#3E2723';
-      let tituloSize = Math.round(34 * escala);
-      /* Abaixo do banner BAYTIGRILL — baseline do nome do dia */
-      let yDia = H * 0.365;
+      let tituloSize = met.tituloSize;
+      let rotuloDia = nomeDiaCardapio(diaUsar);
       ctx.textAlign = 'center';
       ctx.textBaseline = 'alphabetic';
       ctx.fillStyle = corTexto;
+      while (tituloSize > Math.round(16 * met.escala)) {
+          ctx.font = `700 ${tituloSize}px Georgia, 'Times New Roman', serif`;
+          if (ctx.measureText(rotuloDia).width <= areaW * 0.92) break;
+          tituloSize -= 2;
+      }
       ctx.font = `700 ${tituloSize}px Georgia, 'Times New Roman', serif`;
-      ctx.fillText(diaUsar.toUpperCase(), W / 2, yDia);
-      let yLinha = yDia + tituloSize * 0.32;
+      let yDia = met.yDia;
+      ctx.fillText(rotuloDia, W / 2, yDia);
+      let yLinha = yDia + met.gapLinha + tituloSize * 0.12;
       ctx.strokeStyle = 'rgba(62, 39, 35, 0.4)';
-      ctx.lineWidth = Math.max(1.5, escala * 1.2);
+      ctx.lineWidth = Math.max(1.5, met.escala * 1.2);
       ctx.beginPath();
-      ctx.moveTo(padX + areaW * 0.08, yLinha);
-      ctx.lineTo(padX + areaW * 0.92, yLinha);
+      ctx.moveTo(padX + areaW * 0.07, yLinha);
+      ctx.lineTo(padX + areaW * 0.93, yLinha);
       ctx.stroke();
-      return { yCorpo: yLinha + tituloSize * 0.48, yLinha, yDia };
+      return { yCorpo: yLinha + met.gapCorpo, yLinha, yDia };
   }
 
   async function gerarImagemCardapioDia(dia, htmlOpt) {
@@ -6304,16 +6347,17 @@
       let ctx = canvas.getContext('2d');
       ctx.drawImage(molde, 0, 0, W, H);
 
-      let padX = W * 0.10;
-      let padBottom = H * 0.12;
+      let met = calcularMetricasMoldeCardapio(W, H);
+      let padX = met.padX;
+      let padBottom = met.padBottom;
       let areaW = W - padX * 2;
-      let escala = W / 1200;
+      let escala = met.escala;
       let corTexto = '#3E2723';
-      let bodySize = Math.round(28 * escala);
+      let bodySize = met.bodyBase;
 
-      while (bodySize >= Math.round(14 * escala)) {
+      while (bodySize >= Math.round(13 * escala)) {
           ctx.drawImage(molde, 0, 0, W, H);
-          let cab = desenharCabecalhoDiaCardapio(ctx, W, H, padX, areaW, diaUsar, escala);
+          let cab = desenharCabecalhoDiaCardapio(ctx, W, H, padX, areaW, diaUsar, met);
           ctx.font = `400 ${bodySize}px Georgia, 'Times New Roman', serif`;
           let altura = medirAlturaHtmlCardapio(ctx, html, padX, areaW, bodySize, escala);
           let areaCorpoH = H - padBottom - cab.yCorpo;
@@ -6323,7 +6367,7 @@
       }
 
       ctx.drawImage(molde, 0, 0, W, H);
-      let cab = desenharCabecalhoDiaCardapio(ctx, W, H, padX, areaW, diaUsar, escala);
+      let cab = desenharCabecalhoDiaCardapio(ctx, W, H, padX, areaW, diaUsar, met);
       if (textoPlano) {
           desenharHtmlCardapio(ctx, html, padX, cab.yCorpo, areaW, bodySize, escala, corTexto, W);
       } else {
