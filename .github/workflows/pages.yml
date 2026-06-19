@@ -1,0 +1,87 @@
+name: Publicar site (GitHub Pages)
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Preparar ícones PWA e manifest
+        env:
+          PWA_BASE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+        run: |
+          set -e
+          mkdir -p icons
+
+          # Ícones na raiz (upload manual) → copia para icons/
+          for f in icon-192.png icon-256.png icon-512.png; do
+            if [ -f "$f" ] && [ ! -f "icons/$f" ]; then
+              cp "$f" "icons/$f"
+              echo "Copiado $f → icons/"
+            fi
+          done
+
+          # Gera ícones se existir o script e ainda faltar algum
+          if [ -f scripts/gerar-icones.sh ] && { [ ! -f icons/icon-192.png ] || [ ! -f icons/icon-512.png ]; }; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq imagemagick gettext-base
+            chmod +x scripts/gerar-icones.sh
+            ./scripts/gerar-icones.sh
+          elif [ ! -f icons/icon-192.png ]; then
+            echo "AVISO: Sem scripts/gerar-icones.sh e sem icon-192.png — suba os ícones ou a pasta scripts/"
+          fi
+
+          if [ -f favicon.ico ] && [ ! -f icons/favicon.ico ]; then
+            cp favicon.ico icons/favicon.ico 2>/dev/null || true
+          fi
+
+          export PWA_BASE_URL
+          if [ -f manifest.template.webmanifest ]; then
+            envsubst < manifest.template.webmanifest > manifest.webmanifest
+          fi
+          echo "Manifest:"
+          grep -o '"src": "[^"]*"' manifest.webmanifest || true
+
+      - name: Gerar firebase-env.js (Secrets)
+        env:
+          FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+          FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN }}
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
+          FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+        run: |
+          if [ -z "$FIREBASE_API_KEY" ]; then
+            echo "::error::Configure os 6 Secrets FIREBASE_* em Settings → Secrets → Actions"
+            exit 1
+          fi
+          if [ ! -f firebase-env.template.js ]; then
+            echo "::error::Arquivo firebase-env.template.js não encontrado no repositório"
+            exit 1
+          fi
+          envsubst < firebase-env.template.js > firebase-env.js
+          echo "firebase-env.js gerado com sucesso"
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
