@@ -1019,7 +1019,7 @@
       padding: 14px; margin-bottom: 16px; text-align: center;
   }
   .cardapio-arte-preview-wrap h4 { margin: 0 0 10px; font-size: 12px; color: var(--accent); font-weight: 600; letter-spacing: 0.5px; }
-  .cardapio-arte-preview-wrap img { max-width: 100%; max-height: 520px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.35); object-fit: contain; }
+  .cardapio-arte-preview-wrap img { max-width: min(100%, 320px); max-height: 680px; width: auto; height: auto; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.35); object-fit: contain; margin: 0 auto; display: block; }
   .cardapio-arte-preview-wrap .cardapio-arte-hint { font-size: 11px; color: var(--text-muted); margin: 10px 0 0; line-height: 1.5; }
   .cardapio-editor-toolbar {
       display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
@@ -1522,7 +1522,6 @@
       <div id="painel-cardapio" class="painel-secao">
         <h2 class="painel-titulo">Menu do Dia</h2>
         <div class="card">
-          <p style="font-size:12px; color:var(--text-muted); margin-top:0; margin-bottom:15px;">Digite o menu e use a formatação acima. Teste no PC com <strong>TESTAR-LOCAL.bat</strong> antes de subir ao GitHub — troque a moldura em <code style="font-size:11px;">assets/molde-cardapio.png</code> e recarregue (F5).</p>
           <div id="cardapioTabs" style="display:flex; gap:8px; overflow-x:auto; margin-bottom:15px; padding-bottom:8px;">
               <button class="tab-btn active" onclick="mudarAbaDia('Segunda', this)" style="min-width: 80px;">SEG</button>
               <button class="tab-btn" onclick="mudarAbaDia('Terça', this)" style="min-width: 80px;">TER</button>
@@ -6074,7 +6073,18 @@
       return base + caminho;
   }
 
-  const MOLDE_CARDAPIO_VER = 3;
+  const MOLDE_CARDAPIO_VER = 5;
+  const CARDAPIO_CANVAS_W = 900;
+  const CARDAPIO_CANVAS_H = 1350;
+
+  function desenharMoldeRetrato(ctx, molde, W, H) {
+      let mW = molde.naturalWidth || W;
+      let mH = molde.naturalHeight || H;
+      let escala = Math.max(W / mW, H / mH);
+      let dw = mW * escala;
+      let dh = mH * escala;
+      ctx.drawImage(molde, (W - dw) / 2, (H - dh) / 2, dw, dh);
+  }
 
   function nomeDiaCardapio(dia) {
       const mapa = {
@@ -6085,19 +6095,17 @@
   }
 
   function calcularMetricasMoldeCardapio(W, H) {
-      let retrato = H > W * 1.05;
-      let escala = retrato ? (H / 1350) : (W / 1200);
+      let escala = H / 1350;
       return {
-          retrato,
+          retrato: true,
           escala,
-          padX: W * (retrato ? 0.088 : 0.10),
-          padBottom: H * (retrato ? 0.17 : 0.12),
-          tituloSize: Math.round((retrato ? 36 : 32) * escala),
-          bodyBase: Math.round((retrato ? 26 : 28) * escala),
-          /* retrato: dia logo abaixo do banner; paisagem: um pouco mais baixo */
-          yDia: H * (retrato ? 0.228 : 0.288),
-          gapLinha: escala * (retrato ? 8 : 10),
-          gapCorpo: Math.max(H * (retrato ? 0.028 : 0.022), escala * 20)
+          padX: W * 0.09,
+          padBottom: H * 0.13,
+          tituloSize: Math.round(34 * escala),
+          bodyBase: Math.round(25 * escala),
+          yDia: H * 0.215,
+          gapLinha: escala * 7,
+          gapCorpo: Math.max(H * 0.032, escala * 22)
       };
   }
 
@@ -6338,14 +6346,13 @@
           textoPlano = tmp.innerText.replace(/\u00a0/g, ' ').trim();
       }
       let molde = await carregarMoldeCardapio();
-      let W = molde.naturalWidth || 1200;
-      let H = molde.naturalHeight || 630;
+      let W = CARDAPIO_CANVAS_W;
+      let H = CARDAPIO_CANVAS_H;
       let canvas = document.getElementById('cardapioArteCanvas');
       if (!canvas) { canvas = document.createElement('canvas'); canvas.id = 'cardapioArteCanvas'; }
       canvas.width = W;
       canvas.height = H;
       let ctx = canvas.getContext('2d');
-      ctx.drawImage(molde, 0, 0, W, H);
 
       let met = calcularMetricasMoldeCardapio(W, H);
       let padX = met.padX;
@@ -6356,17 +6363,18 @@
       let bodySize = met.bodyBase;
 
       while (bodySize >= Math.round(13 * escala)) {
-          ctx.drawImage(molde, 0, 0, W, H);
+          ctx.clearRect(0, 0, W, H);
+          desenharMoldeRetrato(ctx, molde, W, H);
           let cab = desenharCabecalhoDiaCardapio(ctx, W, H, padX, areaW, diaUsar, met);
           ctx.font = `400 ${bodySize}px Georgia, 'Times New Roman', serif`;
           let altura = medirAlturaHtmlCardapio(ctx, html, padX, areaW, bodySize, escala);
           let areaCorpoH = H - padBottom - cab.yCorpo;
           if (altura <= areaCorpoH) break;
           bodySize -= 2;
-          ctx.clearRect(0, 0, W, H);
       }
 
-      ctx.drawImage(molde, 0, 0, W, H);
+      ctx.clearRect(0, 0, W, H);
+      desenharMoldeRetrato(ctx, molde, W, H);
       let cab = desenharCabecalhoDiaCardapio(ctx, W, H, padX, areaW, diaUsar, met);
       if (textoPlano) {
           desenharHtmlCardapio(ctx, html, padX, cab.yCorpo, areaW, bodySize, escala, corTexto, W);
