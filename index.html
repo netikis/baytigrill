@@ -445,9 +445,21 @@
       padding: 12px 16px; border-radius: 8px; font-weight: 600; font-size: 13px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.25);
   }
+  .btn-mobile-menu {
+      display: none; align-items: center; justify-content: center;
+      min-width: 40px; height: 40px; padding: 0 10px; border-radius: 8px;
+      border: 1px solid var(--border-soft); background: var(--card-elevated);
+      color: var(--text-main); font-size: 20px; cursor: pointer; flex-shrink: 0;
+  }
+  .sidebar-backdrop {
+      display: none; position: fixed; inset: 0; z-index: 480;
+      background: rgba(0,0,0,0.55); border: none; padding: 0; cursor: pointer;
+  }
   body.mode-kds .app-layout { display: none !important; }
   body.mode-kds .sidebar-nav { display: none !important; }
   body.mode-kds #btnToggleSidebar { display: none !important; }
+  body.mode-kds .btn-mobile-menu { display: none !important; }
+  body.mode-garcom .btn-mobile-menu { display: none !important; }
 
   /* --- MENU INFERIOR (CELULAR / TABLET) --- */
   .mobile-bottom-nav {
@@ -460,12 +472,17 @@
       background: linear-gradient(180deg, var(--bg-panel) 0%, #2A3328 100%);
       border-top: 1px solid var(--border-soft);
       padding: 4px 2px calc(4px + env(safe-area-inset-bottom, 0px));
-      justify-content: space-around;
+      justify-content: flex-start;
       align-items: stretch;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
       box-shadow: 0 -4px 24px rgba(0,0,0,0.35);
   }
+  .mobile-bottom-nav::-webkit-scrollbar { display: none; }
   .mobile-nav-item {
-      flex: 1;
+      flex: 0 0 auto;
+      min-width: 58px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -508,6 +525,15 @@
   /* --- RESPONSIVO: TABLET E CELULAR --- */
   @media (max-width: 1023px) {
       .sidebar-nav { display: none !important; }
+      body.menu-mobile-aberto .sidebar-nav {
+          display: flex !important; flex-direction: column;
+          position: fixed; top: 0; left: 0; bottom: 0;
+          width: min(280px, 88vw); min-width: 0;
+          z-index: 500; box-shadow: 4px 0 28px rgba(0,0,0,0.45);
+          min-height: 100vh; min-height: 100dvh;
+      }
+      body.menu-mobile-aberto .sidebar-backdrop { display: block; }
+      .btn-mobile-menu { display: inline-flex; }
       .mobile-bottom-nav { display: flex; }
       .app-layout { min-height: auto; flex-direction: column; }
       .main-panels {
@@ -1037,6 +1063,13 @@
       height: 36px; padding: 0 10px; border-radius: 6px; border: 1px solid var(--border-soft);
       background: var(--card-elevated); color: var(--text-main); font-size: 12px; min-width: 110px;
   }
+  .cardapio-editor-toolbar input[type="color"] {
+      width: 36px; height: 36px; padding: 2px; border-radius: 6px;
+      border: 1px solid var(--border-soft); background: var(--card-elevated); cursor: pointer;
+  }
+  .cardapio-editor-toolbar .toolbar-sep {
+      width: 1px; height: 24px; background: var(--border-soft); margin: 0 2px; flex-shrink: 0;
+  }
   .cardapio-editor-toolbar .toolbar-label { font-size: 10px; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; margin-right: 4px; }
   .cardapio-editor {
       min-height: 180px; max-height: 320px; overflow-y: auto;
@@ -1048,6 +1081,9 @@
   }
   .cardapio-editor:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(201, 162, 59, 0.15); }
   .cardapio-editor div, .cardapio-editor p { margin: 0 0 6px; min-height: 1.2em; }
+  .cardapio-editor u { text-decoration: underline; }
+  .cardapio-editor i, .cardapio-editor em { font-style: italic; }
+  .cardapio-editor s, .cardapio-editor strike { text-decoration: line-through; }
   .cardapio-editor:empty::before {
       content: attr(data-placeholder);
       color: var(--text-muted);
@@ -1065,6 +1101,11 @@
       .garcom-produtos-grid { grid-template-columns: repeat(2, 1fr); }
   }
   @media (max-width: 480px) {
+      .cardapio-editor-toolbar { gap: 4px; padding: 8px; }
+      .cardapio-editor-toolbar button { min-width: 32px; height: 32px; font-size: 12px; padding: 0 6px; }
+      .cardapio-editor-toolbar select { min-width: 88px; height: 32px; font-size: 11px; }
+      .header-left .btn-kds-toggle,
+      .header-left .btn-garcom-toggle { font-size: 10px !important; padding: 6px 8px !important; }
       .garcom-produtos-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
       .garcom-prod-card { padding: 10px; min-height: 90px; }
       .garcom-prod-card .nome { font-size: 12px; }
@@ -1201,6 +1242,7 @@
 
 <header class="header">
   <div class="header-left admin-only" style="display:flex; gap:8px; align-items:center; flex-shrink:0;">
+    <button type="button" id="btnMobileMenu" class="btn-mobile-menu" onclick="toggleMenuMobile()" aria-label="Abrir menu completo">☰</button>
     <button class="warning btn-kds-toggle" onclick="toggleKDS()" style="font-size:11px; padding:8px 12px; font-weight:600;">👨‍🍳 COZINHA</button>
     <button class="warning btn-garcom-toggle" onclick="toggleGarcom()" style="font-size:11px; padding:8px 12px; font-weight:600;">🧑‍🍳 GARÇOM</button>
   </div>
@@ -1221,6 +1263,8 @@
 </header>
 
 <div id="faixaGarcons" class="faixa-garcons admin-only"></div>
+
+<button type="button" class="sidebar-backdrop admin-only" id="sidebarBackdrop" onclick="fecharMenuMobile()" aria-label="Fechar menu"></button>
 
 <div class="container">
   
@@ -1261,6 +1305,20 @@
                 <div style="font-size:10px; color:var(--text-muted); font-weight:600; letter-spacing: 1px;">CAIXA (RECEBIDO)</div>
                 <div id="dashRecebido" style="font-size:20px; font-weight:600; color:var(--text-main); margin-top: 5px;">R$ 0,00</div>
             </div>
+            <div class="dash-stat">
+                <div style="font-size:10px; color:var(--text-muted); font-weight:600; letter-spacing: 1px;">CAIXA INICIAL</div>
+                <div id="dashCaixaInicial" style="font-size:20px; font-weight:600; color:var(--text-main); margin-top: 5px;">R$ 0,00</div>
+            </div>
+            <div class="dash-stat">
+                <div style="font-size:10px; color:var(--text-muted); font-weight:600; letter-spacing: 1px;">TROCO DADO</div>
+                <div id="dashTrocoDado" style="font-size:20px; font-weight:600; color:var(--danger); margin-top: 5px;">R$ 0,00</div>
+            </div>
+            <div class="dash-stat">
+                <div style="font-size:10px; color:var(--text-muted); font-weight:600; letter-spacing: 1px;">DINHEIRO NO CAIXA</div>
+                <div id="dashSaldoDinheiro" style="font-size:20px; font-weight:600; color:var(--success); margin-top: 5px;">R$ 0,00</div>
+            </div>
+            <button class="success" onclick="abrirModalCaixaInicial()" style="flex:1; font-size:11px; border-radius:6px; min-width:100px;">💵 ABRIR<br>CAIXA</button>
+            <button class="dark" onclick="abrirModalFechamentoCaixa()" style="flex:1; font-size:11px; border-radius:6px; min-width:100px; border-color:var(--accent); color:var(--accent);">🔒 FECHAR<br>CAIXA</button>
             <button class="warning" onclick="abrirRelatorios()" style="flex:1; font-size:11px; border-radius:6px; min-width:100px;">📊 RELATÓRIO<br>FINANCEIRO</button>
             <button class="dark" onclick="abrirGraficos()" style="flex:1; font-size:11px; border-radius:6px; min-width:100px;">📈 GRÁFICO<br>PRODUTOS</button>
             <button class="primary" onclick="abrirBalancoGeral()" style="flex:1; font-size:11px; border-radius:6px; min-width:100px;">📅 BALANÇO<br>HISTÓRICO</button>
@@ -1532,28 +1590,57 @@
               <button class="tab-btn" onclick="mudarAbaDia('Domingo', this)" style="min-width: 80px;">DOM</button>
           </div>
           <div class="cardapio-editor-toolbar" id="cardapioEditorToolbar">
-              <span class="toolbar-label">FORMATAÇÃO:</span>
+              <span class="toolbar-label">EDIÇÃO:</span>
+              <button type="button" title="Desfazer (Ctrl+Z)" onclick="cmdCardapio('undo')">↶</button>
+              <button type="button" title="Refazer (Ctrl+Y)" onclick="cmdCardapio('redo')">↷</button>
+              <span class="toolbar-sep"></span>
               <button type="button" title="Negrito (Ctrl+B)" onclick="cmdCardapio('bold')"><b>N</b></button>
-              <button type="button" title="Centralizar" onclick="cmdCardapio('justifyCenter')">☰</button>
+              <button type="button" title="Itálico (Ctrl+I)" onclick="cmdCardapio('italic')"><i>I</i></button>
+              <button type="button" title="Sublinhado (Ctrl+U)" onclick="cmdCardapio('underline')"><u>S</u></button>
+              <button type="button" title="Tachado" onclick="cmdCardapio('strikeThrough')"><s>T</s></button>
+              <span class="toolbar-sep"></span>
               <button type="button" title="Alinhar à esquerda" onclick="cmdCardapio('justifyLeft')">☱</button>
-              <select id="cardapioFonteSelect" onchange="cmdCardapioFonte(this.value); this.selectedIndex=0;" title="Tamanho da fonte — selecione o texto antes">
-                  <option value="">Tamanho…</option>
-                  <option value="pequeno">Pequeno</option>
-                  <option value="medio">Médio</option>
-                  <option value="grande">Grande</option>
-                  <option value="extra">Extra grande</option>
+              <button type="button" title="Centralizar" onclick="cmdCardapio('justifyCenter')">☰</button>
+              <button type="button" title="Alinhar à direita" onclick="cmdCardapio('justifyRight')">☲</button>
+              <span class="toolbar-sep"></span>
+              <select id="cardapioFamiliaSelect" onchange="cmdCardapioFamilia(this.value); this.selectedIndex=0;" title="Tipo de letra — selecione o texto antes">
+                  <option value="">Fonte…</option>
+                  <option value="Georgia, serif">Georgia</option>
+                  <option value="'Times New Roman', Times, serif">Times New Roman</option>
+                  <option value="Arial, Helvetica, sans-serif">Arial</option>
+                  <option value="'Segoe UI', Tahoma, sans-serif">Segoe UI</option>
+                  <option value="Verdana, Geneva, sans-serif">Verdana</option>
+                  <option value="'Courier New', Courier, monospace">Courier</option>
+                  <option value="'Comic Sans MS', cursive">Comic Sans</option>
               </select>
+              <select id="cardapioFonteSelect" onchange="cmdCardapioFonte(this.value); this.selectedIndex=0;" title="Tamanho — selecione o texto antes">
+                  <option value="">Tamanho…</option>
+                  <option value="14">14 px</option>
+                  <option value="16">16 px</option>
+                  <option value="18">18 px</option>
+                  <option value="20">20 px</option>
+                  <option value="22">22 px</option>
+                  <option value="24">24 px</option>
+                  <option value="26">26 px</option>
+                  <option value="28">28 px</option>
+                  <option value="32">32 px</option>
+                  <option value="36">36 px</option>
+                  <option value="42">42 px</option>
+                  <option value="48">48 px</option>
+              </select>
+              <input type="color" id="cardapioCorSelect" value="#F0E6D2" onchange="cmdCardapioCor(this.value)" title="Cor do texto — selecione o texto antes">
           </div>
-          <div id="textoCardapioDia" contenteditable="true" class="cardapio-editor" data-placeholder="Digite os itens do menu…" oninput="agendarPreviewCardapioArte()" onkeydown="if(event.ctrlKey&&event.key==='b'){event.preventDefault();cmdCardapio('bold');}"></div>
+          <div id="textoCardapioDia" contenteditable="true" class="cardapio-editor" data-placeholder="Digite os itens do menu…" oninput="agendarPreviewCardapioArte()" onpaste="colarCardapioDia(event)" onkeydown="atalhosEditorCardapio(event)"></div>
           <div class="cardapio-arte-preview-wrap" id="cardapioArtePreviewWrap">
               <h4>PRÉVIA — CARDÁPIO NA ARTE</h4>
               <img id="cardapioArtePreview" alt="Prévia do cardápio na moldura BAYTIGRILL">
-              <p class="cardapio-arte-hint">O menu aparece dentro da moldura oficial. Clique em <strong>Enviar Menu (WhatsApp)</strong> para compartilhar a imagem.</p>
+              <p class="cardapio-arte-hint">No PC: use <strong>Copiar imagem</strong> e cole no WhatsApp Web (Ctrl+V). No celular: use <strong>Enviar WhatsApp</strong>.</p>
           </div>
           <canvas id="cardapioArteCanvas" style="display:none;" aria-hidden="true"></canvas>
           <div style="display:flex; gap:10px; flex-wrap: wrap;">
-              <button class="success" onclick="salvarCardapioDia()" style="flex:1; min-width: 200px; font-size: 13px;">💾 SALVAR SEMANA</button>
-              <button class="warning" onclick="compartilharCardapioDiaZap()" style="flex:1; min-width: 200px; font-size: 13px; font-weight: 700; color: #000;">📱 ENVIAR MENU (WHATSAPP)</button>
+              <button class="success" onclick="salvarCardapioDia()" style="flex:1; min-width: 160px; font-size: 13px;">💾 SALVAR SEMANA</button>
+              <button class="dark" onclick="copiarCardapioImagem()" style="flex:1; min-width: 160px; font-size: 13px; border-color:var(--accent); color:var(--accent);">📋 COPIAR IMAGEM</button>
+              <button class="warning" onclick="compartilharCardapioDiaZap()" style="flex:1; min-width: 160px; font-size: 13px; font-weight: 700; color: #000;">📱 ENVIAR WHATSAPP</button>
           </div>
         </div>
       </div>
@@ -1627,8 +1714,17 @@
   <button type="button" class="mobile-nav-item" data-painel="cardapio" onclick="abrirPainelLateral('cardapio', this)">
     <span class="mico">📅</span><span>Menu</span>
   </button>
-  <button type="button" class="mobile-nav-item" data-painel="config" onclick="abrirPainelLateral('config', this)">
-    <span class="mico">⚙️</span><span>Config</span>
+  <button type="button" class="mobile-nav-item" data-painel="cliente" onclick="abrirPainelCliente(this)">
+    <span class="mico">👤</span><span>Cliente</span>
+  </button>
+  <button type="button" class="mobile-nav-item" data-painel="produtos" onclick="abrirPainelLateral('produtos', this)">
+    <span class="mico">🍴</span><span>Produtos</span>
+  </button>
+  <button type="button" class="mobile-nav-item" data-painel="mesas" onclick="abrirPainelLateral('mesas', this)">
+    <span class="mico">🪑</span><span>Mesas</span>
+  </button>
+  <button type="button" class="mobile-nav-item" onclick="toggleMenuMobile()">
+    <span class="mico">☰</span><span>Mais</span>
   </button>
 </nav>
 
@@ -1721,7 +1817,16 @@
         <h3 style="color:var(--accent); margin-bottom: 5px;">Liquidação de Conta</h3>
         <p id="txtRestantePagamento" style="color:var(--text-muted); margin-bottom:25px; font-size:14px; letter-spacing: 0.5px;"></p>
         
-        <input type="tel" id="valPagamentoInput" placeholder="Valor R$" style="font-size:32px; text-align:center; color:var(--accent); background:var(--input-bg); border:1px solid var(--border-soft); padding:20px; font-family: 'Poppins', sans-serif; font-weight:700; margin-bottom:20px;">
+        <input type="tel" id="valPagamentoInput" placeholder="Valor R$" oninput="calcularTrocoPagamento()" style="font-size:32px; text-align:center; color:var(--accent); background:var(--input-bg); border:1px solid var(--border-soft); padding:20px; font-family: 'Poppins', sans-serif; font-weight:700; margin-bottom:12px;">
+
+        <div id="areaPagamentoDinheiro" style="display:none; margin-bottom:20px; background:var(--input-bg); padding:15px; border-radius:6px; border:1px solid var(--accent);">
+            <label style="font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Valor que o cliente entregou (R$)</label>
+            <input type="tel" id="valRecebidoDinheiro" placeholder="Ex: 50,00" oninput="calcularTrocoPagamento()" style="font-size:24px; text-align:center; color:var(--text-main); background:var(--card-elevated); border:1px solid var(--border-soft); padding:14px; font-family:'Poppins',sans-serif; font-weight:700; width:100%; box-sizing:border-box; margin-top:8px;">
+            <div style="margin-top:14px; text-align:center; padding:12px; background:var(--card-elevated); border-radius:6px;">
+                <div style="font-size:10px; color:var(--text-muted); font-weight:600; letter-spacing:1px;">TROCO A DEVOLVER</div>
+                <div id="displayTrocoPagamento" style="font-size:32px; font-weight:700; color:var(--accent); margin-top:4px;">R$ 0,00</div>
+            </div>
+        </div>
         
         <div style="margin-bottom:25px; background:var(--input-bg); padding:15px; border-radius:4px; border:1px solid var(--border-soft);">
             <label style="font-size:11px; color:#666; text-transform: uppercase;">Divisão de Conta (Pessoas):</label>
@@ -1744,11 +1849,12 @@
 
         <p style="font-size:11px; color:#666; margin-bottom:12px; text-transform: uppercase; letter-spacing: 1px;">Registrar recebimento em:</p>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <button class="dark" onclick="processarPagamento('DINHEIRO')">DINHEIRO</button>
+            <button class="dark" onclick="prepararPagamentoDinheiro()">DINHEIRO</button>
             <button class="dark" onclick="processarPagamento('PIX')">PIX (CHAVE)</button>
             <button class="dark" onclick="processarPagamento('CARTAO')">CARTÃO</button>
             <button class="dark" onclick="processarPagamento('QRCODE')">QR CODE</button>
         </div>
+        <button class="success" id="btnConfirmarDinheiro" onclick="processarPagamento('DINHEIRO')" style="width:100%; margin-top:10px; display:none; font-weight:700;">✓ CONFIRMAR DINHEIRO E REGISTRAR TROCO</button>
         <button class="dark" onclick="processarPagamento('ONLINE')" style="width:100%; margin-top:10px; border-color: #555;">PAGO EM APLICATIVO / SITE</button>
 
         <button class="danger" onclick="document.getElementById('modalPagamento').style.display='none'" style="width:100%; margin-top:25px; background: transparent; border: 1px solid #666; color: var(--text-muted);">CANCELAR</button>
@@ -1805,6 +1911,22 @@
             <div style="display:flex; justify-content:space-between; padding-top:10px; font-size:14px; color: var(--text-muted);">
                 <span>Saídas (Despesas):</span> <b id="relSangria" style="color:var(--danger);">R$ 0,00</b>
             </div>
+            <div style="display:flex; justify-content:space-between; padding-top:10px; font-size:14px; color: var(--text-muted);">
+                <span>Troco dado (dinheiro):</span> <b id="relTroco" style="color:var(--danger);">R$ 0,00</b>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding-top:10px; font-size:14px; color: var(--text-muted); border-top:1px dashed #333; margin-top:8px; padding-top:12px;">
+                <span>Caixa inicial do dia:</span> <b id="relCaixaInicial" style="color:var(--accent);">R$ 0,00</b>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding-top:10px; font-size:14px; color: var(--text-muted);">
+                <span>Dinheiro esperado no caixa:</span> <b id="relSaldoDinheiro" style="color:var(--success);">R$ 0,00</b>
+            </div>
+        </div>
+
+        <button class="dark" onclick="abrirExtratoTroco()" style="width:100%; margin-bottom:12px; border-color:var(--accent); color:var(--accent);">💸 VER EXTRATO DE TROCO EM DINHEIRO</button>
+
+        <div id="listaTrocosDetalhada" style="margin-bottom: 20px; max-height: 180px; overflow-y: auto; background: var(--input-bg); padding: 15px; border-radius: 6px; border: 1px solid var(--border-soft); display: none;">
+            <h4 style="margin: 0 0 12px 0; color: var(--accent); font-size: 12px; letter-spacing: 0.5px; font-family: 'Poppins', sans-serif;">Histórico de troco dado:</h4>
+            <div id="conteudoListaTrocos"></div>
         </div>
 
         <div id="areaProdutosRelatorio" style="background:var(--input-bg); padding:20px; border-radius:6px; margin-bottom:20px; border:1px solid var(--border-soft);">
@@ -3195,6 +3317,7 @@
 
   // ================= KDS (COZINHA) =================
   function abrirPainelLateral(id, btnEl) {
+      fecharMenuMobile();
       document.querySelectorAll('.painel-secao').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.sidebar-item, .mobile-nav-item').forEach(b => b.classList.remove('active'));
       let painel = document.getElementById('painel-' + id);
@@ -4198,7 +4321,7 @@
           title: 'Receber ' + formatarMoeda(total),
           html: `<p style="font-size:13px;margin-bottom:12px;">${escaparHtml(reg.nome)}</p>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-              <button type="button" class="swal2-confirm swal2-styled" style="margin:0;font-size:12px;" onclick="confirmarRecebimentoBalcao('${id}','DINHEIRO')">DINHEIRO</button>
+              <button type="button" class="swal2-confirm swal2-styled" style="margin:0;font-size:12px;" onclick="receberBalcaoDinheiro('${id}')">DINHEIRO</button>
               <button type="button" class="swal2-confirm swal2-styled" style="margin:0;font-size:12px;background:#4a6741;" onclick="confirmarRecebimentoBalcao('${id}','PIX')">PIX</button>
               <button type="button" class="swal2-confirm swal2-styled" style="margin:0;font-size:12px;background:#555;" onclick="confirmarRecebimentoBalcao('${id}','CARTAO')">CARTÃO</button>
               <button type="button" class="swal2-confirm swal2-styled" style="margin:0;font-size:12px;background:#444;" onclick="confirmarRecebimentoBalcao('${id}','QRCODE')">QR CODE</button>
@@ -4211,41 +4334,82 @@
       });
   }
 
-  function confirmarRecebimentoBalcao(id, metodo) {
+  function receberBalcaoDinheiro(id) {
+      Swal.close();
+      let reg = balcaoDiaLista.find(x => x.id === id);
+      if (!reg || !balcaoEstaPendente(reg)) return;
+      let total = calcularTotalBalcao(reg);
+      Swal.fire({
+          title: 'Pagamento em Dinheiro',
+          html: `<p style="font-size:13px;margin-bottom:8px;">${escaparHtml(reg.nome)}</p>
+              <p style="font-size:14px;margin-bottom:12px;">Conta: <strong style="color:var(--accent);">${formatarMoeda(total)}</strong></p>
+              <input type="number" id="swalRecebidoDinheiro" class="swal2-input" step="0.01" min="${total}" placeholder="Valor que o cliente entregou (R$)" style="margin:0;">
+              <div id="swalTrocoDisplay" style="margin-top:14px;font-size:22px;font-weight:700;color:var(--accent);"></div>`,
+          showCancelButton: true,
+          confirmButtonText: 'Confirmar recebimento',
+          cancelButtonText: 'Voltar',
+          confirmButtonColor: '#C9A23B',
+          background: '#3A4536',
+          color: '#F0E6D2',
+          didOpen: () => {
+              let inp = document.getElementById('swalRecebidoDinheiro');
+              inp.addEventListener('input', () => {
+                  let r = Number(inp.value) || 0;
+                  let t = Math.max(0, r - total);
+                  document.getElementById('swalTrocoDisplay').textContent = r >= total ? ('Troco: ' + formatarMoeda(t)) : 'Informe o valor recebido';
+              });
+              inp.focus();
+          },
+          preConfirm: () => {
+              let r = Number(document.getElementById('swalRecebidoDinheiro').value) || 0;
+              if (r < total - 0.009) { Swal.showValidationMessage('Valor recebido é menor que a conta'); return false; }
+              return { valorRecebido: r, troco: Math.max(0, r - total) };
+          }
+      }).then(res => {
+          if (res.isConfirmed) confirmarRecebimentoBalcao(id, 'DINHEIRO', res.value.valorRecebido, res.value.troco);
+      });
+  }
+
+  function confirmarRecebimentoBalcao(id, metodo, valorRecebidoDinheiro, troco) {
       Swal.close();
       let reg = balcaoDiaLista.find(x => x.id === id);
       if (!reg) return;
       let total = calcularTotalBalcao(reg);
-      let atualizar = { pago: true, pendenteReceber: false, pagamento: metodo, dataPagamento: obterDataHoraLocal() };
-      const finalizar = () => {
-          Swal.fire({ icon: 'success', title: 'Pagamento registrado!', timer: 1600, showConfirmButton: false, background: '#3A4536', color: '#F0E6D2' });
+      let pagTxt = metodo;
+      if (metodo === 'DINHEIRO' && troco > 0.009) pagTxt = metodo + ' (Troco para ' + formatarMoeda(troco) + ')';
+      let atualizar = { pago: true, pendenteReceber: false, pagamento: pagTxt, dataPagamento: obterDataHoraLocal() };
+      const finalizar = (msgTroco) => {
+          Swal.fire({
+              icon: 'success',
+              title: 'Pagamento registrado!',
+              html: msgTroco ? `<p>Entrada: ${formatarMoeda(total)}</p><p style="color:var(--accent);font-size:18px;font-weight:700;">Troco: ${formatarMoeda(msgTroco)}</p>` : undefined,
+              timer: msgTroco ? 2800 : 1600,
+              showConfirmButton: false,
+              background: '#3A4536',
+              color: '#F0E6D2'
+          });
       };
+      const registrarCaixa = () => registrarEntradaComTroco({
+          valorConta: total,
+          metodo,
+          obs: 'Balcão — ' + reg.nome,
+          refBalcao: id,
+          valorRecebidoDinheiro: metodo === 'DINHEIRO' ? valorRecebidoDinheiro : null,
+          troco: metodo === 'DINHEIRO' ? (troco || 0) : 0
+      });
       if (!firebaseConfigurado()) {
           Object.assign(reg, atualizar);
           salvarBalcaoLocal();
-          caixaTotal.push({
-              id: 'local_caixa_' + Date.now(),
-              tipo: 'ENTRADA',
-              metodo: metodo,
-              valor: total,
-              data: obterDataHoraLocal(),
-              obs: 'Balcão — ' + reg.nome,
-              refBalcao: id
+          registrarCaixa().then(() => {
+              renderTabelaDia();
+              finalizar(metodo === 'DINHEIRO' ? troco : 0);
           });
-          atualizarDashboard();
-          renderTabelaDia();
-          return finalizar();
+          return;
       }
-      db.collection('balcao_dia').doc(id).update(atualizar).then(() =>
-          db.collection('caixa').add({
-              tipo: 'ENTRADA',
-              metodo: metodo,
-              valor: total,
-              data: obterDataHoraLocal(),
-              obs: 'Balcão — ' + reg.nome,
-              refBalcao: id
-          })
-      ).then(finalizar).catch(err => Swal.fire('Erro', err.message, 'error'));
+      db.collection('balcao_dia').doc(id).update(atualizar)
+          .then(() => registrarCaixa())
+          .then(() => { renderTabelaDia(); finalizar(metodo === 'DINHEIRO' ? troco : 0); })
+          .catch(err => Swal.fire('Erro', err.message, 'error'));
   }
 
   function imprimirBalcaoDia(id) {
@@ -5050,6 +5214,74 @@
   }
 
   // ================= CAIXA E RELATÓRIO =================
+  function movimentoCaixaDoDia(m, dataRef) {
+      if (!m || m.arquivado) return false;
+      let dStr = normalizarData(m.data);
+      return dStr && dStr.startsWith(dataRef || normalizarData(obterDataLocal()));
+  }
+
+  function calcularResumoCaixaDia(dataRef) {
+      dataRef = dataRef || normalizarData(obterDataLocal());
+      let r = { caixaInicial: 0, recebido: 0, dinheiroVendas: 0, dinheiroBruto: 0, troco: 0, sangrias: 0, saldoDinheiro: 0 };
+      caixaTotal.forEach(m => {
+          if (!movimentoCaixaDoDia(m, dataRef)) return;
+          if (m.tipo === 'CAIXA_INICIAL') r.caixaInicial = Number(m.valor) || 0;
+          else if (m.tipo === 'ENTRADA') {
+              r.recebido += Number(m.valor) || 0;
+              if (m.metodo === 'DINHEIRO') {
+                  r.dinheiroVendas += Number(m.valor) || 0;
+                  r.dinheiroBruto += Number(m.valorRecebidoDinheiro != null ? m.valorRecebidoDinheiro : m.valor) || 0;
+              }
+          } else if (m.tipo === 'SAIDA') {
+              if (m.subtipo === 'TROCO') r.troco += Number(m.valor) || 0;
+              else r.sangrias += Number(m.valor) || 0;
+          }
+      });
+      r.saldoDinheiro = r.caixaInicial + r.dinheiroBruto - r.troco - r.sangrias;
+      return r;
+  }
+
+  function lancarMovimentoCaixa(mov) {
+      let obj = { ...mov, data: mov.data || obterDataHoraLocal() };
+      let id = mov.id || gerarIdCaixa();
+      if (!firebaseConfigurado()) {
+          caixaTotal.push({ id, ...obj });
+          atualizarDashboard();
+          if (document.getElementById('modalRelatorios')?.style.display === 'flex') {
+              filtrarRelatorio(window.periodoRelatorioAtual || 'hoje', document.querySelector('#modalRelatorios .tab-btn.active') || document.querySelector('#modalRelatorios .tab-btn'));
+          }
+          return Promise.resolve(id);
+      }
+      return db.collection('caixa').doc(id).set(obj).then(() => id);
+  }
+
+  function registrarEntradaComTroco(opts) {
+      let { valorConta, metodo, obs, valorRecebidoDinheiro, troco, refBalcao } = opts;
+      let promessas = [];
+      let idEntrada = gerarIdCaixa();
+      promessas.push(lancarMovimentoCaixa({
+          id: idEntrada,
+          tipo: 'ENTRADA',
+          metodo,
+          valor: valorConta,
+          obs,
+          refBalcao: refBalcao || null,
+          valorRecebidoDinheiro: metodo === 'DINHEIRO' ? valorRecebidoDinheiro : null,
+          troco: metodo === 'DINHEIRO' ? (troco || 0) : null
+      }));
+      if (metodo === 'DINHEIRO' && troco > 0.009) {
+          promessas.push(lancarMovimentoCaixa({
+              tipo: 'SAIDA',
+              subtipo: 'TROCO',
+              metodo: 'DINHEIRO',
+              valor: troco,
+              obs: 'Troco — ' + (obs || ''),
+              refEntrada: idEntrada
+          }));
+      }
+      return Promise.all(promessas);
+  }
+
   function abrirRelatorios() {
       document.getElementById('areaSangria').style.display = 'none';
       filtrarRelatorio('hoje', document.querySelector('#modalRelatorios .tab-btn'));
@@ -5058,28 +5290,23 @@
 
   function atualizarDashboard() { 
       let hoje = normalizarData(obterDataLocal()); 
-      let tVenda = 0, tRecebido = 0; 
+      let tVenda = 0; 
       clientes.forEach(c => { 
           if(Array.isArray(c.itens)) {
               c.itens.forEach(i => { 
-                  if(i.arquivado) return; // IGNORA ARQUIVADOS
+                  if(i.arquivado) return;
                   let dataItem = normalizarData(i.data);
                   if(dataItem.startsWith(hoje)) tVenda += (i.valor || 0); 
               }); 
           }
       }); 
-      caixaTotal.forEach(m => { 
-          if(m.arquivado) return; // IGNORA ARQUIVADOS
-          let dataCaixa = normalizarData(m.data);
-          if(dataCaixa.startsWith(hoje) && m.tipo === 'ENTRADA') tRecebido += m.valor; 
-      });
-      balcaoDiaLista.forEach(r => {
-          let t = calcularTotalBalcao(r);
-          tVenda += t;
-          /* Pendentes não entram em tRecebido — só quando confirmar Receber (entrada no caixa) */
-      }); 
+      balcaoDiaLista.forEach(r => { tVenda += calcularTotalBalcao(r); });
+      let resumo = calcularResumoCaixaDia(hoje);
       document.getElementById('dashTotal').innerText = formatarMoeda(tVenda); 
-      document.getElementById('dashRecebido').innerText = formatarMoeda(tRecebido); 
+      document.getElementById('dashRecebido').innerText = formatarMoeda(resumo.recebido); 
+      if (document.getElementById('dashCaixaInicial')) document.getElementById('dashCaixaInicial').innerText = formatarMoeda(resumo.caixaInicial);
+      if (document.getElementById('dashTrocoDado')) document.getElementById('dashTrocoDado').innerText = formatarMoeda(resumo.troco);
+      if (document.getElementById('dashSaldoDinheiro')) document.getElementById('dashSaldoDinheiro').innerText = formatarMoeda(resumo.saldoDinheiro);
   }
 
   function filtrarRelatorio(periodo, btn) {
@@ -5101,30 +5328,55 @@
           return dStr.startsWith(filtroData); 
       });
 
-      let totDin = 0, totPix = 0, totCart = 0, totQr = 0, totOnline = 0, totSaida = 0; let htmlSangrias = '';
+      let totDin = 0, totPix = 0, totCart = 0, totQr = 0, totOnline = 0, totSaida = 0, totTroco = 0;
+      let htmlSangrias = '', htmlTrocos = '';
       movs.forEach(m => {
-          if(m.tipo === 'SAIDA') { 
-              totSaida += m.valor; 
-              htmlSangrias += `<div style="display: flex; justify-content: space-between; border-bottom: 1px solid #333; padding: 6px 0; font-size: 11px; color: var(--text-muted);"><span>${m.data} - <b>${m.obs || 'S/ Obs'}</b></span><span style="color: var(--danger); font-weight: 600;">${formatarMoeda(m.valor)}</span></div>`; 
+          if(m.tipo === 'SAIDA') {
+              if (m.subtipo === 'TROCO') {
+                  totTroco += Number(m.valor) || 0;
+                  htmlTrocos += `<div style="display:flex;justify-content:space-between;border-bottom:1px solid #333;padding:6px 0;font-size:11px;color:var(--text-muted);"><span>${m.data} — <b>${m.obs || 'Troco'}</b></span><span style="color:var(--danger);font-weight:600;">${formatarMoeda(m.valor)}</span></div>`;
+              } else {
+                  totSaida += Number(m.valor) || 0;
+                  htmlSangrias += `<div style="display:flex;justify-content:space-between;border-bottom:1px solid #333;padding:6px 0;font-size:11px;color:var(--text-muted);"><span>${m.data} - <b>${m.obs || 'S/ Obs'}</b></span><span style="color:var(--danger);font-weight:600;">${formatarMoeda(m.valor)}</span></div>`;
+              }
           }
           else if(m.tipo === 'ENTRADA') { 
-              if(m.metodo === 'DINHEIRO') totDin += m.valor; 
-              if(m.metodo === 'PIX') totPix += m.valor; 
-              if(m.metodo === 'CARTAO') totCart += m.valor; 
-              if(m.metodo === 'QRCODE') totQr += m.valor; 
-              if(m.metodo === 'ONLINE') totOnline += m.valor;
+              if(m.metodo === 'DINHEIRO') totDin += Number(m.valor) || 0; 
+              if(m.metodo === 'PIX') totPix += Number(m.valor) || 0; 
+              if(m.metodo === 'CARTAO') totCart += Number(m.valor) || 0; 
+              if(m.metodo === 'QRCODE') totQr += Number(m.valor) || 0; 
+              if(m.metodo === 'ONLINE') totOnline += Number(m.valor) || 0;
           }
       });
 
+      let resumoDin = calcularResumoCaixaDia(periodo === 'hoje' ? dataHojeNormalizada : dataHojeNormalizada);
+      if (periodo !== 'hoje') {
+          resumoDin = { caixaInicial: 0, troco: totTroco, saldoDinheiro: 0, dinheiroBruto: 0, sangrias: totSaida };
+          movs.forEach(m => {
+              if (m.tipo === 'CAIXA_INICIAL') resumoDin.caixaInicial = Number(m.valor) || 0;
+              if (m.tipo === 'ENTRADA' && m.metodo === 'DINHEIRO') resumoDin.dinheiroBruto += Number(m.valorRecebidoDinheiro != null ? m.valorRecebidoDinheiro : m.valor) || 0;
+          });
+          resumoDin.saldoDinheiro = resumoDin.caixaInicial + resumoDin.dinheiroBruto - totTroco - totSaida;
+      }
+
       let areaDetalhes = document.getElementById('listaSangriasDetalhada'); let divDetalhes = document.getElementById('conteudoListaSangrias');
       if (totSaida > 0) { areaDetalhes.style.display = 'block'; divDetalhes.innerHTML = htmlSangrias; } else { areaDetalhes.style.display = 'none'; divDetalhes.innerHTML = ''; }
+
+      let areaTroco = document.getElementById('listaTrocosDetalhada'); let divTroco = document.getElementById('conteudoListaTrocos');
+      if (areaTroco && divTroco) {
+          if (totTroco > 0) { areaTroco.style.display = 'block'; divTroco.innerHTML = htmlTrocos; }
+          else { areaTroco.style.display = 'none'; divTroco.innerHTML = ''; }
+      }
 
       document.getElementById('relDinheiro').innerText = formatarMoeda(totDin); 
       document.getElementById('relPix').innerText = formatarMoeda(totPix); 
       document.getElementById('relCartao').innerText = formatarMoeda(totCart); 
       document.getElementById('relQrCode').innerText = formatarMoeda(totQr); 
       document.getElementById('relOnline').innerText = formatarMoeda(totOnline);
-      document.getElementById('relSangria').innerText = formatarMoeda(totSaida); 
+      document.getElementById('relSangria').innerText = formatarMoeda(totSaida);
+      if (document.getElementById('relTroco')) document.getElementById('relTroco').innerText = formatarMoeda(totTroco);
+      if (document.getElementById('relCaixaInicial')) document.getElementById('relCaixaInicial').innerText = formatarMoeda(resumoDin.caixaInicial);
+      if (document.getElementById('relSaldoDinheiro')) document.getElementById('relSaldoDinheiro').innerText = formatarMoeda(resumoDin.saldoDinheiro);
       document.getElementById('relSaldoFinal').innerText = formatarMoeda((totDin + totPix + totCart + totQr + totOnline) - totSaida);
 
       let produtosVendidosNoPeriodo = {};
@@ -5182,6 +5434,9 @@
       let vQr = document.getElementById('relQrCode').innerText;
       let vOnl = document.getElementById('relOnline').innerText;
       let vSai = document.getElementById('relSangria').innerText;
+      let vTroco = document.getElementById('relTroco') ? document.getElementById('relTroco').innerText : 'R$ 0,00';
+      let vInicial = document.getElementById('relCaixaInicial') ? document.getElementById('relCaixaInicial').innerText : 'R$ 0,00';
+      let vDinEsp = document.getElementById('relSaldoDinheiro') ? document.getElementById('relSaldoDinheiro').innerText : 'R$ 0,00';
       let vLiq = document.getElementById('relSaldoFinal').innerText;
 
       let htmlProdutos = document.getElementById('listaProdutosRelatorio').innerHTML;
@@ -5203,6 +5458,9 @@
               <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:4px;"><span>QR Code:</span> <b>${vQr}</b></div>
               <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:4px;"><span>Site/App:</span> <b>${vOnl}</b></div>
               <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:12px; color:#c00;"><span>(-) Despesas:</span> <b>${vSai}</b></div>
+              <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:4px; color:#c00;"><span>(-) Troco dado:</span> <b>${vTroco}</b></div>
+              <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:4px;"><span>Caixa inicial:</span> <b>${vInicial}</b></div>
+              <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:12px;"><span>Dinheiro no caixa (esperado):</span> <b>${vDinEsp}</b></div>
               
               <div style="display:flex; justify-content:space-between; font-size:18px; font-weight:700; border-top: 2px solid #000; padding-top:8px; font-family: 'Poppins', sans-serif;"><span>SALDO LÍQUIDO:</span> <span>${vLiq}</span></div>
 
@@ -5249,18 +5507,124 @@
       if(!v || v <= 0 || !m) return Swal.fire('Aviso', 'Preencha o valor correto e a justificativa.', 'warning');
       
       const dataStr = obterDataHoraLocal();
-      const objEntrada = { data: dataStr, valor: v, metodo: 'DINHEIRO', tipo: 'SAIDA', obs: m };
+      const objEntrada = { data: dataStr, valor: v, metodo: 'DINHEIRO', tipo: 'SAIDA', subtipo: 'DESPESA', obs: m };
       
-      // Aplicar organização de documento hierárquica baseada em tempo
-      const idEstruturado = gerarIdCaixa();
-
-      db.collection("caixa").doc(idEstruturado).set(objEntrada).then(() => { 
+      lancarMovimentoCaixa(objEntrada).then(() => { 
           document.getElementById('valSangria').value = ''; 
           document.getElementById('obsSangria').value = ''; 
           document.getElementById('areaSangria').style.display = 'none'; 
           Swal.fire({icon:'success', title:'Registrado', timer:1000, showConfirmButton:false}); 
           filtrarRelatorio(window.periodoRelatorioAtual || 'hoje', document.querySelector('#modalRelatorios .tab-btn.active') || document.querySelector('#modalRelatorios .tab-btn')); 
       });
+  }
+
+  function abrirModalCaixaInicial() {
+      let hoje = normalizarData(obterDataLocal());
+      let resumo = calcularResumoCaixaDia(hoje);
+      Swal.fire({
+          title: 'Abertura de Caixa',
+          html: `<p style="font-size:13px;color:var(--text-muted);margin:0 0 12px;">Informe quanto há em dinheiro no caixa no início do turno.</p>`,
+          input: 'number',
+          inputAttributes: { step: '0.01', min: '0' },
+          inputValue: resumo.caixaInicial > 0 ? resumo.caixaInicial : '',
+          inputPlaceholder: 'Ex: 100,00',
+          showCancelButton: true,
+          confirmButtonText: 'Salvar caixa inicial',
+          cancelButtonText: 'Cancelar',
+          confirmButtonColor: '#C9A23B',
+          background: '#3A4536',
+          color: '#F0E6D2',
+          preConfirm: (val) => {
+              let v = Number(String(val).replace(',', '.'));
+              if (!v && v !== 0) { Swal.showValidationMessage('Informe um valor válido'); return false; }
+              if (v < 0) { Swal.showValidationMessage('Valor não pode ser negativo'); return false; }
+              return v;
+          }
+      }).then(r => {
+          if (!r.isConfirmed) return;
+          let valor = Number(r.value) || 0;
+          let antigos = caixaTotal.filter(m => m.tipo === 'CAIXA_INICIAL' && movimentoCaixaDoDia(m, hoje));
+          let prom = Promise.resolve();
+          antigos.forEach(m => {
+              if (!firebaseConfigurado()) {
+                  caixaTotal = caixaTotal.filter(x => x.id !== m.id);
+              } else {
+                  prom = prom.then(() => db.collection('caixa').doc(m.id).delete());
+              }
+          });
+          prom.then(() => lancarMovimentoCaixa({
+              tipo: 'CAIXA_INICIAL',
+              valor,
+              obs: 'Abertura de caixa — ' + hoje.split('-').reverse().join('/')
+          })).then(() => {
+              atualizarDashboard();
+              Swal.fire({ icon: 'success', title: 'Caixa inicial registrado!', text: formatarMoeda(valor), timer: 1800, showConfirmButton: false, background: '#3A4536', color: '#F0E6D2' });
+          });
+      });
+  }
+
+  function abrirModalFechamentoCaixa() {
+      let hoje = normalizarData(obterDataLocal());
+      let r = calcularResumoCaixaDia(hoje);
+      Swal.fire({
+          title: 'Fechamento de Caixa',
+          html: `<div style="text-align:left;font-size:13px;line-height:1.8;">
+              <div>Caixa inicial: <b>${formatarMoeda(r.caixaInicial)}</b></div>
+              <div>Entradas em dinheiro (bruto): <b>${formatarMoeda(r.dinheiroBruto)}</b></div>
+              <div>Vendas em dinheiro (líquido): <b>${formatarMoeda(r.dinheiroVendas)}</b></div>
+              <div>Troco dado: <b style="color:var(--danger);">- ${formatarMoeda(r.troco)}</b></div>
+              <div>Despesas / retiradas: <b style="color:var(--danger);">- ${formatarMoeda(r.sangrias)}</b></div>
+              <hr style="border-color:#444;margin:12px 0;">
+              <div style="font-size:15px;font-weight:700;color:var(--accent);">Esperado em dinheiro: ${formatarMoeda(r.saldoDinheiro)}</div>
+              <div style="font-size:13px;margin-top:6px;">Total recebido (todas formas): <b>${formatarMoeda(r.recebido)}</b></div>
+          </div>
+          <input type="number" id="swalValorContado" class="swal2-input" step="0.01" min="0" placeholder="Valor contado no caixa (R$)" style="margin-top:16px;">`,
+          showCancelButton: true,
+          confirmButtonText: 'Registrar fechamento',
+          cancelButtonText: 'Cancelar',
+          confirmButtonColor: '#C9A23B',
+          background: '#3A4536',
+          color: '#F0E6D2',
+          didOpen: () => document.getElementById('swalValorContado')?.focus(),
+          preConfirm: () => {
+              let contado = Number(document.getElementById('swalValorContado').value) || 0;
+              if (contado < 0) { Swal.showValidationMessage('Valor inválido'); return false; }
+              return { contado, esperado: r.saldoDinheiro, diferenca: contado - r.saldoDinheiro, resumo: r };
+          }
+      }).then(res => {
+          if (!res.isConfirmed) return;
+          let { contado, esperado, diferenca, resumo } = res.value;
+          lancarMovimentoCaixa({
+              tipo: 'CAIXA_FECHAMENTO',
+              valor: contado,
+              valorEsperado: esperado,
+              diferenca,
+              obs: 'Fechamento — contado ' + formatarMoeda(contado) + ' | esperado ' + formatarMoeda(esperado),
+              resumoFechamento: resumo
+          }).then(() => {
+              let msgDiff = diferenca === 0 ? 'Caixa conferido — valor bateu!' : (diferenca > 0 ? 'Sobra de ' + formatarMoeda(diferenca) : 'Falta de ' + formatarMoeda(Math.abs(diferenca)));
+              Swal.fire({
+                  icon: Math.abs(diferenca) < 0.01 ? 'success' : 'warning',
+                  title: 'Fechamento registrado',
+                  html: `<p>Contado: <b>${formatarMoeda(contado)}</b></p><p>Esperado: <b>${formatarMoeda(esperado)}</b></p><p style="margin-top:10px;font-weight:700;">${msgDiff}</p>`,
+                  background: '#3A4536',
+                  color: '#F0E6D2'
+              });
+          });
+      });
+  }
+
+  function abrirExtratoTroco() {
+      let area = document.getElementById('listaTrocosDetalhada');
+      let div = document.getElementById('conteudoListaTrocos');
+      if (!div || !div.innerHTML.trim()) {
+          Swal.fire({ icon: 'info', title: 'Sem troco no período', text: 'Nenhum troco em dinheiro foi registrado neste recorte.', timer: 2200, showConfirmButton: false, background: '#3A4536', color: '#F0E6D2' });
+          return;
+      }
+      if (area) {
+          area.style.display = 'block';
+          area.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
   }
 
   // ================= SISTEMA DE FECHAMENTO (ARQUIVAR DADOS) =================
@@ -5676,6 +6040,31 @@
   }
   function fecharImpressao() { document.getElementById('printOverlay').style.display = 'none'; document.getElementById('printContent').innerHTML = ''; }
 
+  function resetModalPagamento() {
+      document.getElementById('areaPagamentoDinheiro').style.display = 'none';
+      document.getElementById('btnConfirmarDinheiro').style.display = 'none';
+      document.getElementById('valRecebidoDinheiro').value = '';
+      document.getElementById('displayTrocoPagamento').textContent = 'R$ 0,00';
+  }
+
+  function calcularTrocoPagamento() {
+      let conta = Number(String(document.getElementById('valPagamentoInput').value || '').replace(',', '.')) || 0;
+      let recebido = Number(String(document.getElementById('valRecebidoDinheiro').value || '').replace(',', '.')) || 0;
+      let troco = Math.max(0, recebido - conta);
+      let el = document.getElementById('displayTrocoPagamento');
+      if (el) el.textContent = formatarMoeda(troco);
+      return troco;
+  }
+
+  function prepararPagamentoDinheiro() {
+      document.getElementById('areaPagamentoDinheiro').style.display = 'block';
+      document.getElementById('btnConfirmarDinheiro').style.display = 'block';
+      let conta = Number(String(document.getElementById('valPagamentoInput').value || '').replace(',', '.')) || valorSendoPagoNoModal || 0;
+      document.getElementById('valRecebidoDinheiro').value = conta > 0 ? conta.toFixed(2).replace('.', ',') : '';
+      calcularTrocoPagamento();
+      document.getElementById('valRecebidoDinheiro').focus();
+  }
+
   function calcularDivisao() {
       let pessoas = Number(document.getElementById('dividirConta').value);
       if(pessoas > 1 && valorSendoPagoNoModal > 0) {
@@ -5699,6 +6088,7 @@
       document.getElementById('valorDividido').innerText = '';
       
       document.getElementById('areaQrCodeVisor').style.display = 'none';
+      resetModalPagamento();
       document.getElementById('modalPagamento').style.display = 'flex';
   }
 
@@ -5726,10 +6116,21 @@
       document.getElementById('valorDividido').innerText = '';
       
       document.getElementById('areaQrCodeVisor').style.display = 'none';
+      resetModalPagamento();
       document.getElementById('modalPagamento').style.display = 'flex';
   }
 
   function processarPagamento(metodo) {
+      if (metodo === 'DINHEIRO') {
+          let area = document.getElementById('areaPagamentoDinheiro');
+          if (area && area.style.display === 'none') {
+              prepararPagamentoDinheiro();
+              return;
+          }
+      } else {
+          resetModalPagamento();
+      }
+
       let valorPagoTotal = Number(document.getElementById('valPagamentoInput').value.replace(',', '.'));
       
       if (!valorPagoTotal || valorPagoTotal <= 0) {
@@ -5738,12 +6139,27 @@
 
       if (!payRef || !payRef.id) return Swal.fire('Erro', 'Nenhuma comanda selecionada para pagamento.', 'error');
 
+      let valorRecebidoDinheiro = null;
+      let troco = 0;
+      if (metodo === 'DINHEIRO') {
+          valorRecebidoDinheiro = Number(String(document.getElementById('valRecebidoDinheiro').value || '').replace(',', '.')) || 0;
+          if (!valorRecebidoDinheiro) {
+              prepararPagamentoDinheiro();
+              return Swal.fire('Dinheiro', 'Informe quanto o cliente entregou.', 'info');
+          }
+          if (valorRecebidoDinheiro + 0.009 < valorPagoTotal) {
+              return Swal.fire('Valor insuficiente', 'O valor recebido é menor que a conta.', 'warning');
+          }
+          troco = Math.max(0, valorRecebidoDinheiro - valorPagoTotal);
+      }
+
       let {id, indices} = payRef;
       let c = clientes.find(x => x.id === id);
       if (!c) return;
 
       let itens = [...c.itens];
       let valorRestanteParaAbater = valorPagoTotal;
+      let pagObs = metodo === 'DINHEIRO' && troco > 0.009 ? metodo + ' (Troco para ' + formatarMoeda(troco) + ')' : metodo;
 
       indices.forEach(ii => {
           if (valorRestanteParaAbater <= 0) return;
@@ -5767,23 +6183,34 @@
           }
       });
 
-      db.collection("clientes").doc(id).update({ itens: itens })
-      .then(() => {
-          return db.collection("caixa").doc(gerarIdCaixa()).set({ 
-              data: obterDataHoraLocal(), 
-              valor: valorPagoTotal, 
-              metodo: metodo, 
-              tipo: 'ENTRADA', 
-              obs: `Conta ${metodo}: ${c.nome}` 
-          });
-      })
+      const salvarCliente = () => {
+          c.itens = itens;
+          c.pagamento = pagObs;
+          if (firebaseConfigurado()) {
+              return db.collection("clientes").doc(id).update({ itens: itens, pagamento: pagObs });
+          }
+          return Promise.resolve();
+      };
+
+      salvarCliente().then(() => registrarEntradaComTroco({
+          valorConta: valorPagoTotal,
+          metodo,
+          obs: `Conta ${metodo}: ${c.nome}`,
+          valorRecebidoDinheiro,
+          troco
+      }))
       .then(() => {
           document.getElementById('modalPagamento').style.display = 'none';
+          resetModalPagamento();
+          let htmlSucesso = metodo === 'DINHEIRO' && troco > 0.009
+              ? `<p>Entrada: ${formatarMoeda(valorPagoTotal)}</p><p style="color:var(--accent);font-size:20px;font-weight:700;margin-top:8px;">Troco: ${formatarMoeda(troco)}</p>`
+              : undefined;
           Swal.fire({
               icon: 'success', 
               title: 'Recebimento Confirmado', 
-              text: `Entrada em ${metodo}: ${formatarMoeda(valorPagoTotal)}`,
-              timer: 2000, 
+              html: htmlSucesso,
+              text: htmlSucesso ? undefined : `Entrada em ${metodo}: ${formatarMoeda(valorPagoTotal)}`,
+              timer: 2800, 
               showConfirmButton: false,
               background: '#3A4536',
               color: '#F0E6D2'
@@ -5791,7 +6218,7 @@
       })
       .catch(err => {
           console.error("Erro ao processar pagamento:", err);
-          Swal.fire('Erro', 'Houve uma falha de comunicação com o servidor financeiro.', 'error');
+          Swal.fire('Erro', 'Houve uma falha ao registrar o pagamento.', 'error');
       });
   }
 
@@ -6141,20 +6568,192 @@
       agendarPreviewCardapioArte();
   }
 
+  function atalhosEditorCardapio(event) {
+      if (!event.ctrlKey && !event.metaKey) return;
+      let k = event.key.toLowerCase();
+      if (k === 'b') { event.preventDefault(); cmdCardapio('bold'); }
+      else if (k === 'i') { event.preventDefault(); cmdCardapio('italic'); }
+      else if (k === 'u') { event.preventDefault(); cmdCardapio('underline'); }
+  }
+
+  function toggleMenuMobile() {
+      document.body.classList.toggle('menu-mobile-aberto');
+  }
+
+  function fecharMenuMobile() {
+      document.body.classList.remove('menu-mobile-aberto');
+  }
+
+  function exigirSelecaoCardapio() {
+      let sel = window.getSelection();
+      if (!sel || !sel.rangeCount || sel.isCollapsed) {
+          Swal.fire({ icon: 'info', title: 'Selecione o texto', text: 'Marque as palavras ou linhas antes de aplicar a formatação.', timer: 2200, showConfirmButton: false, background: '#3A4536', color: '#F0E6D2' });
+          return false;
+      }
+      if (!sel.toString().trim()) return false;
+      return true;
+  }
+
   function cmdCardapioFonte(tamanho) {
       if (!tamanho) return;
+      if (!exigirSelecaoCardapio()) return;
       let el = document.getElementById('textoCardapioDia');
       if (!el) return;
       el.focus();
       let mapa = { pequeno: '20px', medio: '26px', grande: '32px', extra: '42px' };
-      let px = mapa[tamanho] || mapa.medio;
+      let px = mapa[tamanho] || (/^\d+$/.test(String(tamanho)) ? tamanho + 'px' : tamanho);
       let sel = window.getSelection();
-      if (!sel || !sel.rangeCount || sel.isCollapsed) {
-          return Swal.fire({ icon: 'info', title: 'Selecione o texto', text: 'Marque as palavras ou linhas antes de escolher o tamanho.', timer: 2200, showConfirmButton: false, background: '#3A4536', color: '#F0E6D2' });
-      }
       let trecho = sel.toString();
-      if (!trecho.trim()) return;
       document.execCommand('insertHTML', false, `<span style="font-size:${px}">${escaparHtml(trecho)}</span>`);
+      agendarPreviewCardapioArte();
+  }
+
+  function cmdCardapioFamilia(familia) {
+      if (!familia || !exigirSelecaoCardapio()) return;
+      let el = document.getElementById('textoCardapioDia');
+      if (!el) return;
+      el.focus();
+      let sel = window.getSelection();
+      let trecho = sel.toString();
+      document.execCommand('insertHTML', false, `<span style="font-family:${familia}">${escaparHtml(trecho)}</span>`);
+      agendarPreviewCardapioArte();
+  }
+
+  function cmdCardapioCor(cor) {
+      if (!cor || !exigirSelecaoCardapio()) return;
+      document.execCommand('foreColor', false, cor);
+      agendarPreviewCardapioArte();
+  }
+
+  function ptParaPxCardapio(valor) {
+      let n = parseFloat(String(valor).replace(',', '.'));
+      if (isNaN(n)) return null;
+      if (String(valor).includes('pt')) return Math.round(n * 1.333);
+      if (String(valor).includes('px')) return Math.round(n);
+      return Math.round(n);
+  }
+
+  function normalizarFamiliaFonteCardapio(fam) {
+      if (!fam) return null;
+      let f = String(fam).split(',')[0].replace(/['"]/g, '').trim().toLowerCase();
+      let mapa = {
+          georgia: 'Georgia, serif',
+          'times new roman': "'Times New Roman', Times, serif",
+          times: "'Times New Roman', Times, serif",
+          arial: 'Arial, Helvetica, sans-serif',
+          helvetica: 'Arial, Helvetica, sans-serif',
+          verdana: 'Verdana, Geneva, sans-serif',
+          'segoe ui': "'Segoe UI', Tahoma, sans-serif",
+          tahoma: "'Segoe UI', Tahoma, sans-serif",
+          'courier new': "'Courier New', Courier, monospace",
+          courier: "'Courier New', Courier, monospace",
+          'comic sans ms': "'Comic Sans MS', cursive"
+      };
+      return mapa[f] || fam.split(',')[0].trim();
+  }
+
+  function estiloInlineCardapio(el) {
+      if (!el || el.nodeType !== 1) return {};
+      let s = {};
+      let st = el.style || {};
+      let fw = st.fontWeight || (window.getComputedStyle ? getComputedStyle(el).fontWeight : '');
+      if (fw === 'bold' || parseInt(fw, 10) >= 600) s.bold = true;
+      let fs = st.fontStyle || (window.getComputedStyle ? getComputedStyle(el).fontStyle : '');
+      if (fs === 'italic') s.italic = true;
+      let td = st.textDecoration || (window.getComputedStyle ? getComputedStyle(el).textDecoration : '');
+      if (String(td).includes('underline')) s.underline = true;
+      if (String(td).includes('line-through')) s.strike = true;
+      let fz = st.fontSize || (window.getComputedStyle ? getComputedStyle(el).fontSize : '');
+      if (fz) s.sizePx = ptParaPxCardapio(fz);
+      let ff = st.fontFamily || (window.getComputedStyle ? getComputedStyle(el).fontFamily : '');
+      if (ff) s.fontFamily = normalizarFamiliaFonteCardapio(ff);
+      let cor = st.color || (window.getComputedStyle ? getComputedStyle(el).color : '');
+      if (cor && cor !== 'rgb(0, 0, 0)') s.color = cor;
+      return s;
+  }
+
+  function mesclarEstiloCardapio(base, extra) {
+      let r = { ...base };
+      if (extra.bold) r.bold = true;
+      if (extra.italic) r.italic = true;
+      if (extra.underline) r.underline = true;
+      if (extra.strike) r.strike = true;
+      if (extra.sizePx) r.sizePx = extra.sizePx;
+      if (extra.fontFamily) r.fontFamily = extra.fontFamily;
+      if (extra.color) r.color = extra.color;
+      return r;
+  }
+
+  function htmlRunCardapio(texto, est) {
+      if (!texto) return '';
+      let t = escaparHtml(texto);
+      let estilos = [];
+      if (est.sizePx) estilos.push(`font-size:${est.sizePx}px`);
+      if (est.fontFamily) estilos.push(`font-family:${est.fontFamily}`);
+      if (est.color) estilos.push(`color:${est.color}`);
+      if (est.bold) t = `<b>${t}</b>`;
+      if (est.italic) t = `<i>${t}</i>`;
+      if (est.underline) t = `<u>${t}</u>`;
+      if (est.strike) t = `<s>${t}</s>`;
+      if (estilos.length) t = `<span style="${estilos.join(';')}">${t}</span>`;
+      return t;
+  }
+
+  function sanitizarHtmlColagemCardapio(html) {
+      let tmp = document.createElement('div');
+      tmp.innerHTML = html;
+      tmp.querySelectorAll('script, style, meta, link, xml, head, title, o\\:p').forEach(n => n.remove());
+
+      function blocoDeNo(no, est) {
+          if (no.nodeType === 3) {
+              let txt = no.textContent.replace(/\u00a0/g, ' ');
+              if (!txt.trim() && !txt.includes('\n')) return '';
+              return htmlRunCardapio(txt, est);
+          }
+          if (no.nodeType !== 1) return '';
+          let tag = no.tagName.toLowerCase();
+          if (tag === 'br') return '<br>';
+          let estNovo = mesclarEstiloCardapio(est, estiloInlineCardapio(no));
+          if (tag === 'b' || tag === 'strong') estNovo.bold = true;
+          if (tag === 'i' || tag === 'em') estNovo.italic = true;
+          if (tag === 'u') estNovo.underline = true;
+          if (tag === 's' || tag === 'strike') estNovo.strike = true;
+          let inner = '';
+          no.childNodes.forEach(f => { inner += blocoDeNo(f, estNovo); });
+          if (tag === 'p' || tag === 'div' || tag === 'li' || tag === 'h1' || tag === 'h2' || tag === 'h3') {
+              let al = (no.style && no.style.textAlign) || no.getAttribute('align') || '';
+              let align = al === 'center' ? 'center' : (al === 'right' ? 'right' : 'left');
+              let bloco = inner || '<br>';
+              if (align !== 'left') return `<div style="text-align:${align}">${bloco}</div>`;
+              return `<div>${bloco}</div>`;
+          }
+          return inner;
+      }
+
+      let saida = '';
+      tmp.childNodes.forEach(no => { saida += blocoDeNo(no, {}); });
+      if (!saida.trim()) {
+          let plano = tmp.innerText || tmp.textContent || '';
+          return plano.split('\n').map(l => `<div>${escaparHtml(l)}</div>`).join('');
+      }
+      return saida;
+  }
+
+  function colarCardapioDia(e) {
+      e.preventDefault();
+      let el = document.getElementById('textoCardapioDia');
+      if (!el) return;
+      el.focus();
+      let html = (e.clipboardData && e.clipboardData.getData('text/html')) || '';
+      let plano = (e.clipboardData && e.clipboardData.getData('text/plain')) || '';
+      if (html && html.trim()) {
+          let limpo = sanitizarHtmlColagemCardapio(html);
+          document.execCommand('insertHTML', false, limpo);
+      } else if (plano) {
+          let linhas = plano.split(/\r?\n/);
+          let bloco = linhas.map(l => `<div>${escaparHtml(l)}</div>`).join('');
+          document.execCommand('insertHTML', false, bloco);
+      }
       agendarPreviewCardapioArte();
   }
 
@@ -6172,20 +6771,28 @@
           let runs = [];
           no.childNodes.forEach(filho => {
               if (filho.nodeType === 3) {
-                  if (filho.textContent) runs.push({ text: filho.textContent, bold: estilo.bold, sizePx: estilo.sizePx });
+                  if (filho.textContent) runs.push({ text: filho.textContent, bold: estilo.bold, italic: estilo.italic, underline: estilo.underline, strike: estilo.strike, sizePx: estilo.sizePx, fontFamily: estilo.fontFamily, color: estilo.color });
                   return;
               }
               if (filho.nodeType !== 1) return;
               let tag = filho.tagName.toLowerCase();
-              let est = { bold: estilo.bold, sizePx: estilo.sizePx };
+              let est = { bold: estilo.bold, italic: estilo.italic, underline: estilo.underline, strike: estilo.strike, sizePx: estilo.sizePx, fontFamily: estilo.fontFamily, color: estilo.color };
               if (tag === 'b' || tag === 'strong') est.bold = true;
+              if (tag === 'i' || tag === 'em') est.italic = true;
+              if (tag === 'u') est.underline = true;
+              if (tag === 's' || tag === 'strike') est.strike = true;
               if (filho.style && filho.style.fontWeight && (filho.style.fontWeight === 'bold' || parseInt(filho.style.fontWeight, 10) >= 600)) est.bold = true;
-              if (filho.style && filho.style.fontSize) est.sizePx = parseInt(filho.style.fontSize, 10) || est.sizePx;
+              if (filho.style && filho.style.fontStyle === 'italic') est.italic = true;
+              if (filho.style && String(filho.style.textDecoration || '').includes('underline')) est.underline = true;
+              if (filho.style && String(filho.style.textDecoration || '').includes('line-through')) est.strike = true;
+              if (filho.style && filho.style.fontSize) est.sizePx = ptParaPxCardapio(filho.style.fontSize) || est.sizePx;
+              if (filho.style && filho.style.fontFamily) est.fontFamily = normalizarFamiliaFonteCardapio(filho.style.fontFamily) || est.fontFamily;
+              if (filho.style && filho.style.color) est.color = filho.style.color;
               if (tag === 'font' && filho.size) {
                   let mapaFont = { 1: 16, 2: 18, 3: 20, 4: 24, 5: 28, 6: 34, 7: 42 };
                   est.sizePx = mapaFont[filho.size] || est.sizePx;
               }
-              if (tag === 'br') runs.push({ text: '\n', br: true, bold: est.bold, sizePx: est.sizePx });
+              if (tag === 'br') runs.push({ text: '\n', br: true, bold: est.bold, italic: est.italic, underline: est.underline, strike: est.strike, sizePx: est.sizePx, fontFamily: est.fontFamily, color: est.color });
               else runs.push(...runsDoNo(filho, est));
           });
           return runs;
@@ -6210,7 +6817,7 @@
               blocos.push({ align: 'left', runs: [{ text: '', bold: false, sizePx: null }] });
               return;
           }
-          blocos.push({ align: alinharBloco(no), runs: runsDoNo(no, { bold: false, sizePx: null }) });
+          blocos.push({ align: alinharBloco(no), runs: runsDoNo(no, { bold: false, italic: false, underline: false, strike: false, sizePx: null, fontFamily: null, color: null }) });
       });
       return blocos.filter(b => b.runs.length);
   }
@@ -6218,8 +6825,10 @@
   function fonteRunCardapio(ctx, run, bodySize, escala, corTexto) {
       let px = run.sizePx ? Math.round(run.sizePx * escala) : bodySize;
       let peso = run.bold ? '700' : '400';
-      ctx.font = `${peso} ${px}px Georgia, 'Times New Roman', serif`;
-      ctx.fillStyle = corTexto;
+      let estilo = run.italic ? 'italic ' : '';
+      let familia = run.fontFamily || "Georgia, 'Times New Roman', serif";
+      ctx.font = `${estilo}${peso} ${px}px ${familia}`;
+      ctx.fillStyle = run.color || corTexto;
       return { px, lineH: px * 1.38 };
   }
 
@@ -6299,11 +6908,33 @@
               else if (bloco.align === 'right') x = padX + areaW - larguraLinha;
               let cx = x;
               linha.forEach(seg => {
-                  fonteRunCardapio(ctx, seg.run, bodySize, escala, corTexto);
+                  let fSeg = fonteRunCardapio(ctx, seg.run, bodySize, escala, corTexto);
                   ctx.textAlign = 'left';
                   ctx.textBaseline = 'alphabetic';
                   ctx.fillText(seg.text, cx, cy);
-                  cx += ctx.measureText(seg.text).width;
+                  let wSeg = ctx.measureText(seg.text).width;
+                  let segPx = fSeg.px;
+                  if (seg.run.underline && seg.text.trim()) {
+                      ctx.save();
+                      ctx.strokeStyle = seg.run.color || corTexto;
+                      ctx.lineWidth = Math.max(1, segPx * 0.06);
+                      ctx.beginPath();
+                      ctx.moveTo(cx, cy + segPx * 0.12);
+                      ctx.lineTo(cx + wSeg, cy + segPx * 0.12);
+                      ctx.stroke();
+                      ctx.restore();
+                  }
+                  if (seg.run.strike && seg.text.trim()) {
+                      ctx.save();
+                      ctx.strokeStyle = seg.run.color || corTexto;
+                      ctx.lineWidth = Math.max(1, segPx * 0.05);
+                      ctx.beginPath();
+                      ctx.moveTo(cx, cy - segPx * 0.28);
+                      ctx.lineTo(cx + wSeg, cy - segPx * 0.28);
+                      ctx.stroke();
+                      ctx.restore();
+                  }
+                  cx += wSeg;
               });
               cy += lineH;
           });
@@ -6419,6 +7050,104 @@
       setTimeout(() => URL.revokeObjectURL(url), 8000);
   }
 
+  function ehCelularParaShare() {
+      return /Android|webOS|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+  }
+
+  function podeUsarShareNativo(file) {
+      if (!navigator.share || !navigator.canShare || !navigator.canShare({ files: [file] })) return false;
+      if (/Windows/i.test(navigator.userAgent) && !/Mobile/i.test(navigator.userAgent)) return false;
+      return ehCelularParaShare();
+  }
+
+  async function copiarImagemCardapio(blob) {
+      try {
+          if (navigator.clipboard && window.ClipboardItem) {
+              await navigator.clipboard.write([
+                  new ClipboardItem({ 'image/png': Promise.resolve(blob) })
+              ]);
+              return true;
+          }
+      } catch (e) {
+          console.warn('copiar imagem:', e);
+      }
+      return false;
+  }
+
+  async function mostrarDialogoEnvioCardapio(blob, dataUrl, nomeArquivo, msgCurta) {
+      await Swal.fire({
+          title: 'Menu pronto!',
+          html: `<img src="${dataUrl}" alt="Cardápio" style="max-width:100%;max-height:340px;border-radius:8px;margin-bottom:12px;display:block;margin-left:auto;margin-right:auto;">
+              <p style="font-size:13px;line-height:1.55;margin:0;text-align:left;">
+                  <b>Computador:</b> clique em <b>Copiar imagem</b> → abra WhatsApp Web → <b>Ctrl+V</b> no chat.<br><br>
+                  <b>Ou</b> clique em <b>Baixar PNG</b> e anexe manualmente no WhatsApp.
+              </p>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:16px;">
+                  <button type="button" id="btnCardapioCopiar" class="swal2-confirm swal2-styled" style="margin:0;font-size:12px;">📋 Copiar imagem</button>
+                  <button type="button" id="btnCardapioBaixar" class="swal2-confirm swal2-styled" style="margin:0;font-size:12px;background:#555;">⬇️ Baixar PNG</button>
+                  <button type="button" id="btnCardapioZap" class="swal2-confirm swal2-styled" style="margin:0;font-size:12px;background:#25D366;">💬 WhatsApp Web</button>
+              </div>`,
+          showConfirmButton: false,
+          showCancelButton: true,
+          cancelButtonText: 'Fechar',
+          background: '#3A4536',
+          color: '#F0E6D2',
+          width: 520,
+          didOpen: () => {
+              document.getElementById('btnCardapioCopiar').onclick = async () => {
+                  let ok = await copiarImagemCardapio(blob);
+                  Swal.fire({
+                      toast: true, position: 'top', icon: ok ? 'success' : 'warning',
+                      title: ok ? 'Copiado! Cole no WhatsApp com Ctrl+V' : 'Use Baixar PNG e anexe manualmente',
+                      timer: 4000, showConfirmButton: false, background: '#3A4536', color: '#F0E6D2'
+                  });
+              };
+              document.getElementById('btnCardapioBaixar').onclick = () => {
+                  baixarBlobCardapio(blob, nomeArquivo);
+                  Swal.fire({ toast: true, position: 'top', icon: 'success', title: 'Download iniciado', timer: 2200, showConfirmButton: false });
+              };
+              document.getElementById('btnCardapioZap').onclick = async () => {
+                  await copiarImagemCardapio(blob);
+                  window.open('https://web.whatsapp.com/', '_blank');
+                  Swal.fire({
+                      toast: true, position: 'top', icon: 'info',
+                      title: 'WhatsApp Web aberto — cole com Ctrl+V',
+                      timer: 4500, showConfirmButton: false, background: '#3A4536', color: '#F0E6D2'
+                  });
+              };
+          }
+      });
+  }
+
+  async function copiarCardapioImagem() {
+      salvarCardapioDiaAtualNaMemoria();
+      if (!obterTextoPlanoCardapioEditor()) {
+          return Swal.fire('Aviso', `O cardápio de ${diaSelecionado} está vazio.`, 'warning');
+      }
+      Swal.fire({ title: 'Gerando imagem...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+      try {
+          let { blob } = await gerarImagemCardapioDia(diaSelecionado, obterHtmlEditorCardapio());
+          Swal.close();
+          if (!blob) throw new Error('Imagem vazia');
+          let ok = await copiarImagemCardapio(blob);
+          if (ok) {
+              return Swal.fire({
+                  icon: 'success', title: 'Imagem copiada!',
+                  text: 'Abra o WhatsApp Web ou app e cole com Ctrl+V (ou toque em Colar).',
+                  timer: 4500, showConfirmButton: false, background: '#3A4536', color: '#F0E6D2'
+              });
+          }
+          baixarBlobCardapio(blob, nomeArquivoCardapio(diaSelecionado));
+          Swal.fire({
+              icon: 'info', title: 'Copiar não disponível',
+              text: 'A imagem foi baixada — anexe no WhatsApp manualmente.',
+              background: '#3A4536', color: '#F0E6D2'
+          });
+      } catch (e) {
+          Swal.fire('Erro', e.message || 'Não foi possível gerar a imagem.', 'error');
+      }
+  }
+
   function nomeArquivoCardapio(dia) {
       let slug = String(dia || 'menu').toLowerCase()
           .normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-');
@@ -6494,7 +7223,7 @@
           let file = new File([blob], nomeArquivo, { type: 'image/png' });
           Swal.close();
 
-          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          if (podeUsarShareNativo(file)) {
               try {
                   await navigator.share({ files: [file], title: 'Menu do Dia — ' + nomeRestaurante, text: msgCurta });
                   return;
@@ -6503,19 +7232,7 @@
               }
           }
 
-          baixarBlobCardapio(blob, nomeArquivo);
-          let r = await Swal.fire({
-              icon: 'success',
-              title: 'Imagem pronta!',
-              html: `<p style="font-size:13px;line-height:1.5;margin:0 0 12px;">No celular, escolha <b>WhatsApp</b> ao compartilhar. No computador, a imagem foi baixada — anexe no WhatsApp Web.</p>
-                  <img src="${dataUrl}" alt="Cardápio" style="max-width:100%;border-radius:8px;margin-top:8px;">`,
-              showCancelButton: true,
-              confirmButtonText: '📱 Abrir WhatsApp',
-              cancelButtonText: 'Fechar',
-              background: '#3A4536',
-              color: '#F0E6D2'
-          });
-          if (r.isConfirmed) window.open(`https://wa.me/?text=${encodeURIComponent(msgCurta)}`, '_blank');
+          await mostrarDialogoEnvioCardapio(blob, dataUrl, nomeArquivo, msgCurta);
       } catch (e) {
           console.error(e);
           Swal.fire('Erro', e.message || 'Não foi possível gerar a imagem do cardápio. Verifique se assets/molde-cardapio.png existe.', 'error');
