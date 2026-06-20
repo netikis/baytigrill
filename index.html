@@ -1668,8 +1668,11 @@
               <input type="file" id="logoInput" accept="image/*" style="margin-bottom:15px; font-size: 12px;">
               <button class="warning" onclick="salvarDadosEmpresa()" style="width:100%; margin-bottom:25px; font-size: 13px;">💾 SALVAR INFORMAÇÕES</button>
               <h4 style="color:var(--text-main); margin-top:0;">Segurança do Caixa</h4>
-              <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px; line-height:1.5;">O caixa <strong style="color:var(--text-main);">sempre exige e-mail e senha</strong> quando o Firebase está ativo. Crie o login em <strong>Acesso Equipe</strong> (perfil Caixa / Gerência).</p>
-              <p style="font-size:11px; color:var(--accent); margin:0 0 25px; padding:10px; background:var(--input-bg); border-radius:6px; border:1px solid var(--border-soft);">🔐 Entrada direta sem senha foi desativada.</p>
+              <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px; line-height:1.5;">Ative para exigir <strong style="color:var(--text-main);">e-mail e senha</strong> no caixa. Crie o login em <strong>Acesso Equipe</strong> (perfil Caixa / Gerência).</p>
+              <label style="display:flex; align-items:center; gap:10px; font-size:13px; color:var(--text-main); margin:0 0 25px; padding:12px; background:var(--input-bg); border-radius:6px; border:1px solid var(--border-soft); cursor:pointer;">
+                  <input type="checkbox" id="chkExigirSenhaCaixa" onchange="toggleExigirSenhaCaixa(this.checked)" style="width:18px; height:18px; accent-color:var(--accent);">
+                  <span>Exigir senha no caixa (gerência)</span>
+              </label>
               <h4 style="color:var(--text-main); margin-top:0;">Contador de Pedidos</h4>
               <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px; line-height:1.5;">Automático: 0001, 0002, 0003… O número sobe a cada pedido confirmado.</p>
               <div style="background:var(--input-bg); padding:14px; border-radius:6px; border:1px solid var(--border-soft); margin-bottom:12px; text-align:center;">
@@ -1994,9 +1997,9 @@
   const LOGO_PADRAO_URL = 'logo-baytigrill-sistema.png?v=2';
   const LOGO_IMPRESSAO_URL = 'logo-baytigrill-sistema.png?v=2';
   const LOGO_VERSAO_CACHE = 'sistema-v2';
-  const LOGIN_ATIVO = firebaseConfiguradoPreInit(); // login por e-mail só para garçom/cozinha (caixa entra direto)
+  const LOGIN_ATIVO = firebaseConfiguradoPreInit(); // login por e-mail; caixa pode entrar direto se senha estiver desativada
 
-  let empDados = { nome: "BAYTIGRILL", end: "", tel: "", qrCodeBase64: "", pixCopiaCola: "", taxaEntrega: 0, statusLoja: 'aberto', exigirSenhaCaixa: true };
+  let empDados = { nome: "BAYTIGRILL", end: "", tel: "", qrCodeBase64: "", pixCopiaCola: "", taxaEntrega: 0, statusLoja: 'aberto', exigirSenhaCaixa: false };
   let cardapioDiario = { 'Segunda': '', 'Terça': '', 'Quarta': '', 'Quinta': '', 'Sexta': '', 'Sábado': '', 'Domingo': '' };
   let diaSelecionado = 'Segunda';
   let logoBase64 = localStorage.getItem('logoRestaurante') || "";
@@ -2268,7 +2271,7 @@
           localStorage.setItem('chef_emp_data', JSON.stringify({
               nome: empDados.nome, end: empDados.end, tel: empDados.tel,
               pixCopiaCola: empDados.pixCopiaCola, taxaEntrega: empDados.taxaEntrega,
-              statusLoja: empDados.statusLoja, exigirSenhaCaixa: true
+              statusLoja: empDados.statusLoja, exigirSenhaCaixa: !!empDados.exigirSenhaCaixa
           }));
       } catch (e) { }
   }
@@ -2287,16 +2290,35 @@
   }
 
   function caixaExigeSenha() {
-      return !!LOGIN_ATIVO;
+      return !!LOGIN_ATIVO && empDados.exigirSenhaCaixa === true;
   }
 
   function atualizarBotoesLoginCaixa() {
       const hint = document.getElementById('loginCaixaHint');
-      if (hint) {
-          hint.innerHTML = LOGIN_ATIVO
-              ? 'O caixa entra com <strong style="color:var(--accent);">e-mail e senha</strong> criados em Acesso Equipe. Garçom e cozinha também usam login.'
-              : 'Modo local (sem Firebase): o caixa entra direto. Com Firebase ativo, sempre exige senha.';
+      if (!hint) return;
+      if (!LOGIN_ATIVO) {
+          hint.innerHTML = 'Modo local (sem Firebase): todos os perfis entram direto.';
+          return;
       }
+      if (caixaExigeSenha()) {
+          hint.innerHTML = 'O caixa entra com <strong style="color:var(--accent);">e-mail e senha</strong> criados em Acesso Equipe. Garçom e cozinha também usam login.';
+      } else {
+          hint.innerHTML = 'O <strong style="color:var(--accent);">caixa entra direto</strong> (sem senha). Garçom e cozinha usam e-mail e senha de Acesso Equipe.';
+      }
+  }
+
+  function toggleExigirSenhaCaixa(ativo) {
+      empDados.exigirSenhaCaixa = !!ativo;
+      salvarEmpCacheLocal();
+      atualizarBotoesLoginCaixa();
+      if (firebaseConfigurado()) {
+          db.collection('config').doc('empresa').set({ exigirSenhaCaixa: empDados.exigirSenhaCaixa }, { merge: true }).catch(() => {});
+      }
+  }
+
+  function sincronizarChkExigirSenhaCaixa() {
+      const chk = document.getElementById('chkExigirSenhaCaixa');
+      if (chk) chk.checked = caixaExigeSenha();
   }
 
   function atualizarBotaoStatusLoja() {
@@ -2796,7 +2818,9 @@
       try {
           const savedEmp = JSON.parse(localStorage.getItem('chef_emp_data') || 'null');
           const qrCache = localStorage.getItem('chef_qr_pix');
-          if (savedEmp) empDados = { ...empDados, ...savedEmp };
+          if (savedEmp) {
+              empDados = { ...empDados, ...savedEmp, exigirSenhaCaixa: savedEmp.exigirSenhaCaixa === true };
+          }
           if (qrCache) empDados.qrCodeBase64 = qrCache;
           atualizarInputsEmpresa();
           atualizarPreviewQrConfig();
@@ -2878,8 +2902,15 @@
           });
           return;
       }
+      sessionStorage.setItem('caixa_sem_senha', 'sim');
+      empDados.exigirSenhaCaixa = false;
+      salvarEmpCacheLocal();
+      if (firebaseConfigurado()) {
+          db.collection('config').doc('empresa').set({ exigirSenhaCaixa: false }, { merge: true }).catch(() => {});
+      }
       document.getElementById('loginOverlay').style.display = 'none';
       document.getElementById('userDisplay').innerText = 'Modo Administrador';
+      roleUsuarioAtual = 'admin';
       setTimeout(() => iniciarSync(), 300);
   }
 
@@ -2889,6 +2920,7 @@
   let loginEmAndamento = false;
 
   auth.onAuthStateChanged((user) => {
+      if (sessionStorage.getItem('caixa_sem_senha') === 'sim') return;
       if (user && (isLogadoNestaSessao === "sim" || loginEmAndamento)) {
           if (isLogadoNestaSessao === "sim") carregarSistema(user);
       } else {
@@ -3040,7 +3072,7 @@
       db.collection("config").doc("empresa").onSnapshot((doc) => {
           if(doc.exists) {
               let d = doc.data();
-              empDados = { nome: d.nome || "BAYTIGRILL", end: d.end, tel: d.tel, qrCodeBase64: d.qrCode || '', pixCopiaCola: d.pixCopiaCola || '', taxaEntrega: d.taxaEntrega || 0, statusLoja: d.statusLoja || 'aberto', exigirSenhaCaixa: true };
+              empDados = { nome: d.nome || "BAYTIGRILL", end: d.end, tel: d.tel, qrCodeBase64: d.qrCode || '', pixCopiaCola: d.pixCopiaCola || '', taxaEntrega: d.taxaEntrega || 0, statusLoja: d.statusLoja || 'aberto', exigirSenhaCaixa: d.exigirSenhaCaixa === true };
               preencherInputPixCopiaCola();
               atualizarPreviewQrConfig();
               
@@ -3055,6 +3087,7 @@
               salvarEmpCacheLocal();
               atualizarInputsEmpresa();
               atualizarBotoesLoginCaixa();
+              sincronizarChkExigirSenhaCaixa();
               if(d.contador !== undefined) {
                   definirNumPedidoAtual(Number(d.contador) + 1);
               }
@@ -3109,6 +3142,7 @@
 
   function logout() {
       sessionStorage.removeItem('logado_agora');
+      sessionStorage.removeItem('caixa_sem_senha');
       syncJaIniciado = false;
       carrinhoGarcom = [];
       carrinhoCompras = [];
@@ -6227,6 +6261,7 @@
           }
           atualizarPreviewQrConfig();
           atualizarDisplayContadorPedido();
+          sincronizarChkExigirSenhaCaixa();
       } 
   }
   
@@ -6268,7 +6303,7 @@
   function selecionarPerfil(p) {
       perfilLoginSelecionado = p;
       if (p === 'admin') {
-          if (LOGIN_ATIVO) {
+          if (caixaExigeSenha()) {
               selecionarPerfilComLogin('admin');
               return;
           }
