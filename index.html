@@ -1160,6 +1160,7 @@
     <h2 class="titulo" style="font-size:22px; margin-bottom:5px; color:#fff; letter-spacing:3px;">BAYTIGRILL</h2>
     <div id="step-1" style="margin-top:20px;">
         <button id="btnCaixaLogin" class="primary" onclick="selecionarPerfil('admin')" style="width:100%; margin-bottom:10px; padding:15px; font-size:14px;">🛡️ GERÊNCIA (CAIXA)</button>
+        <button id="btnGerenteLogin" class="primary" onclick="selecionarPerfil('gerente')" style="width:100%; margin-bottom:10px; padding:15px; font-size:14px; border-color:var(--accent);">👔 ADMINISTRADOR GERAL (GERENTE)</button>
         <button class="warning" onclick="selecionarPerfil('garcom')" style="width:100%; margin-bottom:10px; padding:15px; font-size:14px;">🧑‍🍳 GARÇOM (SALÃO)</button>
         <button class="dark" onclick="selecionarPerfil('func')" style="width:100%; padding:15px; font-size:14px;">👨‍🍳 COZINHA (PRODUÇÃO)</button>
         <p id="loginCaixaHint" style="font-size:11px; color:var(--text-muted); margin-top:14px; line-height:1.5;">O caixa entra com <strong style="color:var(--accent);">e-mail e senha</strong> criados em Acesso Equipe. Garçom e cozinha também usam login.</p>
@@ -1435,11 +1436,13 @@
       <div id="painel-acesso" class="painel-secao">
         <h2 class="painel-titulo">Acesso da Equipe</h2>
         <div class="card" style="max-width: 480px;">
-          <p style="font-size:13px; color:var(--text-muted); margin-top:0; line-height:1.5;">Crie logins com e-mail e senha para <strong style="color:var(--text-main);">caixa, garçom e cozinha</strong>. O sistema gera credenciais aleatórias e salva no Firebase — você pode editar antes de salvar.</p>
+          <p style="font-size:13px; color:var(--text-muted); margin-top:0; line-height:1.5;">Crie logins com e-mail e senha para <strong style="color:var(--text-main);">gerente, caixa, garçom e cozinha</strong>. O sistema guarda a senha para consultar ou redefinir se alguém esquecer.</p>
           <ul style="font-size:12px; color:var(--text-muted); margin:0 0 20px 0; padding-left:18px; line-height:1.7;">
-              <li><strong style="color:var(--text-main);">Caixa</strong> — gerência com e-mail e senha (opcional)</li>
+              <li><strong style="color:var(--text-main);">Administrador Geral</strong> — gerente com acesso total ao sistema</li>
+              <li><strong style="color:var(--text-main);">Caixa</strong> — operador de caixa (senha opcional)</li>
               <li><strong style="color:var(--text-main);">Garçom</strong> — cardápio e pedidos do salão</li>
               <li><strong style="color:var(--text-main);">Cozinha</strong> — comandas para produção</li>
+              <li><strong style="color:var(--text-main);">Gerenciar</strong> — ver senha, redefinir ou excluir acessos</li>
           </ul>
           <button class="warning" onclick="abrirModalUsuario()" style="width:100%; padding:16px; font-size:14px; font-weight:700;">👥 CRIAR ACESSO DA EQUIPE</button>
           <div id="listaUsuariosEquipe" style="margin-top:24px; font-size:12px; color:var(--text-muted);"></div>
@@ -1668,7 +1671,7 @@
               <input type="file" id="logoInput" accept="image/*" style="margin-bottom:15px; font-size: 12px;">
               <button class="warning" onclick="salvarDadosEmpresa()" style="width:100%; margin-bottom:25px; font-size: 13px;">💾 SALVAR INFORMAÇÕES</button>
               <h4 style="color:var(--text-main); margin-top:0;">Segurança do Caixa</h4>
-              <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px; line-height:1.5;">Ative para exigir <strong style="color:var(--text-main);">e-mail e senha</strong> no caixa. Crie o login em <strong>Acesso Equipe</strong> (perfil Caixa / Gerência).</p>
+              <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px; line-height:1.5;">Ative para exigir <strong style="color:var(--text-main);">e-mail e senha</strong> no caixa. O gerente sempre usa login. Crie os acessos em <strong>Acesso Equipe</strong>.</p>
               <label style="display:flex; align-items:center; gap:10px; font-size:13px; color:var(--text-main); margin:0 0 25px; padding:12px; background:var(--input-bg); border-radius:6px; border:1px solid var(--border-soft); cursor:pointer;">
                   <input type="checkbox" id="chkExigirSenhaCaixa" onchange="toggleExigirSenhaCaixa(this.checked)" style="width:18px; height:18px; accent-color:var(--accent);">
                   <span>Exigir senha no caixa (gerência)</span>
@@ -1866,7 +1869,8 @@
         <input type="text" id="novoUserNome" placeholder="Nome do Colaborador" style="margin-bottom:12px;">
         <label style="font-size:11px; color:#666; margin-bottom: 5px; display: block;">Permissão:</label>
         <select id="novoUserPerfil" onchange="gerarCredenciaisUsuario()" style="margin-bottom:12px;">
-            <option value="admin">🛡️ Caixa / Gerência (com senha)</option>
+            <option value="gerente">👔 Administrador Geral / Gerente</option>
+            <option value="admin">🛡️ Caixa / Operador de caixa</option>
             <option value="garcom">🧑‍🍳 Garçom (Cardápio e Pedidos)</option>
             <option value="func">👨‍🍳 Cozinha (Apenas Comandas)</option>
         </select>
@@ -2018,7 +2022,7 @@
   let categoriaFiltroGarcom = 'TODAS';
   let numPedidoGarcom = 1;
   let garcomPedidoEnviando = false;
-  let perfilLoginSelecionado = 'admin';
+  let perfilLoginSelecionado = sessionStorage.getItem('perfil_login') || 'admin';
   let alertasAtivos = new Set(); 
   let chartInstancia = null; 
   let periodoGraficoAtual = 'hoje';
@@ -2301,9 +2305,9 @@
           return;
       }
       if (caixaExigeSenha()) {
-          hint.innerHTML = 'O caixa entra com <strong style="color:var(--accent);">e-mail e senha</strong> criados em Acesso Equipe. Garçom e cozinha também usam login.';
+          hint.innerHTML = 'Caixa, gerente, garçom e cozinha entram com <strong style="color:var(--accent);">e-mail e senha</strong> criados em Acesso Equipe.';
       } else {
-          hint.innerHTML = 'O <strong style="color:var(--accent);">caixa entra direto</strong> (sem senha). Garçom e cozinha usam e-mail e senha de Acesso Equipe.';
+          hint.innerHTML = 'O <strong style="color:var(--accent);">caixa entra direto</strong> (sem senha). O <strong style="color:var(--accent);">gerente</strong>, garçom e cozinha usam e-mail e senha de Acesso Equipe.';
       }
   }
 
@@ -2902,6 +2906,13 @@
           });
           return;
       }
+      if (perfil === 'gerente') {
+          document.getElementById('loginOverlay').style.display = 'none';
+          document.getElementById('userDisplay').innerText = 'Administrador Geral';
+          roleUsuarioAtual = 'gerente';
+          setTimeout(() => iniciarSync(), 300);
+          return;
+      }
       sessionStorage.setItem('caixa_sem_senha', 'sim');
       empDados.exigirSenhaCaixa = false;
       salvarEmpCacheLocal();
@@ -2951,6 +2962,7 @@
       if(document.getElementById('chkLembrarEmail').checked) localStorage.setItem('chef_email_login', email);
       else localStorage.removeItem('chef_email_login');
       sessionStorage.setItem("logado_agora", "sim");
+      sessionStorage.setItem('perfil_login', perfilLoginSelecionado);
       isLogadoNestaSessao = "sim";
       let tempoLimite = setTimeout(() => {
           if (loginEmAndamento) {
@@ -2969,6 +2981,7 @@
           clearTimeout(tempoLimite);
           loginEmAndamento = false;
           sessionStorage.removeItem("logado_agora");
+          sessionStorage.removeItem('perfil_login');
           isLogadoNestaSessao = null;
           msgBox.style.color = "var(--danger)";
           let msg = traduzirErroFirebase(err.code, err.message);
@@ -2987,6 +3000,7 @@
           if (!doc.exists) {
               auth.signOut();
               sessionStorage.removeItem("logado_agora");
+          sessionStorage.removeItem('perfil_login');
               isLogadoNestaSessao = null;
               document.getElementById('loginOverlay').style.display = 'flex';
               voltarLogin();
@@ -2997,10 +3011,11 @@
           if (roleUsuarioAtual !== perfilLoginSelecionado) {
               auth.signOut();
               sessionStorage.removeItem("logado_agora");
+          sessionStorage.removeItem('perfil_login');
               isLogadoNestaSessao = null;
               document.getElementById('loginOverlay').style.display = 'flex';
               voltarLogin();
-              const nomes = { garcom: 'Garçom', func: 'Cozinha', admin: 'Gerente' };
+              const nomes = { garcom: 'Garçom', func: 'Cozinha', admin: 'Caixa', gerente: 'Administrador Geral' };
               Swal.fire('Perfil incorreto', 'Este login é de ' + (nomes[roleUsuarioAtual] || roleUsuarioAtual) + '. Escolha o perfil certo na tela inicial.', 'warning');
               return;
           }
@@ -3023,6 +3038,7 @@
       }).catch(() => {
           auth.signOut();
           sessionStorage.removeItem("logado_agora");
+          sessionStorage.removeItem('perfil_login');
           isLogadoNestaSessao = null;
           document.getElementById('loginOverlay').style.display = 'flex';
           voltarLogin();
@@ -3038,7 +3054,7 @@
           clientes = []; let chamouBeep = false;
           snap.forEach((d) => {
               let data = d.data();
-              if(roleUsuarioAtual === 'admin' && Array.isArray(data.itens)) {
+              if(perfilEhGerencia(roleUsuarioAtual) && Array.isArray(data.itens)) {
                   let needUpdate = false; let clienteTemNovoPronto = false;
                   data.itens = data.itens.map(i => {
                       if(i.pronto && !i.notificadoAdmin) { clienteTemNovoPronto = true; needUpdate = true; return {...i, notificadoAdmin: true}; }
@@ -3143,6 +3159,7 @@
   function logout() {
       sessionStorage.removeItem('logado_agora');
       sessionStorage.removeItem('caixa_sem_senha');
+      sessionStorage.removeItem('perfil_login');
       syncJaIniciado = false;
       carrinhoGarcom = [];
       carrinhoCompras = [];
@@ -3194,16 +3211,54 @@
       });
   }
 
+  function gerarSenhaAleatoriaEquipe(tamanho) {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+      const len = tamanho || 10;
+      let senha = '';
+      for (let i = 0; i < len; i++) senha += chars.charAt(Math.floor(Math.random() * chars.length));
+      return senha;
+  }
+
+  function perfilEhGerencia(perfil) {
+      return perfil === 'admin' || perfil === 'gerente';
+  }
+
   function gerarCredenciaisUsuario() {
       const perfil = document.getElementById('novoUserPerfil').value;
-      const prefixo = perfil === 'garcom' ? 'garcom' : perfil === 'func' ? 'cozinha' : 'caixa';
+      const prefixo = perfil === 'garcom' ? 'garcom' : perfil === 'func' ? 'cozinha' : perfil === 'gerente' ? 'gerente' : 'caixa';
       const sufixo = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
       const email = prefixo + '.' + sufixo + '@equipe.baytigrill';
-      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
-      let senha = '';
-      for (let i = 0; i < 10; i++) senha += chars.charAt(Math.floor(Math.random() * chars.length));
       document.getElementById('novoUserEmail').value = email;
-      document.getElementById('novoUserSenha').value = senha;
+      document.getElementById('novoUserSenha').value = gerarSenhaAleatoriaEquipe();
+  }
+
+  function labelPerfilEquipe(perfil) {
+      const nomes = { garcom: 'Garçom', func: 'Cozinha', admin: 'Caixa', gerente: 'Administrador Geral' };
+      return nomes[perfil] || perfil;
+  }
+
+  function mostrarCredenciaisEquipe(nome, email, senha, titulo) {
+      const credenciaisTxt = 'Nome: ' + (nome || '') + '\nE-mail: ' + email + '\nSenha: ' + senha;
+      Swal.fire({
+          icon: 'success',
+          title: titulo || 'Credenciais de acesso',
+          html: '<div style="text-align:left;font-size:13px;line-height:1.6;">'
+              + '<p><b>Nome:</b> ' + escaparHtml(nome || '—') + '</p>'
+              + '<p><b>E-mail:</b><br><code style="color:#F5B041;word-break:break-all;">' + escaparHtml(email) + '</code></p>'
+              + '<p><b>Senha:</b><br><code style="color:#F5B041;font-size:15px;">' + escaparHtml(senha) + '</code></p>'
+              + '<p style="font-size:11px;color:#aaa;">Guarde em local seguro. O administrador pode consultar em Acesso Equipe.</p></div>',
+          confirmButtonText: 'Copiar e-mail e senha',
+          showCancelButton: true,
+          cancelButtonText: 'Fechar',
+          background: '#3A4536',
+          color: '#F0E6D2'
+      }).then(r => {
+          if (r.isConfirmed && navigator.clipboard) {
+              navigator.clipboard.writeText(credenciaisTxt).then(() => {
+                  Swal.fire({ icon: 'success', title: 'Copiado!', timer: 1200, showConfirmButton: false, background: '#3A4536', color: '#F0E6D2' });
+              });
+          }
+      });
   }
 
   function carregarListaUsuariosEquipe() {
@@ -3219,14 +3274,21 @@
               el.innerHTML = '<p style="margin:0;">Nenhum acesso criado ainda. Clique em <strong>Criar Acesso da Equipe</strong>.</p>';
               return;
           }
-          const nomes = { garcom: 'Garçom', func: 'Cozinha', admin: 'Gerente' };
           let html = '<h4 style="color:var(--accent); margin:0 0 10px; font-size:13px;">Acessos cadastrados</h4>';
           snap.forEach(d => {
               const u = d.data();
-              html += '<div style="padding:10px 0; border-bottom:1px solid var(--border-soft); line-height:1.5;">'
+              const uid = d.id;
+              const temSenha = !!(u.senha && String(u.senha).length >= 6);
+              html += '<div style="padding:12px 0; border-bottom:1px solid var(--border-soft); line-height:1.5;">'
                   + '<strong style="color:var(--text-main);">' + escaparHtml(u.nome || '—') + '</strong>'
-                  + ' <span style="color:var(--accent);">(' + (nomes[u.perfil] || u.perfil) + ')</span><br>'
-                  + '<span style="font-size:11px;">' + escaparHtml(u.email || '') + '</span></div>';
+                  + ' <span style="color:var(--accent);">(' + labelPerfilEquipe(u.perfil) + ')</span><br>'
+                  + '<span style="font-size:11px;">' + escaparHtml(u.email || '') + '</span>'
+                  + (temSenha ? '' : '<br><span style="font-size:10px;color:var(--warning);">Senha não registrada — use Redefinir ou exclua e crie de novo.</span>')
+                  + '<div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:10px;">'
+                  + '<button type="button" class="dark" onclick="verSenhaUsuarioEquipe(\'' + uid + '\')" style="padding:6px 10px; font-size:11px;">🔑 Ver senha</button>'
+                  + '<button type="button" class="warning" onclick="redefinirSenhaUsuarioEquipe(\'' + uid + '\')" style="padding:6px 10px; font-size:11px;">🔄 Redefinir senha</button>'
+                  + '<button type="button" class="danger" onclick="excluirUsuarioEquipe(\'' + uid + '\')" style="padding:6px 10px; font-size:11px;">🗑️ Excluir</button>'
+                  + '</div></div>';
           });
           el.innerHTML = html;
       }).catch(() => {
@@ -3234,9 +3296,119 @@
       });
   }
 
+  function verSenhaUsuarioEquipe(uid) {
+      db.collection('usuarios').doc(uid).get().then(doc => {
+          if (!doc.exists) return Swal.fire('Erro', 'Usuário não encontrado.', 'error');
+          const u = doc.data();
+          if (!u.senha || String(u.senha).length < 6) {
+              return Swal.fire({
+                  icon: 'info',
+                  title: 'Senha não registrada',
+                  text: 'Este acesso foi criado antes do recurso de consulta. Use Redefinir senha ou exclua e crie um novo acesso.',
+                  background: '#3A4536',
+                  color: '#F0E6D2'
+              });
+          }
+          mostrarCredenciaisEquipe(u.nome, u.email, u.senha, 'Senha de ' + (u.nome || 'colaborador'));
+      }).catch(() => Swal.fire('Erro', 'Não foi possível carregar os dados.', 'error'));
+  }
+
+  function redefinirSenhaUsuarioEquipe(uid) {
+      Swal.fire({
+          title: 'Redefinir senha?',
+          text: 'Uma nova senha será gerada. Informe ao colaborador após confirmar.',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Gerar nova senha',
+          cancelButtonText: 'Cancelar',
+          confirmButtonColor: '#C9A23B',
+          background: '#3A4536',
+          color: '#F0E6D2'
+      }).then(r => {
+          if (!r.isConfirmed) return;
+          Swal.fire({ title: 'Gerando nova senha...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+          db.collection('usuarios').doc(uid).get().then(doc => {
+              if (!doc.exists) return Swal.fire('Erro', 'Usuário não encontrado.', 'error');
+              const u = doc.data();
+              if (!u.email) return Swal.fire('Erro', 'E-mail não encontrado neste cadastro.', 'error');
+              if (!u.senha || String(u.senha).length < 6) {
+                  return Swal.fire({
+                      icon: 'warning',
+                      title: 'Não foi possível redefinir',
+                      text: 'Senha antiga não está salva. Exclua este acesso e crie um novo para o colaborador.',
+                      background: '#3A4536',
+                      color: '#F0E6D2'
+                  });
+              }
+              const novaSenha = gerarSenhaAleatoriaEquipe();
+              destruirAppTempUsuario();
+              const tempApp = obterAppTempUsuario();
+              tempApp.auth().signInWithEmailAndPassword(u.email, u.senha)
+                  .then(() => tempApp.auth().currentUser.updatePassword(novaSenha))
+                  .then(() => db.collection('usuarios').doc(uid).update({ senha: novaSenha }))
+                  .then(() => {
+                      destruirAppTempUsuario();
+                      mostrarCredenciaisEquipe(u.nome, u.email, novaSenha, 'Senha redefinida!');
+                      carregarListaUsuariosEquipe();
+                  })
+                  .catch(e => {
+                      destruirAppTempUsuario();
+                      Swal.fire('Erro', traduzirErroFirebase(e.code, e.message), 'error');
+                  });
+          }).catch(() => Swal.fire('Erro', 'Não foi possível carregar os dados.', 'error'));
+      });
+  }
+
+  function excluirUsuarioEquipe(uid) {
+      db.collection('usuarios').doc(uid).get().then(doc => {
+          if (!doc.exists) return Swal.fire('Erro', 'Usuário não encontrado.', 'error');
+          const u = doc.data();
+          Swal.fire({
+              title: 'Excluir acesso?',
+              html: 'Remover o acesso de <strong>' + escaparHtml(u.nome || 'colaborador') + '</strong>?<br><span style="font-size:12px;color:#aaa;">O login deixará de funcionar.</span>',
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonText: 'Sim, excluir',
+              cancelButtonText: 'Cancelar',
+              confirmButtonColor: '#C62828',
+              background: '#3A4536',
+              color: '#F0E6D2'
+          }).then(r => {
+              if (!r.isConfirmed) return;
+              Swal.fire({ title: 'Excluindo...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+              const removerFirestore = (msgExtra) => db.collection('usuarios').doc(uid).delete()
+                  .then(() => {
+                      carregarListaUsuariosEquipe();
+                      if (msgExtra) {
+                          Swal.fire({
+                              icon: 'info',
+                              title: 'Cadastro removido',
+                              text: msgExtra,
+                              background: '#3A4536',
+                              color: '#F0E6D2'
+                          });
+                      } else {
+                          Swal.fire({ icon: 'success', title: 'Acesso excluído', timer: 1800, showConfirmButton: false, background: '#3A4536', color: '#F0E6D2' });
+                      }
+                  })
+                  .catch(() => Swal.fire('Erro', 'Não foi possível excluir o cadastro.', 'error'));
+              if (u.email && u.senha && String(u.senha).length >= 6) {
+                  destruirAppTempUsuario();
+                  const tempApp = obterAppTempUsuario();
+                  tempApp.auth().signInWithEmailAndPassword(u.email, u.senha)
+                      .then(() => tempApp.auth().currentUser.delete())
+                      .then(() => { destruirAppTempUsuario(); return removerFirestore(); })
+                      .catch(() => { destruirAppTempUsuario(); return removerFirestore(); });
+              } else {
+                  removerFirestore('O registro foi apagado. Se o e-mail ainda existir no Firebase Authentication, remova manualmente no console do Firebase.');
+              }
+          });
+      }).catch(() => Swal.fire('Erro', 'Não foi possível carregar os dados.', 'error'));
+  }
+
   function abrirModalUsuario() {
       document.getElementById('novoUserNome').value = '';
-      document.getElementById('novoUserPerfil').value = 'garcom';
+      document.getElementById('novoUserPerfil').value = 'gerente';
       gerarCredenciaisUsuario();
       document.getElementById('modalUsuario').style.display = 'flex';
   }
@@ -6289,7 +6461,8 @@
       const hints = {
           garcom: '🧑‍🍳 Garçom — use o e-mail e senha criados em Acesso Equipe',
           func: '👨‍🍳 Cozinha — use o e-mail e senha criados em Acesso Equipe',
-          admin: '🛡️ Gerente — use o e-mail e senha criados em Acesso Equipe'
+          admin: '🛡️ Caixa — use o e-mail e senha criados em Acesso Equipe',
+          gerente: '👔 Administrador Geral — use o e-mail e senha criados em Acesso Equipe'
       };
       document.getElementById('loginPerfilHint').innerText = hints[p] || '';
       document.getElementById('step-1').style.display = 'none';
@@ -6302,6 +6475,14 @@
 
   function selecionarPerfil(p) {
       perfilLoginSelecionado = p;
+      if (p === 'gerente') {
+          if (!LOGIN_ATIVO) {
+              entrarComPerfilLocal('gerente');
+              return;
+          }
+          selecionarPerfilComLogin('gerente');
+          return;
+      }
       if (p === 'admin') {
           if (caixaExigeSenha()) {
               selecionarPerfilComLogin('admin');
@@ -6457,34 +6638,14 @@
       tempApp.auth().createUserWithEmailAndPassword(email, senha)
           .then((userCredential) => {
               uidCriado = userCredential.user.uid;
-              return db.collection('usuarios').doc(uidCriado).set({ nome: nome, email: email, perfil: perfil });
+              return db.collection('usuarios').doc(uidCriado).set({ nome: nome, email: email, perfil: perfil, senha: senha });
           })
           .then(() => {
               destruirAppTempUsuario();
               document.getElementById('modalUsuario').style.display = 'none';
               document.getElementById('novoUserNome').value = '';
-              const perfilLabel = perfil === 'garcom' ? 'Garçom' : perfil === 'func' ? 'Cozinha' : 'Caixa';
-              const credenciaisTxt = 'E-mail: ' + email + '\nSenha: ' + senha;
-              Swal.fire({
-                  icon: 'success',
-                  title: 'Acesso criado no Firebase!',
-                  html: '<div style="text-align:left;font-size:13px;line-height:1.6;">'
-                      + '<p><b>Perfil:</b> ' + perfilLabel + '</p>'
-                      + '<p><b>E-mail:</b><br><code style="color:#F5B041;word-break:break-all;">' + escaparHtml(email) + '</code></p>'
-                      + '<p><b>Senha:</b><br><code style="color:#F5B041;font-size:15px;">' + escaparHtml(senha) + '</code></p>'
-                      + '<p style="font-size:11px;color:#aaa;">Anote ou envie ao colaborador. A senha não aparece de novo.</p></div>',
-                  confirmButtonText: 'Copiar e-mail e senha',
-                  showCancelButton: true,
-                  cancelButtonText: 'Fechar',
-                  background: '#3A4536',
-                  color: '#F0E6D2'
-              }).then(r => {
-                  if (r.isConfirmed && navigator.clipboard) {
-                      navigator.clipboard.writeText(credenciaisTxt).then(() => {
-                          Swal.fire({ icon: 'success', title: 'Copiado!', timer: 1200, showConfirmButton: false, background: '#3A4536', color: '#F0E6D2' });
-                      });
-                  }
-              });
+              const perfilLabel = labelPerfilEquipe(perfil);
+              mostrarCredenciaisEquipe(nome, email, senha, 'Acesso criado — ' + perfilLabel);
               carregarListaUsuariosEquipe();
           })
           .catch((e) => {
