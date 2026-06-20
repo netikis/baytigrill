@@ -1159,11 +1159,10 @@
     </div>
     <h2 class="titulo" style="font-size:22px; margin-bottom:5px; color:#fff; letter-spacing:3px;">BAYTIGRILL</h2>
     <div id="step-1" style="margin-top:20px;">
-        <button id="btnCaixaDireto" class="primary" onclick="selecionarPerfil('admin')" style="width:100%; margin-bottom:10px; padding:15px; font-size:14px;">🛡️ GERÊNCIA (CAIXA) — Entrada direta</button>
-        <button id="btnCaixaSenha" class="primary" onclick="selecionarPerfilComLogin('admin')" style="width:100%; margin-bottom:10px; padding:15px; font-size:14px; display:none; background:linear-gradient(135deg,#3d4a32,#2A3328); border:1px solid var(--accent);">🔐 CAIXA — Entrar com e-mail e senha</button>
+        <button id="btnCaixaLogin" class="primary" onclick="selecionarPerfil('admin')" style="width:100%; margin-bottom:10px; padding:15px; font-size:14px;">🛡️ GERÊNCIA (CAIXA)</button>
         <button class="warning" onclick="selecionarPerfil('garcom')" style="width:100%; margin-bottom:10px; padding:15px; font-size:14px;">🧑‍🍳 GARÇOM (SALÃO)</button>
         <button class="dark" onclick="selecionarPerfil('func')" style="width:100%; padding:15px; font-size:14px;">👨‍🍳 COZINHA (PRODUÇÃO)</button>
-        <p id="loginCaixaHint" style="font-size:11px; color:var(--text-muted); margin-top:14px; line-height:1.5;">O caixa pode entrar direto ou com senha criada em <strong style="color:var(--accent);">Acesso Equipe</strong>. Garçom e cozinha sempre usam login.</p>
+        <p id="loginCaixaHint" style="font-size:11px; color:var(--text-muted); margin-top:14px; line-height:1.5;">O caixa entra com <strong style="color:var(--accent);">e-mail e senha</strong> criados em Acesso Equipe. Garçom e cozinha também usam login.</p>
     </div>
     <div id="step-2" style="display:none; margin-top:20px;">
         <p id="loginPerfilHint" style="font-size:12px; color:var(--accent); margin:0 0 12px; font-weight:600;"></p>
@@ -1669,12 +1668,8 @@
               <input type="file" id="logoInput" accept="image/*" style="margin-bottom:15px; font-size: 12px;">
               <button class="warning" onclick="salvarDadosEmpresa()" style="width:100%; margin-bottom:25px; font-size: 13px;">💾 SALVAR INFORMAÇÕES</button>
               <h4 style="color:var(--text-main); margin-top:0;">Segurança do Caixa</h4>
-              <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px; line-height:1.5;">Crie o login do caixa em <strong>Acesso Equipe</strong>. Se marcar abaixo, só entra com e-mail e senha (a entrada direta fica desativada).</p>
-              <label style="display:flex; align-items:flex-start; gap:10px; font-size:13px; color:var(--text-main); margin-bottom:12px; cursor:pointer;">
-                  <input type="checkbox" id="confExigirSenhaCaixa" style="width:auto; min-width:auto; margin-top:3px;">
-                  <span>Exigir senha para acessar o caixa</span>
-              </label>
-              <button type="button" class="dark" onclick="salvarSegurancaCaixa()" style="width:100%; margin-bottom:25px; font-size:12px; border-color:var(--accent); color:var(--accent);">🔐 SALVAR SEGURANÇA DO CAIXA</button>
+              <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px; line-height:1.5;">O caixa <strong style="color:var(--text-main);">sempre exige e-mail e senha</strong> quando o Firebase está ativo. Crie o login em <strong>Acesso Equipe</strong> (perfil Caixa / Gerência).</p>
+              <p style="font-size:11px; color:var(--accent); margin:0 0 25px; padding:10px; background:var(--input-bg); border-radius:6px; border:1px solid var(--border-soft);">🔐 Entrada direta sem senha foi desativada.</p>
               <h4 style="color:var(--text-main); margin-top:0;">Contador de Pedidos</h4>
               <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px; line-height:1.5;">Automático: 0001, 0002, 0003… O número sobe a cada pedido confirmado.</p>
               <div style="background:var(--input-bg); padding:14px; border-radius:6px; border:1px solid var(--border-soft); margin-bottom:12px; text-align:center;">
@@ -2001,7 +1996,7 @@
   const LOGO_VERSAO_CACHE = 'sistema-v2';
   const LOGIN_ATIVO = firebaseConfiguradoPreInit(); // login por e-mail só para garçom/cozinha (caixa entra direto)
 
-  let empDados = { nome: "BAYTIGRILL", end: "", tel: "", qrCodeBase64: "", pixCopiaCola: "", taxaEntrega: 0, statusLoja: 'aberto', exigirSenhaCaixa: false };
+  let empDados = { nome: "BAYTIGRILL", end: "", tel: "", qrCodeBase64: "", pixCopiaCola: "", taxaEntrega: 0, statusLoja: 'aberto', exigirSenhaCaixa: true };
   let cardapioDiario = { 'Segunda': '', 'Terça': '', 'Quarta': '', 'Quinta': '', 'Sexta': '', 'Sábado': '', 'Domingo': '' };
   let diaSelecionado = 'Segunda';
   let logoBase64 = localStorage.getItem('logoRestaurante') || "";
@@ -2273,7 +2268,7 @@
           localStorage.setItem('chef_emp_data', JSON.stringify({
               nome: empDados.nome, end: empDados.end, tel: empDados.tel,
               pixCopiaCola: empDados.pixCopiaCola, taxaEntrega: empDados.taxaEntrega,
-              statusLoja: empDados.statusLoja, exigirSenhaCaixa: !!empDados.exigirSenhaCaixa
+              statusLoja: empDados.statusLoja, exigirSenhaCaixa: true
           }));
       } catch (e) { }
   }
@@ -2292,21 +2287,15 @@
   }
 
   function caixaExigeSenha() {
-      return !!(empDados.exigirSenhaCaixa && LOGIN_ATIVO);
+      return !!LOGIN_ATIVO;
   }
 
   function atualizarBotoesLoginCaixa() {
-      const btnDireto = document.getElementById('btnCaixaDireto');
-      const btnSenha = document.getElementById('btnCaixaSenha');
       const hint = document.getElementById('loginCaixaHint');
-      if (!btnDireto || !btnSenha) return;
-      const exige = caixaExigeSenha();
-      btnDireto.style.display = exige ? 'none' : 'block';
-      btnSenha.style.display = LOGIN_ATIVO ? 'block' : 'none';
       if (hint) {
-          hint.innerHTML = exige
-              ? 'O caixa exige <strong style="color:var(--accent);">e-mail e senha</strong> criados em Acesso Equipe.'
-              : 'O caixa pode entrar <strong>sem senha</strong> ou pelo botão <strong>Entrar com e-mail e senha</strong>. Garçom e cozinha sempre usam senha.';
+          hint.innerHTML = LOGIN_ATIVO
+              ? 'O caixa entra com <strong style="color:var(--accent);">e-mail e senha</strong> criados em Acesso Equipe. Garçom e cozinha também usam login.'
+              : 'Modo local (sem Firebase): o caixa entra direto. Com Firebase ativo, sempre exige senha.';
       }
   }
 
@@ -3051,7 +3040,7 @@
       db.collection("config").doc("empresa").onSnapshot((doc) => {
           if(doc.exists) {
               let d = doc.data();
-              empDados = { nome: d.nome || "BAYTIGRILL", end: d.end, tel: d.tel, qrCodeBase64: d.qrCode || '', pixCopiaCola: d.pixCopiaCola || '', taxaEntrega: d.taxaEntrega || 0, statusLoja: d.statusLoja || 'aberto', exigirSenhaCaixa: !!d.exigirSenhaCaixa };
+              empDados = { nome: d.nome || "BAYTIGRILL", end: d.end, tel: d.tel, qrCodeBase64: d.qrCode || '', pixCopiaCola: d.pixCopiaCola || '', taxaEntrega: d.taxaEntrega || 0, statusLoja: d.statusLoja || 'aberto', exigirSenhaCaixa: true };
               preencherInputPixCopiaCola();
               atualizarPreviewQrConfig();
               
@@ -6236,9 +6225,6 @@
           if(document.getElementById('confEmpPix')) {
               document.getElementById('confEmpPix').value = empDados.pixCopiaCola || '';
           }
-          if (document.getElementById('confExigirSenhaCaixa')) {
-              document.getElementById('confExigirSenhaCaixa').checked = !!empDados.exigirSenhaCaixa;
-          }
           atualizarPreviewQrConfig();
           atualizarDisplayContadorPedido();
       } 
@@ -6282,7 +6268,7 @@
   function selecionarPerfil(p) {
       perfilLoginSelecionado = p;
       if (p === 'admin') {
-          if (caixaExigeSenha()) {
+          if (LOGIN_ATIVO) {
               selecionarPerfilComLogin('admin');
               return;
           }
@@ -6302,18 +6288,6 @@
       atualizarBotoesLoginCaixa();
   }
   
-  function salvarSegurancaCaixa() {
-      const exigir = !!(document.getElementById('confExigirSenhaCaixa') && document.getElementById('confExigirSenhaCaixa').checked);
-      aplicarDadosEmpresaNoApp({ exigirSenhaCaixa: exigir });
-      if (!firebaseConfigurado()) {
-          Swal.fire({ icon: 'success', title: 'Regra salva', text: 'Salvo neste aparelho.', timer: 2000, showConfirmButton: false });
-          return;
-      }
-      db.collection('config').doc('empresa').set({ exigirSenhaCaixa: exigir }, { merge: true })
-          .then(() => Swal.fire({ icon: 'success', title: 'Regra salva', text: exigir ? 'O caixa agora exige senha para entrar.' : 'O caixa voltou a permitir entrada direta.', timer: 2800, showConfirmButton: false }))
-          .catch(() => Swal.fire('Aviso', 'Salvo localmente. Verifique a conexão com o Firebase.', 'info'));
-  }
-
   function salvarDadosEmpresa() { 
       let n = document.getElementById('confEmpNome').value.trim(); 
       let e = document.getElementById('confEmpEnd').value.trim(); 
