@@ -6500,20 +6500,23 @@
       return base + caminho;
   }
 
-  const MOLDE_CARDAPIO_VER = 15;
+  const MOLDE_CARDAPIO_VER = 16;
   const CARDAPIO_CANVAS_W = 900;
   const CARDAPIO_CANVAS_H = 1350;
 
   function desenharMoldeRetrato(ctx, molde, W, H) {
       let mW = molde.naturalWidth || W;
       let mH = molde.naturalHeight || H;
-      let corteVerde = mH * 0.028;
+      let corteVerde = mH * 0.012;
       let sw = mW, sh = mH - corteVerde;
-      let escala = Math.max(W / sw, H / sh) * 0.972;
+      let margemBottom = H * 0.028;
+      let margemTop = H * 0.012;
+      let areaH = H - margemBottom - margemTop;
+      let escala = areaH / sh;
       let dw = sw * escala;
       let dh = sh * escala;
       let dx = (W - dw) / 2;
-      let dy = H - dh + H * 0.072;
+      let dy = H - margemBottom - dh;
       ctx.drawImage(molde, 0, 0, sw, sh, dx, dy, dw, dh);
   }
 
