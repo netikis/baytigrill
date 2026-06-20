@@ -6500,18 +6500,26 @@
       return base + caminho;
   }
 
-  const MOLDE_CARDAPIO_VER = 12;
+  const MOLDE_CARDAPIO_VER = 13;
   const CARDAPIO_CANVAS_W = 900;
   const CARDAPIO_CANVAS_H = 1350;
 
   function desenharMoldeRetrato(ctx, molde, W, H) {
       let mW = molde.naturalWidth || W;
       let mH = molde.naturalHeight || H;
-      let escala = Math.max(W / mW, H / mH);
-      let dw = mW * escala;
-      let dh = mH * escala;
-      let offsetY = -H * 0.06;
-      ctx.drawImage(molde, (W - dw) / 2, (H - dh) / 2 + offsetY, dw, dh);
+      let corteVerde = mH * 0.05;
+      let sw = mW, sh = mH - corteVerde;
+      let escala = Math.max(W / sw, H / sh);
+      let dw = sw * escala;
+      let dh = sh * escala;
+      let dx = (W - dw) / 2;
+      let dy = H - dh;
+      ctx.drawImage(molde, 0, 0, sw, sh, dx, dy, dw, dh);
+  }
+
+  function preencherFundoPergaminhoCardapio(ctx, W, H) {
+      ctx.fillStyle = '#E8DCC8';
+      ctx.fillRect(0, 0, W, H);
   }
 
   function nomeDiaCardapio(dia) {
@@ -6531,7 +6539,7 @@
           padBottom: H * 0.13,
           tituloSize: Math.round(34 * escala),
           bodyBase: Math.round(25 * escala),
-          yDia: H * 0.43,
+          yDia: H * 0.305,
           gapLinha: escala * 10,
           gapCorpo: Math.max(H * 0.048, escala * 28)
       };
@@ -6996,6 +7004,7 @@
 
       while (bodySize >= Math.round(13 * escala)) {
           ctx.clearRect(0, 0, W, H);
+          preencherFundoPergaminhoCardapio(ctx, W, H);
           desenharMoldeRetrato(ctx, molde, W, H);
           let cab = desenharCabecalhoDiaCardapio(ctx, W, H, padX, areaW, diaUsar, met);
           ctx.font = `400 ${bodySize}px Georgia, 'Times New Roman', serif`;
@@ -7006,6 +7015,7 @@
       }
 
       ctx.clearRect(0, 0, W, H);
+      preencherFundoPergaminhoCardapio(ctx, W, H);
       desenharMoldeRetrato(ctx, molde, W, H);
       let cab = desenharCabecalhoDiaCardapio(ctx, W, H, padX, areaW, diaUsar, met);
       if (textoPlano) {
