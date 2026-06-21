@@ -2198,12 +2198,34 @@
       if (!valor) return null;
       let s = String(valor).trim();
       if (!s) return null;
+      // Apenas data (input type=date) — meia-noite LOCAL, não UTC
+      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+          const partes = s.split('-').map(Number);
+          return new Date(partes[0], partes[1] - 1, partes[2]);
+      }
       if (s.endsWith('Z') && /^\d{4}-\d{2}-\d{2}T/.test(s)) {
           let d = new Date(s.replace('Z', ''));
           return isNaN(d.getTime()) ? null : d;
       }
       let d = new Date(s);
       return isNaN(d.getTime()) ? null : d;
+  }
+
+  function obterDataHoraLocalParaData(dataYmd) {
+      const agora = new Date();
+      const p = n => String(n).padStart(2, '0');
+      const base = (dataYmd && /^\d{4}-\d{2}-\d{2}$/.test(dataYmd)) ? dataYmd : obterDataLocal();
+      return `${base}T${p(agora.getHours())}:${p(agora.getMinutes())}:${p(agora.getSeconds())}`;
+  }
+
+  function formatarRetiradaMarmita(r) {
+      if (!r) return '';
+      if (r.registradoEm) return formatarDataHoraBR(r.registradoEm);
+      if (/^\d{4}-\d{2}-\d{2}$/.test(String(r.data || ''))) {
+          const [y, m, d] = String(r.data).split('-');
+          return `${d}/${m}/${y}`;
+      }
+      return formatarDataHoraBR(r.data);
   }
 
   function formatarHoraPedido(iso) {
@@ -4464,6 +4486,64 @@
       return itens.reduce((s, i) => s + (Number(i.valor) || 0), 0);
   }
 
+  function refsBalcaoJaRegistradosNoCaixa() {
+      const refs = new Set();
+      caixaTotal.forEach(m => {
+          if (m.tipo === 'REGISTRO_ITENS' && m.refBalcao) refs.add(m.refBalcao);
+      });
+      return refs;
+  }
+
+  function coletarItensParaEstatisticasVendas() {
+      const itens = [];
+      clientes.forEach(c => {
+          if (Array.isArray(c.itens)) c.itens.forEach(i => itens.push(i));
+      });
+      caixaTotal.forEach(m => {
+          if (m.tipo === 'REGISTRO_ITENS' && Array.isArray(m.itens)) {
+              m.itens.forEach(i => itens.push(i));
+          }
+      });
+      const refsCaixa = refsBalcaoJaRegistradosNoCaixa();
+      balcaoDiaLista.forEach(reg => {
+          if (balcaoEstaPendente(reg)) return;
+          if (refsCaixa.has(reg.id)) return;
+          const dataRef = reg.dataPagamento || reg.criadoEm || obterDataHoraLocal();
+          (reg.itens || []).forEach(i => {
+              itens.push({
+                  desc: i.desc,
+                  qtd: i.qtd,
+                  valor: i.valor,
+                  data: dataRef,
+                  avulso: i.avulso,
+                  arquivado: reg.arquivado
+              });
+          });
+      });
+      return itens;
+  }
+
+  function registrarItensVendidosBalcao(reg) {
+      if (!reg || !Array.isArray(reg.itens) || !reg.itens.length) return Promise.resolve();
+      if (refsBalcaoJaRegistradosNoCaixa().has(reg.id)) return Promise.resolve();
+      const dataVenda = reg.dataPagamento || obterDataHoraLocal();
+      const itens = reg.itens.map(i => ({
+          desc: i.desc,
+          qtd: Math.max(1, Number(i.qtd) || 1),
+          valor: Number(i.valor) || 0,
+          data: dataVenda,
+          avulso: !!i.avulso,
+          origem: 'balcao'
+      }));
+      return lancarMovimentoCaixa({
+          tipo: 'REGISTRO_ITENS',
+          data: dataVenda,
+          itens,
+          refBalcao: reg.id,
+          obs: 'Venda balcão — ' + (reg.nome || '')
+      });
+  }
+
   function balcaoEstaPendente(reg) {
       return reg && reg.pago !== true;
   }
@@ -4482,7 +4562,8 @@
           qtdPaga: Math.max(0, Number(p.qtdPaga) || 0),
           retiradas: Array.isArray(p.retiradas) ? p.retiradas.map(r => ({
               data: r.data || obterDataLocal(),
-              qtd: Math.max(1, Number(r.qtd) || 1)
+              qtd: Math.max(1, Number(r.qtd) || 1),
+              registradoEm: r.registradoEm || ''
           })) : []
       };
   }
@@ -4527,7 +4608,7 @@
           } else {
               lista.innerHTML = pacote.retiradas.map((r, idx) => `
                   <div class="balcao-retirada-item">
-                      <span>📅 ${formatarDataBR(r.data)} — <strong>${r.qtd}</strong> marmita(s)</span>
+                      <span>📅 ${formatarRetiradaMarmita(r)} — <strong>${r.qtd}</strong> marmita(s)</span>
                       <button type="button" class="tabela-dia-acoes-btn" onclick="removerRetiradaMarmita(${idx})">✕</button>
                   </div>`).join('');
           }
@@ -4572,7 +4653,7 @@
       if (qtd > saldo) {
           return Swal.fire('Saldo insuficiente', `Restam apenas ${saldo} marmita(s) neste pacote.`, 'warning');
       }
-      pacote.retiradas.push({ data, qtd });
+      pacote.retiradas.push({ data, qtd, registradoEm: obterDataHoraLocalParaData(data) });
       pacote.retiradas.sort((a, b) => String(b.data).localeCompare(String(a.data)));
       balcaoPacoteMarmitasTemp = pacote;
       document.getElementById('balcaoRetiradaQtd').value = '1';
@@ -4900,7 +4981,7 @@
           refBalcao: id,
           valorRecebidoDinheiro: metodo === 'DINHEIRO' ? valorRecebidoDinheiro : null,
           troco: metodo === 'DINHEIRO' ? (troco || 0) : 0
-      });
+      }).then(() => registrarItensVendidosBalcao({ ...reg, ...atualizar }));
       if (!firebaseConfigurado()) {
           Object.assign(reg, atualizar);
           salvarBalcaoLocal();
@@ -5884,10 +5965,7 @@
       document.getElementById('relSaldoFinal').innerText = formatarMoeda((totDin + totPix + totCart + totQr + totOnline) - totSaida);
 
       let produtosVendidosNoPeriodo = {};
-      
-      let todosItensRelatorio = [];
-      clientes.forEach(c => { if(Array.isArray(c.itens)) c.itens.forEach(i => todosItensRelatorio.push(i)); });
-      caixaTotal.forEach(m => { if(m.tipo === 'REGISTRO_ITENS' && Array.isArray(m.itens)) { m.itens.forEach(i => todosItensRelatorio.push(i)); } });
+      let todosItensRelatorio = coletarItensParaEstatisticasVendas();
 
       todosItensRelatorio.forEach(i => {
           if(i.arquivado) return; // IGNORA ARQUIVADOS
@@ -5901,8 +5979,9 @@
               if (diff >= 0 && diff <= 7) { incluir = true; }
           }
           
-          if(incluir) {
+          if (incluir) {
               let nomeProduto = String(i.desc||'').trim().toUpperCase();
+              if (i.avulso && nomeProduto && !nomeProduto.includes('(AVULSO)')) nomeProduto += ' (AVULSO)';
               if(nomeProduto) {
                   if (!produtosVendidosNoPeriodo[nomeProduto]) { produtosVendidosNoPeriodo[nomeProduto] = 0; }
                   produtosVendidosNoPeriodo[nomeProduto] += Number(i.qtd) || 0;
@@ -6453,9 +6532,7 @@
       let filtroDataMes = hoje.slice(0, 7);
       let produtosVendidos = {};
 
-      let todosItensParaGrafico = [];
-      clientes.forEach(c => { if(Array.isArray(c.itens)) c.itens.forEach(i => todosItensParaGrafico.push(i)); });
-      caixaTotal.forEach(m => { if(m.tipo === 'REGISTRO_ITENS' && Array.isArray(m.itens)) { m.itens.forEach(i => todosItensParaGrafico.push(i)); } });
+      let todosItensParaGrafico = coletarItensParaEstatisticasVendas();
 
       todosItensParaGrafico.forEach(i => {
           if(i.arquivado) return; 
@@ -6472,6 +6549,7 @@
 
           if (incluir) {
               let nomeProduto = String(i.desc || '').trim().toUpperCase();
+              if (i.avulso && nomeProduto && !nomeProduto.includes('(AVULSO)')) nomeProduto += ' (AVULSO)';
               if(nomeProduto) {
                   if (!produtosVendidos[nomeProduto]) { produtosVendidos[nomeProduto] = 0; }
                   produtosVendidos[nomeProduto] += Number(i.qtd) || 0;
@@ -6491,7 +6569,7 @@
           data: {
               labels: labels,
               datasets: [{
-                  label: 'Pratos/Itens Solicitados',
+                  label: 'Itens vendidos / recebidos',
                   data: dataValores,
                   backgroundColor: '#D4AF37',
                   borderColor: '#8B0000',
