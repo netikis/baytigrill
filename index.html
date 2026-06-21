@@ -439,6 +439,26 @@
   }
   .balcao-item-linha input, .balcao-item-linha select { flex: 1; min-width: 80px; margin: 0; padding: 10px; font-size: 12px; }
   .balcao-itens-lista { max-height: 200px; overflow-y: auto; margin: 12px 0; }
+  .balcao-avulso-box {
+      background: var(--input-bg); padding: 14px; border-radius: 8px;
+      border: 1px solid var(--border-soft); margin-bottom: 12px;
+  }
+  .balcao-pacote-box {
+      background: rgba(201, 162, 59, 0.08); padding: 14px; border-radius: 8px;
+      border: 1px solid var(--accent); margin: 14px 0;
+  }
+  .balcao-pacote-resumo {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; text-align: center;
+  }
+  .balcao-pacote-resumo div {
+      background: var(--input-bg); padding: 10px 6px; border-radius: 6px; border: 1px solid var(--border-soft);
+  }
+  .balcao-pacote-resumo strong { display: block; font-size: 20px; color: var(--accent); margin-top: 4px; }
+  .balcao-pacote-resumo span { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .balcao-retirada-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 0; border-bottom: 1px dashed var(--border-soft); font-size: 12px;
+  }
   #btnToggleSidebar {
       display: none; position: fixed; bottom: 16px; left: 16px; z-index: 200;
       background: var(--primary); color: #fff; border: 1px solid var(--accent);
@@ -1366,11 +1386,11 @@
         <h2 class="painel-titulo">Cadastrar Cliente</h2>
         <div class="card card--full" id="balcaoFormSecao">
           <h3 id="tituloFormBalcao" style="color:var(--accent); margin-top:0;">Novo Cliente — Balcão</h3>
-          <p style="font-size:12px; color:var(--text-muted); margin-top:0; margin-bottom:16px; line-height:1.5;">Cadastre vendas rápidas do balcão com nome, contato e produtos.</p>
+          <p style="font-size:12px; color:var(--text-muted); margin-top:0; margin-bottom:16px; line-height:1.5;">Cadastre vendas do balcão, combos avulsos (ex.: 20 marmitas) e controle de retiradas por data.</p>
           <input type="text" id="balcaoNome" placeholder="Nome do cliente" style="margin-bottom:10px;">
           <input type="text" id="balcaoTelefone" placeholder="Telefone" style="margin-bottom:10px;">
           <input type="text" id="balcaoEndereco" placeholder="Endereço (opcional)" style="margin-bottom:15px;">
-          <label style="font-size:11px; color:var(--accent); font-weight:600; display:block; margin-bottom:8px;">PRODUTOS / VALORES</label>
+          <label style="font-size:11px; color:var(--accent); font-weight:600; display:block; margin-bottom:8px;">DO CARDÁPIO</label>
           <div class="balcao-item-linha">
               <select id="balcaoProdutoSelect" style="flex:2;">
                   <option value="">— Escolher do cardápio —</option>
@@ -1378,12 +1398,36 @@
               <input type="number" id="balcaoItemQtd" value="1" min="1" placeholder="Qtd" style="width:60px; flex:none;">
               <button type="button" class="warning" onclick="adicionarItemBalcaoModal()" style="flex:none; padding:10px 14px;">+</button>
           </div>
-          <div class="balcao-item-linha">
-              <input type="text" id="balcaoItemDescManual" placeholder="Ou digite o produto..." style="flex:2;">
-              <input type="number" id="balcaoItemValorManual" placeholder="R$" step="0.01" style="width:90px; flex:none;">
-              <button type="button" class="dark" onclick="adicionarItemBalcaoManual()" style="flex:none; padding:10px 12px; font-size:11px;">+ MANUAL</button>
+          <div class="balcao-avulso-box">
+              <label style="font-size:11px; color:var(--accent); font-weight:600; display:block; margin-bottom:10px;">PRODUTO AVULSO / COMBO</label>
+              <input type="text" id="balcaoAvulsoDesc" placeholder="Ex: Combo 20 marmitas, Kit semanal..." style="margin-bottom:10px;">
+              <div class="balcao-item-linha" style="margin-bottom:10px;">
+                  <input type="number" id="balcaoAvulsoQtd" value="1" min="1" placeholder="Qtd" style="width:70px; flex:none;">
+                  <input type="number" id="balcaoAvulsoValor" placeholder="Valor total R$" step="0.01" style="flex:1;">
+                  <button type="button" class="warning" onclick="adicionarItemBalcaoAvulso()" style="flex:none; padding:10px 12px; font-size:11px; white-space:nowrap;">+ AVULSO</button>
+              </div>
+              <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-main); cursor:pointer;">
+                  <input type="checkbox" id="balcaoAvulsoPacoteMarmita" style="width:auto; min-width:auto;">
+                  <span>📦 Controlar retiradas de marmitas (quantidade paga × retiradas por data)</span>
+              </label>
+              <button type="button" class="dark" onclick="ativarPacoteMarmitasSoControle()" style="margin-top:10px; width:100%; padding:10px; font-size:11px; border-color:var(--border-soft); color:var(--text-muted);">Só ativar controle de marmitas (sem adicionar produto)</button>
           </div>
           <div class="balcao-itens-lista" id="balcaoItensLista"></div>
+          <div id="balcaoPacoteSecao" class="balcao-pacote-box" style="display:none;">
+              <h4 style="color:var(--accent); margin:0 0 12px; font-size:14px;">📦 Controle de Marmitas</h4>
+              <div class="balcao-item-linha" style="margin-bottom:12px;">
+                  <input type="number" id="balcaoPacoteQtdPaga" min="1" placeholder="Qtd. paga" style="width:100px; flex:none;" onchange="atualizarQtdPagaPacoteMarmita()">
+                  <input type="text" id="balcaoPacoteDescricao" placeholder="Descrição do pacote" style="flex:1;" onchange="atualizarDescPacoteMarmita()">
+              </div>
+              <div id="balcaoPacoteResumo" class="balcao-pacote-resumo"></div>
+              <label style="font-size:11px; color:var(--text-muted); display:block; margin-bottom:8px;">Registrar retirada:</label>
+              <div class="balcao-item-linha" style="margin-bottom:10px;">
+                  <input type="date" id="balcaoRetiradaData" style="flex:1;">
+                  <input type="number" id="balcaoRetiradaQtd" value="1" min="1" placeholder="Qtd" style="width:70px; flex:none;">
+                  <button type="button" class="success" onclick="registrarRetiradaMarmita()" style="flex:none; padding:10px 12px; font-size:11px;">+ RETIRADA</button>
+              </div>
+              <div id="balcaoRetiradasLista" style="max-height:160px; overflow-y:auto;"></div>
+          </div>
           <div style="text-align:right; font-size:20px; font-weight:700; color:var(--accent); margin:16px 0;">
               Total: <span id="balcaoModalTotal">R$ 0,00</span>
           </div>
@@ -2032,6 +2076,7 @@
   let balcaoDiaLista = [];
   let balcaoDiaEditId = null;
   let balcaoDiaItensTemp = [];
+  let balcaoPacoteMarmitasTemp = null;
   let balcaoPaginaAtual = 1;
   const BALCAO_ITENS_POR_PAGINA = 15;
   let balcaoIrParaNomeAposSync = null;
@@ -4330,6 +4375,7 @@
           lista = lista.filter(reg => {
               let texto = [
                   reg.nome, reg.telefone, reg.endereco,
+                  reg.pacoteMarmitas?.descricao,
                   ...(Array.isArray(reg.itens) ? reg.itens.map(i => i.desc) : [])
               ].join(' ').toLowerCase();
               return texto.includes(termo);
@@ -4363,7 +4409,7 @@
                       </div>
                       <div>${pagBadge}</div>
                   </div>
-                  <div class="balcao-cliente-card-itens">${itensHtml}</div>
+                  <div class="balcao-cliente-card-itens">${itensHtml}${htmlResumoPacoteMarmita(reg)}</div>
                   <div class="balcao-cliente-card-rodape">
                       <strong style="color:var(--accent); font-size:16px;">Total: ${formatarMoeda(total)}</strong>
                       <div style="display:flex; gap:6px; flex-wrap:wrap;">
@@ -4429,6 +4475,153 @@
       return '<span class="badge-pendente">PENDENTE A RECEBER</span>';
   }
 
+  function normalizarPacoteMarmitas(p) {
+      if (!p || !Number(p.qtdPaga)) return null;
+      return {
+          descricao: String(p.descricao || 'Pacote de marmitas').trim(),
+          qtdPaga: Math.max(0, Number(p.qtdPaga) || 0),
+          retiradas: Array.isArray(p.retiradas) ? p.retiradas.map(r => ({
+              data: r.data || obterDataLocal(),
+              qtd: Math.max(1, Number(r.qtd) || 1)
+          })) : []
+      };
+  }
+
+  function totalRetiradoPacoteMarmita(p) {
+      if (!p || !p.retiradas) return 0;
+      return p.retiradas.reduce((s, r) => s + (Number(r.qtd) || 0), 0);
+  }
+
+  function saldoPacoteMarmita(p) {
+      if (!p) return 0;
+      return Math.max(0, (Number(p.qtdPaga) || 0) - totalRetiradoPacoteMarmita(p));
+  }
+
+  function renderPacoteMarmitasBalcao() {
+      const sec = document.getElementById('balcaoPacoteSecao');
+      if (!sec) return;
+      const pacote = normalizarPacoteMarmitas(balcaoPacoteMarmitasTemp);
+      if (!pacote) {
+          sec.style.display = 'none';
+          return;
+      }
+      sec.style.display = 'block';
+      balcaoPacoteMarmitasTemp = pacote;
+      const elQtd = document.getElementById('balcaoPacoteQtdPaga');
+      const elDesc = document.getElementById('balcaoPacoteDescricao');
+      if (elQtd) elQtd.value = pacote.qtdPaga;
+      if (elDesc) elDesc.value = pacote.descricao;
+      const retirou = totalRetiradoPacoteMarmita(pacote);
+      const saldo = saldoPacoteMarmita(pacote);
+      const resumo = document.getElementById('balcaoPacoteResumo');
+      if (resumo) {
+          resumo.innerHTML = `
+              <div><span>Qtd. paga</span><strong>${pacote.qtdPaga}</strong></div>
+              <div><span>Qtd. retirada</span><strong style="color:var(--success);">${retirou}</strong></div>
+              <div><span>Saldo</span><strong style="color:${saldo > 0 ? 'var(--accent)' : 'var(--danger)'};">${saldo}</strong></div>`;
+      }
+      const lista = document.getElementById('balcaoRetiradasLista');
+      if (lista) {
+          if (!pacote.retiradas.length) {
+              lista.innerHTML = '<p style="font-size:12px;color:var(--text-muted);margin:0;font-style:italic;">Nenhuma retirada registrada.</p>';
+          } else {
+              lista.innerHTML = pacote.retiradas.map((r, idx) => `
+                  <div class="balcao-retirada-item">
+                      <span>📅 ${formatarDataBR(r.data)} — <strong>${r.qtd}</strong> marmita(s)</span>
+                      <button type="button" class="tabela-dia-acoes-btn" onclick="removerRetiradaMarmita(${idx})">✕</button>
+                  </div>`).join('');
+          }
+      }
+      const dataEl = document.getElementById('balcaoRetiradaData');
+      if (dataEl && !dataEl.value) dataEl.value = obterDataLocal();
+  }
+
+  function ativarPacoteMarmitas(descricao, qtdPaga) {
+      const atual = normalizarPacoteMarmitas(balcaoPacoteMarmitasTemp);
+      balcaoPacoteMarmitasTemp = {
+          descricao: descricao || atual?.descricao || 'Pacote de marmitas',
+          qtdPaga: Math.max(1, Number(qtdPaga) || 1),
+          retiradas: atual?.retiradas || []
+      };
+      renderPacoteMarmitasBalcao();
+  }
+
+  function atualizarQtdPagaPacoteMarmita() {
+      const el = document.getElementById('balcaoPacoteQtdPaga');
+      if (!balcaoPacoteMarmitasTemp) ativarPacoteMarmitas('Pacote de marmitas', el?.value || 1);
+      else {
+          balcaoPacoteMarmitasTemp.qtdPaga = Math.max(1, Number(el?.value) || 1);
+          renderPacoteMarmitasBalcao();
+      }
+  }
+
+  function atualizarDescPacoteMarmita() {
+      const el = document.getElementById('balcaoPacoteDescricao');
+      if (!balcaoPacoteMarmitasTemp) ativarPacoteMarmitas(el?.value || 'Pacote de marmitas', 1);
+      else {
+          balcaoPacoteMarmitasTemp.descricao = (el?.value || 'Pacote de marmitas').trim();
+      }
+  }
+
+  function registrarRetiradaMarmita() {
+      const pacote = normalizarPacoteMarmitas(balcaoPacoteMarmitasTemp);
+      if (!pacote) return Swal.fire('Aviso', 'Ative o pacote de marmitas ao adicionar um combo avulso ou informe a quantidade paga.', 'info');
+      const data = document.getElementById('balcaoRetiradaData')?.value || obterDataLocal();
+      const qtd = Math.max(1, Number(document.getElementById('balcaoRetiradaQtd')?.value) || 1);
+      const saldo = saldoPacoteMarmita(pacote);
+      if (qtd > saldo) {
+          return Swal.fire('Saldo insuficiente', `Restam apenas ${saldo} marmita(s) neste pacote.`, 'warning');
+      }
+      pacote.retiradas.push({ data, qtd });
+      pacote.retiradas.sort((a, b) => String(b.data).localeCompare(String(a.data)));
+      balcaoPacoteMarmitasTemp = pacote;
+      document.getElementById('balcaoRetiradaQtd').value = '1';
+      renderPacoteMarmitasBalcao();
+  }
+
+  function removerRetiradaMarmita(idx) {
+      const pacote = normalizarPacoteMarmitas(balcaoPacoteMarmitasTemp);
+      if (!pacote) return;
+      pacote.retiradas.splice(idx, 1);
+      balcaoPacoteMarmitasTemp = pacote;
+      renderPacoteMarmitasBalcao();
+  }
+
+  function htmlResumoPacoteMarmita(reg) {
+      const p = normalizarPacoteMarmitas(reg.pacoteMarmitas);
+      if (!p) return '';
+      const retirou = totalRetiradoPacoteMarmita(p);
+      const saldo = saldoPacoteMarmita(p);
+      return `<div style="margin-top:8px;padding:8px 10px;background:rgba(201,162,59,0.12);border-radius:6px;border:1px solid var(--accent);font-size:11px;line-height:1.5;">
+          <strong style="color:var(--accent);">📦 ${escaparHtml(p.descricao)}</strong><br>
+          Paga: <b>${p.qtdPaga}</b> · Retirou: <b style="color:var(--success);">${retirou}</b> · Saldo: <b style="color:${saldo > 0 ? 'var(--accent)' : 'var(--danger)'};">${saldo}</b>
+      </div>`;
+  }
+
+  function ativarPacoteMarmitasSoControle() {
+      Swal.fire({
+          title: 'Controle de marmitas',
+          html: `<p style="font-size:13px;margin-bottom:12px;">Informe quantas marmitas o cliente já pagou.</p>
+              <input type="text" id="swalPacoteDesc" class="swal2-input" placeholder="Descrição (ex: Combo 20 marmitas)" style="margin:0 0 8px;">
+              <input type="number" id="swalPacoteQtd" class="swal2-input" min="1" value="20" placeholder="Quantidade paga" style="margin:0;">`,
+          showCancelButton: true,
+          confirmButtonText: 'Ativar',
+          cancelButtonText: 'Cancelar',
+          background: '#3A4536',
+          color: '#F0E6D2',
+          preConfirm: () => {
+              const qtd = Math.max(1, Number(document.getElementById('swalPacoteQtd')?.value) || 0);
+              const desc = (document.getElementById('swalPacoteDesc')?.value || 'Pacote de marmitas').trim();
+              if (!qtd) { Swal.showValidationMessage('Informe a quantidade paga'); return false; }
+              return { qtd, desc };
+          }
+      }).then(r => {
+          if (!r.isConfirmed || !r.value) return;
+          ativarPacoteMarmitas(r.value.desc, r.value.qtd);
+          document.getElementById('balcaoFormSecao')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+  }
+
   function atualizarSelectProdutosBalcao() {
       let sel = document.getElementById('balcaoProdutoSelect');
       if (!sel) return;
@@ -4448,7 +4641,7 @@
       } else {
           box.innerHTML = balcaoDiaItensTemp.map((i, idx) => `
               <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border-soft);font-size:12px;">
-                  <span><b>${i.qtd}x</b> ${escaparHtml(i.desc)}</span>
+                  <span><b>${i.qtd}x</b> ${escaparHtml(i.desc)}${i.avulso ? ' <span style="font-size:10px;color:var(--accent);">(avulso)</span>' : ''}</span>
                   <span style="display:flex;align-items:center;gap:8px;">
                       <strong style="color:var(--accent);">${formatarMoeda(i.valor)}</strong>
                       <button type="button" class="tabela-dia-acoes-btn" onclick="removerItemBalcaoModal(${idx})">✕</button>
@@ -4470,14 +4663,23 @@
       renderItensBalcaoModal();
   }
 
-  function adicionarItemBalcaoManual() {
-      let desc = (document.getElementById('balcaoItemDescManual')?.value || '').trim();
-      let val = Number(String(document.getElementById('balcaoItemValorManual')?.value || '').replace(',', '.'));
-      if (!desc || val <= 0) return Swal.fire('Aviso', 'Informe nome e valor do produto.', 'warning');
-      balcaoDiaItensTemp.push({ desc: desc, qtd: 1, valor: val });
-      document.getElementById('balcaoItemDescManual').value = '';
-      document.getElementById('balcaoItemValorManual').value = '';
+  function adicionarItemBalcaoAvulso() {
+      let desc = (document.getElementById('balcaoAvulsoDesc')?.value || '').trim();
+      let qtd = Math.max(1, Number(document.getElementById('balcaoAvulsoQtd')?.value) || 1);
+      let val = Number(String(document.getElementById('balcaoAvulsoValor')?.value || '').replace(',', '.'));
+      let controlarPacote = !!document.getElementById('balcaoAvulsoPacoteMarmita')?.checked;
+      if (!desc || val <= 0) return Swal.fire('Aviso', 'Informe descrição, quantidade e valor total do produto avulso.', 'warning');
+      balcaoDiaItensTemp.push({ desc: desc.toUpperCase(), qtd: qtd, valor: val, avulso: true });
+      if (controlarPacote) ativarPacoteMarmitas(desc, qtd);
+      document.getElementById('balcaoAvulsoDesc').value = '';
+      document.getElementById('balcaoAvulsoQtd').value = '1';
+      document.getElementById('balcaoAvulsoValor').value = '';
+      document.getElementById('balcaoAvulsoPacoteMarmita').checked = false;
       renderItensBalcaoModal();
+  }
+
+  function adicionarItemBalcaoManual() {
+      adicionarItemBalcaoAvulso();
   }
 
   function removerItemBalcaoModal(idx) {
@@ -4488,6 +4690,7 @@
   function prepararFormBalcaoDia(id) {
       balcaoDiaEditId = id || null;
       balcaoDiaItensTemp = [];
+      balcaoPacoteMarmitasTemp = null;
       let titulo = document.getElementById('tituloFormBalcao');
       if (titulo) titulo.textContent = id ? 'Editar Cliente — Balcão' : 'Novo Cliente — Balcão';
       if (id) {
@@ -4497,14 +4700,18 @@
               document.getElementById('balcaoTelefone').value = reg.telefone || '';
               document.getElementById('balcaoEndereco').value = reg.endereco || '';
               balcaoDiaItensTemp = (reg.itens || []).map(i => ({ ...i }));
+              balcaoPacoteMarmitasTemp = reg.pacoteMarmitas ? { ...reg.pacoteMarmitas, retiradas: (reg.pacoteMarmitas.retiradas || []).map(r => ({ ...r })) } : null;
           }
       } else {
           document.getElementById('balcaoNome').value = '';
           document.getElementById('balcaoTelefone').value = '';
           document.getElementById('balcaoEndereco').value = '';
       }
+      const dataRet = document.getElementById('balcaoRetiradaData');
+      if (dataRet) dataRet.value = obterDataLocal();
       atualizarSelectProdutosBalcao();
       renderItensBalcaoModal();
+      renderPacoteMarmitasBalcao();
   }
 
   function limparFormBalcaoDia() {
@@ -4540,7 +4747,10 @@
               dados.criadoEm = antigo.criadoEm || dados.criadoEm;
           }
       }
+      const pacote = normalizarPacoteMarmitas(balcaoPacoteMarmitasTemp);
+      if (pacote) dados.pacoteMarmitas = pacote;
       if (!firebaseConfigurado()) {
+          if (!pacote && balcaoDiaEditId) delete dados.pacoteMarmitas;
           if (balcaoDiaEditId) {
               let idx = balcaoDiaLista.findIndex(x => x.id === balcaoDiaEditId);
               if (idx >= 0) balcaoDiaLista[idx] = { ...dados, id: balcaoDiaEditId };
@@ -4552,6 +4762,7 @@
           irParaClienteBalcaoNaLista(dados.nome);
           return Swal.fire({ icon: 'success', title: 'Salvo!', timer: 1500, showConfirmButton: false });
       }
+      if (!pacote && balcaoDiaEditId) dados.pacoteMarmitas = firebase.firestore.FieldValue.delete();
       Swal.fire({ title: 'Salvando...', didOpen: () => Swal.showLoading() });
       let prom = balcaoDiaEditId
           ? db.collection('balcao_dia').doc(balcaoDiaEditId).set(dados, { merge: true })
