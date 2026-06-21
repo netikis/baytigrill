@@ -27,6 +27,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
 <style>
   :root {
@@ -1067,6 +1068,34 @@
   .cardapio-arte-preview-wrap h4 { margin: 0 0 10px; font-size: 12px; color: var(--accent); font-weight: 600; letter-spacing: 0.5px; }
   .cardapio-arte-preview-wrap img { max-width: min(100%, 320px); max-height: 680px; width: auto; height: auto; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.35); object-fit: contain; margin: 0 auto; display: block; }
   .cardapio-arte-preview-wrap .cardapio-arte-hint { font-size: 11px; color: var(--text-muted); margin: 10px 0 0; line-height: 1.5; }
+  .cardapio-import-box {
+      background: var(--input-bg); border: 1px dashed var(--accent); border-radius: 8px;
+      padding: 14px; margin-bottom: 14px;
+  }
+  .cardapio-import-preview {
+      margin-top: 12px; text-align: center; display: none;
+  }
+  .cardapio-import-preview img {
+      max-width: 100%; max-height: 420px; border-radius: 8px;
+      border: 1px solid var(--border-soft); box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  }
+  .cardapio-import-badge {
+      display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+      text-transform: uppercase; color: var(--accent); background: rgba(201,162,59,0.15);
+      padding: 4px 10px; border-radius: 20px; margin-bottom: 8px;
+  }
+  .menu-dia-online-secao {
+      margin: 0 0 20px; padding: 14px; background: #faf5e6; border-radius: 12px;
+      border: 2px solid var(--accent); text-align: center;
+  }
+  .menu-dia-online-secao img {
+      max-width: 100%; border-radius: 8px; display: block; margin: 10px auto 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  }
+  .menu-dia-online-titulo {
+      color: var(--bg-dark); font-size: 16px; font-weight: 900; margin: 0;
+  }
+  .menu-dia-online-sub { font-size: 12px; color: #666; margin: 6px 0 0; }
   .cardapio-editor-toolbar {
       display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
       padding: 10px 12px; background: var(--input-bg); border: 1px solid var(--border-soft);
@@ -1646,7 +1675,21 @@
               <button class="tab-btn" onclick="mudarAbaDia('Sexta', this)" style="min-width: 80px;">SEX</button>
               <button class="tab-btn" onclick="mudarAbaDia('Sábado', this)" style="min-width: 80px;">SÁB</button>
               <button class="tab-btn" onclick="mudarAbaDia('Domingo', this)" style="min-width: 80px;">DOM</button>
+              <button type="button" class="tab-btn" onclick="irParaDiaSemanaAtual()" style="min-width: 110px; border-color: var(--accent); color: var(--accent);" title="Ir para o dia de hoje">📅 HOJE</button>
           </div>
+          <div class="cardapio-import-box">
+              <label style="font-size:11px; color:var(--accent); font-weight:700; display:block; margin-bottom:8px; letter-spacing:0.5px;">IMPORTAR CARDÁPIO (JPEG, PNG ou PDF)</label>
+              <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px; line-height:1.5;">Use arte feita em Canva, Word, Photoshop etc. O PDF usa a <strong>primeira página</strong>.</p>
+              <input type="file" id="inputImportCardapioDia" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" onchange="importarArquivoCardapioDia(this)" style="width:100%; font-size:12px; margin-bottom:10px;">
+              <div id="cardapioImportPreview" class="cardapio-import-preview">
+                  <span class="cardapio-import-badge">📎 Imagem importada</span>
+                  <img id="cardapioImportPreviewImg" alt="Cardápio importado">
+                  <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:12px;">
+                      <button type="button" class="dark" onclick="removerImagemImportadaCardapio()" style="font-size:11px; padding:8px 12px; border-color:var(--danger); color:var(--danger);">🗑️ Remover importação</button>
+                  </div>
+              </div>
+          </div>
+          <p style="font-size:11px; color:var(--text-muted); margin:0 0 10px; line-height:1.5;">Ou monte o cardápio no editor abaixo (sem importar imagem):</p>
           <div class="cardapio-editor-toolbar" id="cardapioEditorToolbar">
               <span class="toolbar-label">EDIÇÃO:</span>
               <button type="button" title="Desfazer (Ctrl+Z)" onclick="cmdCardapio('undo')">↶</button>
@@ -1697,9 +1740,12 @@
           <canvas id="cardapioArteCanvas" style="display:none;" aria-hidden="true"></canvas>
           <div style="display:flex; gap:10px; flex-wrap: wrap;">
               <button class="success" onclick="salvarCardapioDia()" style="flex:1; min-width: 160px; font-size: 13px;">💾 SALVAR SEMANA</button>
+              <button class="primary" onclick="publicarMenuDoDiaOnline()" style="flex:1; min-width: 160px; font-size: 13px;">🌐 PUBLICAR NO CARDÁPIO ONLINE</button>
               <button class="dark" onclick="copiarCardapioImagem()" style="flex:1; min-width: 160px; font-size: 13px; border-color:var(--accent); color:var(--accent);">📋 COPIAR IMAGEM</button>
               <button class="warning" onclick="compartilharCardapioDiaZap()" style="flex:1; min-width: 160px; font-size: 13px; font-weight: 700; color: #000;">📱 ENVIAR WHATSAPP</button>
+              <button class="success" onclick="compartilharMenuDoDiaStatus()" style="flex:1; min-width: 160px; font-size: 13px; background:#25D366; color:#fff;">📲 STATUS WHATSAPP</button>
           </div>
+          <p style="font-size:11px; color:var(--text-muted); margin:12px 0 0; line-height:1.5;">Ao <strong>Publicar no Cardápio Online</strong>, o menu de <strong id="cardapioDiaPublicadoLabel">Segunda</strong> aparece no link do cardápio digital para os clientes (atualiza em tempo real).</p>
         </div>
       </div>
 
@@ -2730,9 +2776,264 @@
   }
 
   function normalizarEntradaCardapioDia(val) {
-      if (!val) return { texto: '', imagem: '' };
-      if (typeof val === 'string') return { texto: val, imagem: '' };
-      return { texto: val.texto || '', imagem: val.imagem || '' };
+      if (!val) return { texto: '', imagem: '', imagemImportada: false };
+      if (typeof val === 'string') return { texto: val, imagem: '', imagemImportada: false };
+      return {
+          texto: val.texto || '',
+          imagem: val.imagem || '',
+          imagemImportada: !!val.imagemImportada
+      };
+  }
+
+  const DIAS_SEMANA_CARDAPIO = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+
+  function obterDiaSemanaAtual() {
+      return DIAS_SEMANA_CARDAPIO[new Date().getDay()];
+  }
+
+  function irParaDiaSemanaAtual() {
+      const dia = obterDiaSemanaAtual();
+      const tabs = document.querySelectorAll('#cardapioTabs .tab-btn');
+      let btn = null;
+      tabs.forEach(b => {
+          if (b.textContent.includes('HOJE')) return;
+          const onclick = b.getAttribute('onclick') || '';
+          if (onclick.includes("'" + dia + "'")) btn = b;
+      });
+      if (btn) mudarAbaDia(dia, btn);
+  }
+
+  function atualizarUiImportacaoCardapioDia() {
+      const img = obterImagemCardapioDia(diaSelecionado);
+      const wrap = document.getElementById('cardapioImportPreview');
+      const imgEl = document.getElementById('cardapioImportPreviewImg');
+      const label = document.getElementById('cardapioDiaPublicadoLabel');
+      if (label) label.textContent = diaSelecionado;
+      if (!wrap || !imgEl) return;
+      if (img && normalizarEntradaCardapioDia(cardapioDiario[diaSelecionado]).imagemImportada) {
+          wrap.style.display = 'block';
+          imgEl.src = img;
+      } else {
+          wrap.style.display = 'none';
+          imgEl.src = '';
+      }
+  }
+
+  function comprimirImagemCardapioMenu(dataUrl, maxLado) {
+      maxLado = maxLado || 1000;
+      return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = function() {
+              const escala = Math.min(1, maxLado / Math.max(img.width, img.height));
+              const c = document.createElement('canvas');
+              c.width = Math.max(1, Math.round(img.width * escala));
+              c.height = Math.max(1, Math.round(img.height * escala));
+              c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+              let base64 = c.toDataURL('image/jpeg', 0.78);
+              if (base64.length > 850000) base64 = c.toDataURL('image/jpeg', 0.62);
+              if (base64.length > 850000) base64 = c.toDataURL('image/jpeg', 0.5);
+              resolve(base64);
+          };
+          img.onerror = () => reject(new Error('invalid'));
+          img.src = dataUrl;
+      });
+  }
+
+  async function converterPdfCardapioParaImagem(file) {
+      if (typeof pdfjsLib === 'undefined') throw new Error('Leitor de PDF não carregou. Recarregue a página.');
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      const buf = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+      const page = await pdf.getPage(1);
+      const viewport = page.getViewport({ scale: 1 });
+      const maxLado = 1200;
+      const escala = Math.min(2, maxLado / Math.max(viewport.width, viewport.height));
+      const vp = page.getViewport({ scale: escala });
+      const canvas = document.createElement('canvas');
+      canvas.width = vp.width;
+      canvas.height = vp.height;
+      await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+      return comprimirImagemCardapioMenu(canvas.toDataURL('image/png'));
+  }
+
+  async function importarArquivoCardapioDia(inputEl) {
+      const file = inputEl && inputEl.files && inputEl.files[0];
+      if (!file) return;
+      const nome = (file.name || '').toLowerCase();
+      const ehPdf = file.type === 'application/pdf' || nome.endsWith('.pdf');
+      const ehImg = /^image\//i.test(file.type || '') || /\.(jpe?g|png)$/i.test(nome);
+      if (!ehPdf && !ehImg) {
+          inputEl.value = '';
+          return Swal.fire('Formato inválido', 'Use JPEG, PNG ou PDF.', 'warning');
+      }
+      Swal.fire({ title: 'Processando arquivo...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+      try {
+          let base64 = '';
+          if (ehPdf) base64 = await converterPdfCardapioParaImagem(file);
+          else {
+              const dataUrl = await new Promise((res, rej) => {
+                  const r = new FileReader();
+                  r.onload = e => res(e.target.result);
+                  r.onerror = () => rej(new Error('read'));
+                  r.readAsDataURL(file);
+              });
+              base64 = await comprimirImagemCardapioMenu(dataUrl);
+          }
+          salvarCardapioDiaAtualNaMemoria();
+          cardapioDiario[diaSelecionado] = {
+              texto: obterTextoCardapioDia(diaSelecionado),
+              imagem: base64,
+              imagemImportada: true
+          };
+          atualizarUiImportacaoCardapioDia();
+          agendarPreviewCardapioArte();
+          Swal.fire({
+              icon: 'success', title: 'Cardápio importado!',
+              text: 'Clique em Publicar no Cardápio Online ou Salvar Semana.',
+              timer: 2800, showConfirmButton: false, background: '#3A4536', color: '#F0E6D2'
+          });
+      } catch (e) {
+          console.error(e);
+          Swal.fire('Erro', e.message || 'Não foi possível importar o arquivo.', 'error');
+      } finally {
+          if (inputEl) inputEl.value = '';
+      }
+  }
+
+  function removerImagemImportadaCardapio() {
+      Swal.fire({
+          title: 'Remover imagem importada?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Remover',
+          cancelButtonText: 'Cancelar',
+          background: '#3A4536',
+          color: '#F0E6D2'
+      }).then(r => {
+          if (!r.isConfirmed) return;
+          salvarCardapioDiaAtualNaMemoria();
+          cardapioDiario[diaSelecionado] = {
+              texto: obterTextoCardapioDia(diaSelecionado),
+              imagem: '',
+              imagemImportada: false
+          };
+          atualizarUiImportacaoCardapioDia();
+          agendarPreviewCardapioArte();
+      });
+  }
+
+  function cardapioDiaTemConteudo(dia) {
+      const ent = normalizarEntradaCardapioDia(cardapioDiario[dia || diaSelecionado]);
+      if (ent.imagem && ent.imagemImportada) return true;
+      const tmp = document.createElement('div');
+      tmp.innerHTML = ent.texto || '';
+      return !!tmp.innerText.replace(/\u00a0/g, ' ').trim();
+  }
+
+  async function obterImagemMenuDoDiaParaEnvio(dia) {
+      const diaUsar = dia || diaSelecionado;
+      const ent = normalizarEntradaCardapioDia(cardapioDiario[diaUsar]);
+      if (ent.imagem && ent.imagemImportada) {
+          const blob = await dataUrlParaBlob(ent.imagem);
+          return { blob, dataUrl: ent.imagem, importada: true };
+      }
+      if (!cardapioDiaTemConteudo(diaUsar)) return null;
+      const html = ent.texto || '';
+      const gerado = await gerarImagemCardapioDia(diaUsar, html);
+      return { blob: gerado.blob, dataUrl: gerado.dataUrl, importada: false };
+  }
+
+  function dataUrlParaBlob(dataUrl) {
+      return fetch(dataUrl).then(r => r.blob());
+  }
+
+  function mensagemMenuDoDiaZap(dia) {
+      const nomeRestaurante = empDados.nome || 'BAYTIGRILL';
+      const link = obterUrlCardapioDigital();
+      return `🍽️ *MENU DO DIA | ${String(dia || diaSelecionado).toUpperCase()}* — ${nomeRestaurante}\n\nConfira nosso cardápio na imagem! 🛵 Peça pelo link:\n${link}`;
+  }
+
+  async function publicarMenuDoDiaOnline() {
+      salvarCardapioDiaAtualNaMemoria();
+      if (!cardapioDiaTemConteudo(diaSelecionado)) {
+          return Swal.fire('Aviso', `O menu de ${diaSelecionado} está vazio. Importe uma imagem ou escreva no editor.`, 'warning');
+      }
+      Swal.fire({ title: 'Publicando...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+      try {
+          let ent = normalizarEntradaCardapioDia(cardapioDiario[diaSelecionado]);
+          if (!ent.imagemImportada && cardapioDiaTemConteudo(diaSelecionado)) {
+              const gerado = await gerarImagemCardapioDia(diaSelecionado, ent.texto);
+              ent.imagem = gerado.dataUrl;
+          }
+          cardapioDiario[diaSelecionado] = ent;
+          try { localStorage.setItem('baytigrill_cardapio_semanal', JSON.stringify(cardapioDiario)); } catch (e) {}
+
+          const menuOnline = {
+              dia: diaSelecionado,
+              imagem: ent.imagem || '',
+              atualizadoEm: obterDataHoraLocal(),
+              diaSemanaHoje: obterDiaSemanaAtual()
+          };
+
+          if (!firebaseConfigurado()) {
+              try { localStorage.setItem('baytigrill_menu_online', JSON.stringify(menuOnline)); } catch (e) {}
+              Swal.fire({
+                  icon: 'success', title: 'Publicado localmente!',
+                  html: `Menu de <b>${diaSelecionado}</b> salvo neste aparelho.<br><small>Conecte o Firebase para sincronizar o cardápio online.</small>`,
+                  background: '#3A4536', color: '#F0E6D2'
+              });
+              return;
+          }
+
+          await db.collection('config').doc('cardapio_semanal').set(cardapioDiario, { merge: true });
+          await db.collection('config').doc('empresa').set({ menuDoDiaOnline: menuOnline }, { merge: true });
+          Swal.fire({
+              icon: 'success',
+              title: 'Cardápio online atualizado!',
+              html: `O menu de <b>${diaSelecionado}</b> já está no cardápio digital.<br><small>Clientes que abrirem o link verão a imagem em tempo real.</small>`,
+              timer: 3200,
+              showConfirmButton: false,
+              background: '#3A4536',
+              color: '#F0E6D2'
+          });
+      } catch (err) {
+          console.error(err);
+          Swal.fire('Erro', err.message || 'Não foi possível publicar.', 'error');
+      }
+  }
+
+  async function compartilharMenuDoDiaStatus() {
+      salvarCardapioDiaAtualNaMemoria();
+      if (!cardapioDiaTemConteudo(diaSelecionado)) {
+          return Swal.fire('Aviso', `O cardápio de ${diaSelecionado} está vazio.`, 'warning');
+      }
+      Swal.fire({ title: 'Preparando para Status...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+      try {
+          const img = await obterImagemMenuDoDiaParaEnvio(diaSelecionado);
+          if (!img || !img.blob) throw new Error('Imagem vazia');
+          const nomeArquivo = nomeArquivoCardapio(diaSelecionado);
+          const file = new File([img.blob], nomeArquivo, { type: 'image/jpeg' });
+          Swal.close();
+          if (podeUsarShareNativo(file)) {
+              try {
+                  await navigator.share({ files: [file], title: 'Status — Menu do Dia' });
+                  return;
+              } catch (e) {
+                  if (e && e.name === 'AbortError') return;
+              }
+          }
+          baixarBlobCardapio(img.blob, nomeArquivo);
+          Swal.fire({
+              icon: 'info',
+              title: 'Imagem salva!',
+              html: `<p style="font-size:13px;line-height:1.55;text-align:left;">
+                  <b>No celular:</b> abra o WhatsApp → Status → adicione a imagem que acabou de baixar.<br><br>
+                  <b>No PC:</b> envie a imagem para seu celular (WhatsApp Web ou cabo) e poste no Status.</p>`,
+              background: '#3A4536', color: '#F0E6D2'
+          });
+      } catch (e) {
+          Swal.fire('Erro', e.message || 'Não foi possível preparar a imagem.', 'error');
+      }
   }
 
   function normalizarCardapioSemanalCompleto() {
@@ -2752,7 +3053,12 @@
   function salvarCardapioDiaAtualNaMemoria() {
       let textoEl = document.getElementById('textoCardapioDia');
       let texto = textoEl ? textoEl.innerHTML : '';
-      cardapioDiario[diaSelecionado] = { texto, imagem: '' };
+      const atual = normalizarEntradaCardapioDia(cardapioDiario[diaSelecionado]);
+      cardapioDiario[diaSelecionado] = {
+          texto,
+          imagem: atual.imagem,
+          imagemImportada: atual.imagemImportada
+      };
   }
 
   function setEditorCardapioHtml(html) {
@@ -3251,6 +3557,7 @@
               normalizarCardapioSemanalCompleto();
               if (document.getElementById('textoCardapioDia')) {
                   setEditorCardapioHtml(obterTextoCardapioDia(diaSelecionado));
+                  atualizarUiImportacaoCardapioDia();
                   agendarPreviewCardapioArte();
               }
           }
@@ -3688,7 +3995,7 @@
           atualizarSelectProdutosBalcao();
           renderListaClientesBalcao();
       }
-      if (id === 'cardapio') agendarPreviewCardapioArte();
+      if (id === 'cardapio') { atualizarUiImportacaoCardapioDia(); agendarPreviewCardapioArte(); }
   }
 
   function abrirPainelCliente(btnEl, idEdicao) {
@@ -7601,6 +7908,12 @@
   async function atualizarPreviewCardapioArte() {
       let imgEl = document.getElementById('cardapioArtePreview');
       if (!imgEl) return;
+      atualizarUiImportacaoCardapioDia();
+      const ent = normalizarEntradaCardapioDia(cardapioDiario[diaSelecionado]);
+      if (ent.imagem && ent.imagemImportada) {
+          imgEl.src = ent.imagem;
+          return;
+      }
       let html = obterHtmlEditorCardapio() || obterTextoCardapioDia(diaSelecionado);
       try {
           let { dataUrl } = await gerarImagemCardapioDia(diaSelecionado, html);
@@ -7692,15 +8005,15 @@
 
   async function copiarCardapioImagem() {
       salvarCardapioDiaAtualNaMemoria();
-      if (!obterTextoPlanoCardapioEditor()) {
+      if (!cardapioDiaTemConteudo(diaSelecionado)) {
           return Swal.fire('Aviso', `O cardápio de ${diaSelecionado} está vazio.`, 'warning');
       }
       Swal.fire({ title: 'Gerando imagem...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
       try {
-          let { blob } = await gerarImagemCardapioDia(diaSelecionado, obterHtmlEditorCardapio());
+          let img = await obterImagemMenuDoDiaParaEnvio(diaSelecionado);
           Swal.close();
-          if (!blob) throw new Error('Imagem vazia');
-          let ok = await copiarImagemCardapio(blob);
+          if (!img || !img.blob) throw new Error('Imagem vazia');
+          let ok = await copiarImagemCardapio(img.blob);
           if (ok) {
               return Swal.fire({
                   icon: 'success', title: 'Imagem copiada!',
@@ -7708,7 +8021,7 @@
                   timer: 4500, showConfirmButton: false, background: '#3A4536', color: '#F0E6D2'
               });
           }
-          baixarBlobCardapio(blob, nomeArquivoCardapio(diaSelecionado));
+          baixarBlobCardapio(img.blob, nomeArquivoCardapio(diaSelecionado));
           Swal.fire({
               icon: 'info', title: 'Copiar não disponível',
               text: 'A imagem foi baixada — anexe no WhatsApp manualmente.',
@@ -7732,6 +8045,7 @@
       document.querySelectorAll('#cardapioTabs .tab-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       setEditorCardapioHtml(obterTextoCardapioDia(dia));
+      atualizarUiImportacaoCardapioDia();
       agendarPreviewCardapioArte();
   }
 
@@ -7778,20 +8092,19 @@
 
   async function compartilharCardapioDiaZap() {
       salvarCardapioDiaAtualNaMemoria();
-      if (!obterTextoPlanoCardapioEditor()) {
-          return Swal.fire('Aviso', `O cardápio de ${diaSelecionado} está vazio. Escreva algo antes de enviar.`, 'warning');
+      if (!cardapioDiaTemConteudo(diaSelecionado)) {
+          return Swal.fire('Aviso', `O cardápio de ${diaSelecionado} está vazio. Importe uma imagem ou escreva no editor.`, 'warning');
       }
-      let html = obterHtmlEditorCardapio();
       let nomeRestaurante = empDados.nome || 'BAYTIGRILL';
-      let msgCurta = `🍽️ *MENU DO DIA | ${diaSelecionado.toUpperCase()}* — ${nomeRestaurante}\n\nConfira nosso cardápio na imagem! 🛵 Faça seu pedido agora.`;
+      let msgCurta = mensagemMenuDoDiaZap(diaSelecionado);
 
       Swal.fire({ title: 'Gerando imagem...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
       try {
-          let { blob, dataUrl } = await gerarImagemCardapioDia(diaSelecionado, html);
-          if (!blob) throw new Error('Imagem vazia');
+          let img = await obterImagemMenuDoDiaParaEnvio(diaSelecionado);
+          if (!img || !img.blob) throw new Error('Imagem vazia');
           let nomeArquivo = nomeArquivoCardapio(diaSelecionado);
-          let file = new File([blob], nomeArquivo, { type: 'image/png' });
+          let file = new File([img.blob], nomeArquivo, { type: img.blob.type || 'image/png' });
           Swal.close();
 
           if (podeUsarShareNativo(file)) {
@@ -7803,7 +8116,7 @@
               }
           }
 
-          await mostrarDialogoEnvioCardapio(blob, dataUrl, nomeArquivo, msgCurta);
+          await mostrarDialogoEnvioCardapio(img.blob, img.dataUrl, nomeArquivo, msgCurta);
       } catch (e) {
           console.error(e);
           Swal.fire('Erro', e.message || 'Não foi possível gerar a imagem do cardápio. Verifique se assets/molde-cardapio.png existe.', 'error');
