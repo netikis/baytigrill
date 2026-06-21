@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#2A3328">
+<meta name="description" content="Cardápio digital — faça seu pedido online">
+<title>BAYTIGRILL - Cardápio Digital</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<script src="firebase-env.js"></script>
+
+<style>
+  :root {
+      --primary: #4B5D3F;
+      --accent: #C9A23B;
+      --bg-dark: #2A3328;
+      --card-bg: #FFFFFF;
+      --text-main: #2A3328;
+      --text-muted: #5C6B58;
+      --page-bg: #EEF1EB;
+      --success: #5A7A52;
+      --danger: #B85C5C;
+  }
+
+  body { font-family: 'Poppins', sans-serif; background-color: var(--page-bg); color: var(--text-main); margin: 0; padding-bottom: 80px; }
+
+  .header-loja {
+      background: var(--bg-dark); color: #fff; padding: 20px 15px; text-align: center;
+      border-bottom: 4px solid var(--accent); position: relative; overflow: hidden;
+  }
+  .header-loja::before {
+      content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background-image: var(--bg-logo); background-size: cover; background-position: center;
+      opacity: 0.08; z-index: 0;
+  }
+  .logo-loja {
+      width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--accent);
+      object-fit: cover; position: relative; z-index: 1; background: #fff;
+  }
+  .titulo-loja { font-size: 26px; font-weight: 800; margin: 10px 0 0 0; position: relative; z-index: 1; color: #F0E6D2; letter-spacing: 1px; }
+  .desc-loja { font-size: 12px; color: #C5D0C0; margin: 5px 0 0 0; position: relative; z-index: 1; }
+
+  .aviso-fechado {
+      display: none; background: #5c2a2a; color: #ffebee; text-align: center;
+      padding: 14px 15px; font-size: 14px; font-weight: 700; border-bottom: 3px solid #B85C5C;
+      line-height: 1.45;
+  }
+
+  body.loja-fechada .produto-card { opacity: 0.72; }
+  body.loja-fechada .btn-add {
+      opacity: 0.35; pointer-events: none; cursor: not-allowed;
+      box-shadow: none;
+  }
+  body.loja-fechada .carrinho-float { display: none !important; }
+
+  .produto-thumb {
+      width: 56px; height: 56px; border-radius: 10px; object-fit: cover;
+      margin-right: 12px; flex-shrink: 0; border: 1px solid #dde3d8;
+  }
+  .produto-card-inner { display: flex; align-items: center; flex: 1; min-width: 0; }
+
+  .container { max-width: 600px; margin: 0 auto; padding: 15px; }
+
+  .produto-card {
+      background: var(--card-bg); border-radius: 12px; padding: 15px; margin-bottom: 15px;
+      display: flex; justify-content: space-between; align-items: center;
+      box-shadow: 0 4px 10px rgba(42, 51, 40, 0.08); border-left: 5px solid var(--accent);
+  }
+  .produto-info { flex: 1; padding-right: 15px; }
+  .produto-nome { font-size: 16px; font-weight: 800; margin: 0 0 5px 0; color: var(--bg-dark); }
+  .produto-ingred {
+      font-size: 11px; color: var(--text-muted); margin: 0 0 8px 0; font-style: italic;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .produto-preco { font-size: 16px; font-weight: 900; color: var(--success); margin: 0; }
+  .btn-add {
+      background: var(--accent); color: #1a1a1a; border: none; width: 45px; height: 45px;
+      border-radius: 10px; font-size: 24px; font-weight: bold; cursor: pointer;
+      box-shadow: 0 4px 6px rgba(201, 162, 59, 0.35);
+      display: flex; align-items: center; justify-content: center;
+  }
+  .btn-add:active { transform: scale(0.95); }
+
+  .categoria-titulo {
+      font-size: 17px; font-weight: 800; padding-bottom: 6px; margin-top: 22px; margin-bottom: 12px;
+      color: var(--primary); border-bottom: 2px solid var(--accent);
+  }
+
+  .carrinho-float {
+      position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%);
+      width: 90%; max-width: 500px; background: var(--bg-dark); color: #fff;
+      padding: 15px 20px; border-radius: 30px; display: none;
+      justify-content: space-between; align-items: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index: 1000; cursor: pointer;
+      border: 2px solid var(--accent);
+  }
+  .carrinho-float .total-itens { background: var(--accent); color: #1a1a1a; font-weight: bold; padding: 4px 10px; border-radius: 20px; font-size: 14px; }
+  .carrinho-float .total-valor { font-size: 18px; font-weight: 900; color: var(--accent); }
+
+  .modal-checkout {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--page-bg); z-index: 9999; display: none; flex-direction: column; overflow-y: auto;
+  }
+  .checkout-header {
+      background: var(--bg-dark); color: #fff; padding: 15px; text-align: center;
+      font-weight: bold; font-size: 18px; position: sticky; top: 0; z-index: 10;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 3px solid var(--accent);
+  }
+  .checkout-content { padding: 15px; max-width: 600px; margin: 0 auto; width: 100%; box-sizing: border-box; }
+
+  .item-carrinho {
+      background: #fff; padding: 12px; border-radius: 10px; margin-bottom: 10px;
+      display: flex; justify-content: space-between; align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #dde3d8;
+  }
+  .item-carrinho-nome { font-weight: bold; font-size: 14px; color: #333; }
+  .item-carrinho-obs { font-size: 11px; color: #888; font-style: italic; margin-top: 2px; }
+  .item-carrinho-preco { font-weight: bold; color: var(--success); font-size: 14px; }
+  .btn-remove { background: #fdecea; color: var(--danger); border: none; padding: 5px 10px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; }
+
+  .form-section { background: #fff; padding: 15px; border-radius: 12px; margin-top: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+  .form-section h4 { margin: 0 0 15px 0; color: var(--bg-dark); border-bottom: 2px solid var(--accent); padding-bottom: 5px; }
+  .input-group { margin-bottom: 12px; }
+  .input-group label { display: block; font-size: 12px; color: #555; margin-bottom: 5px; font-weight: bold; }
+  .input-group input, .input-group select, .input-group textarea {
+      width: 100%; padding: 12px; border: 1px solid #cdd5c8; border-radius: 8px;
+      font-family: 'Poppins', sans-serif; font-size: 14px; box-sizing: border-box; background: #fafcf9;
+  }
+  .input-group input:focus, .input-group select:focus { border-color: var(--accent); outline: none; background: #fff; }
+
+  .radio-box { display: flex; gap: 10px; margin-bottom: 15px; }
+  .radio-box label {
+      flex: 1; text-align: center; background: #f0f3ed; padding: 12px; border-radius: 8px;
+      border: 2px solid #cdd5c8; cursor: pointer; font-weight: bold; font-size: 13px; color: #555; transition: 0.2s;
+  }
+  .radio-box input { display: none; }
+  .radio-box input:checked + label { background: #faf5e6; border-color: var(--accent); color: var(--bg-dark); }
+
+  .btn-finalizar {
+      background: var(--success); color: #fff; border: none; width: 100%; padding: 18px;
+      border-radius: 12px; font-size: 16px; font-weight: 900; margin-top: 20px; margin-bottom: 30px;
+      cursor: pointer; box-shadow: 0 5px 15px rgba(90, 122, 82, 0.35); text-transform: uppercase;
+  }
+
+  .loader-container { text-align: center; padding: 50px; color: #888; }
+  .spinner {
+      width: 40px; height: 40px; border: 4px solid #ddd; border-top: 4px solid var(--accent);
+      border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 10px auto;
+  }
+  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+  .erro-firebase {
+      display: none; background: #fff3cd; color: #664d03; padding: 14px; margin: 15px;
+      border-radius: 8px; border: 1px solid #ffc107; font-size: 13px; line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+
+<div id="avisoLojaFechada" class="aviso-fechado">🔴 Restaurante fechado no momento. Não estamos aceitando pedidos online. Volte mais tarde!</div>
+
+<div class="header-loja" id="headerLoja">
+    <img id="logoLoja" src="logo-baytigrill-sistema.png?v=2" class="logo-loja" alt="BAYTIGRILL">
+    <h1 id="nomeLoja" class="titulo-loja">BAYTIGRILL</h1>
+    <p id="descLoja" class="desc-loja">Faça seu pedido online de forma rápida!</p>
+</div>
+
+<div id="erroFirebaseBox" class="erro-firebase"></div>
+
+<div class="container">
+    <h3 style="color: var(--bg-dark); margin-top: 5px; text-align:center; font-size: 22px; font-weight:900;">Nosso Cardápio</h3>
+
+    <div id="loadingCatalogo" class="loader-container">
+        <div class="spinner"></div>
+        <p>Carregando cardápio...</p>
+    </div>
+
+    <div id="listaCategoriasCardapio"></div>
+</div>
+
+<div class="carrinho-float" id="carrinhoFloat" onclick="abrirCheckout()">
+    <div style="display:flex; align-items:center; gap:10px;">
+        <span style="font-size:24px;">🛒</span>
+        <span class="total-itens" id="cartBadge">0</span>
+    </div>
+    <div style="text-align:right;">
+        <div style="font-size:10px; opacity:0.8; text-transform:uppercase;">Ver Carrinho</div>
+        <div class="total-valor" id="cartTotalFloat">R$ 0,00</div>
+    </div>
+</div>
+
+<div class="modal-checkout" id="modalCheckout">
+    <div class="checkout-header">
+        <button onclick="fecharCheckout()" style="background:transparent; border:none; color:#fff; font-size:20px; cursor:pointer;">⬅ Voltar</button>
+        <span>Seu Pedido</span>
+        <div style="width: 20px;"></div>
+    </div>
+
+    <div class="checkout-content">
+        <div style="margin-bottom: 20px;">
+            <h4 style="color:var(--bg-dark); margin-bottom:10px;">Itens Selecionados:</h4>
+
+            <div class="form-section" style="padding: 10px 15px; margin-bottom: 15px; background: #faf5e6; border: 1px solid #e8d9a8;">
+                <div class="radio-box" style="margin-bottom: 0;">
+                    <input type="radio" id="modoMesa" name="modoEntrega" value="mesa" checked onchange="mudarModoEntrega()">
+                    <label for="modoMesa">🪑 Retirar/Local</label>
+
+                    <input type="radio" id="modoDelivery" name="modoEntrega" value="delivery" onchange="mudarModoEntrega()">
+                    <label for="modoDelivery">🛵 Delivery</label>
+                </div>
+            </div>
+
+            <div id="listaItensCheckout"></div>
+            <div style="text-align: right; font-size: 22px; font-weight: 900; color: var(--bg-dark); margin-top: 15px; border-top: 2px dashed #ccc; padding-top: 10px;">
+                Total: <span id="valorTotalCheckout" style="color:var(--success);">R$ 0,00</span>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h4 id="tituloEntregaForm">Seus Dados</h4>
+
+            <div id="areaMesa">
+                <div class="input-group">
+                    <label>Seu Nome ou Número da Mesa *</label>
+                    <input type="text" id="cliNomeMesa" placeholder="Ex: Mesa 05 ou João">
+                </div>
+                <div class="input-group">
+                    <label>Seu WhatsApp (Opcional — para receber o recibo)</label>
+                    <input type="tel" id="cliZapMesa" placeholder="(00) 00000-0000">
+                </div>
+            </div>
+
+            <div id="areaDelivery" style="display:none;">
+                <div class="input-group">
+                    <label>Seu Nome Completo *</label>
+                    <input type="text" id="cliNome">
+                </div>
+                <div class="input-group">
+                    <label>WhatsApp *</label>
+                    <input type="tel" id="cliZap" placeholder="(00) 00000-0000">
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <div class="input-group" style="flex:1;">
+                        <label>CEP</label>
+                        <input type="tel" id="cliCep" placeholder="00000-000" onblur="buscarCepDelivery()">
+                    </div>
+                    <div class="input-group" style="flex:2;">
+                        <label>Bairro *</label>
+                        <input type="text" id="cliBairro">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Rua e Número *</label>
+                    <input type="text" id="cliRua" placeholder="Ex: Rua das Flores, 123">
+                </div>
+                <div class="input-group">
+                    <label>Ponto de Referência / Complemento</label>
+                    <input type="text" id="cliRef">
+                </div>
+            </div>
+
+            <h4 style="margin-top: 20px;">Pagamento (Pague na entrega)</h4>
+            <div class="input-group">
+                <select id="cliPagamento">
+                    <option value="PIX">💠 Vou pagar no PIX</option>
+                    <option value="CARTAO">💳 Vou passar o Cartão</option>
+                    <option value="DINHEIRO">💵 Vou pagar em Dinheiro</option>
+                </select>
+            </div>
+
+            <div id="areaPix" style="display:block; background:#fff; padding:15px; border-radius:10px; margin-bottom:15px; border:2px dashed var(--accent); text-align:center;">
+                <p style="margin:0 0 10px 0; font-size:13px; font-weight:bold; color:#333;">Escaneie o QR Code ou use o Copia e Cola:</p>
+                <img id="imgPixQrApp" src="" style="width:150px; height:150px; margin-bottom:10px; display:none; border-radius:10px; border:1px solid #ddd; padding:5px; object-fit:contain; margin-left:auto; margin-right:auto;">
+                <div style="display:flex; gap:5px; justify-content:center; align-items:center;">
+                    <input type="text" id="inputPixCopiaColaApp" readonly style="flex:1; font-size:10px; padding:10px; border:1px solid #ccc; border-radius:5px; background:#f9f9f9; color:#333;">
+                    <button type="button" onclick="copiarPixApp()" style="background:var(--accent); color:#1a1a1a; border:none; padding:10px 15px; border-radius:5px; font-weight:bold; cursor:pointer;">COPIAR</button>
+                </div>
+            </div>
+
+            <div class="input-group" id="areaTroco" style="display:none;">
+                <label>Precisa de troco para quanto?</label>
+                <input type="number" id="cliTroco" placeholder="Ex: 50">
+            </div>
+        </div>
+
+        <button class="btn-finalizar" onclick="enviarPedido()">✅ FINALIZAR PEDIDO</button>
+    </div>
+</div>
+
+<script>
+  const ORDEM_CATEGORIAS = [
+      'MARMITAS', 'ENTRADAS', 'PRATOS PRINCIPAIS', 'MASSAS E RISOTOS',
+      'CARNES E GRELHADOS', 'SOBREMESAS', 'CARTA DE VINHOS', 'BEBIDAS'
+  ];
+  const LOGO_PADRAO = 'logo-baytigrill-sistema.png?v=2';
+
+  const firebaseConfig = window.FIREBASE_CONFIG || {
+      apiKey: 'SUA_API_KEY',
+      authDomain: 'seu-projeto.firebaseapp.com',
+      projectId: 'seu-projeto',
+      storageBucket: 'seu-projeto.firebasestorage.app',
+      messagingSenderId: '123456789',
+      appId: '1:123456789:web:abcdef'
+  };
+
+  function firebaseConfigurado() {
+      return !!(firebaseConfig.apiKey && firebaseConfig.apiKey !== 'SUA_API_KEY'
+          && firebaseConfig.projectId && firebaseConfig.projectId !== 'seu-projeto');
+  }
+
+  function mostrarErroFirebase(msg) {
+      const box = document.getElementById('erroFirebaseBox');
+      if (!box) return;
+      box.style.display = 'block';
+      box.innerHTML = msg;
+      document.getElementById('loadingCatalogo').innerHTML = '<p>Não foi possível conectar ao servidor.</p>';
+  }
+
+  if (!firebaseConfigurado()) {
+      let msg = '<strong>Firebase não configurado.</strong><br>'
+          + '1) Abra o arquivo <code>firebase-env.js</code> na pasta do projeto e cole as chaves do Firebase (as mesmas dos Secrets do GitHub).<br>'
+          + '2) Não abra pelo Explorer (<code>file://</code>). Use <strong>Live Server</strong> no Cursor/VS Code ou o link do GitHub Pages.<br>'
+          + '3) No GitHub: após o push, o deploy gera o <code>firebase-env.js</code> automaticamente pelos Secrets.';
+      if (location.protocol === 'file:') {
+          msg += '<br><br>⚠️ Você abriu pelo arquivo local (<code>file://</code>). Clique com botão direito em <code>cardapio.html</code> → <strong>Open with Live Server</strong>.';
+      }
+      mostrarErroFirebase(msg);
+  } else {
+      firebase.initializeApp(firebaseConfig);
+      if (location.protocol === 'file:') {
+          mostrarErroFirebase(
+              '⚠️ Abra por <strong>http://</strong> (Live Server), não pelo Explorer.<br>'
+              + 'No Cursor: botão direito em <code>cardapio.html</code> → <strong>Open with Live Server</strong>.'
+          );
+      }
+  }
+
+  const db = firebaseConfigurado() ? firebase.firestore() : null;
+
+  let catalogoLoja = [];
+  let carrinho = [];
+  let numPedidoAtual = 1;
+  let foneLoja = '';
+  let taxaEntregaLoja = 0;
+  let pixCopiaColaLoja = '';
+  let qrCodeLoja = '';
+  let statusLoja = 'aberto';
+
+  $(document).ready(function(){
+      $('#cliZap').mask('(00) 00000-0000');
+      $('#cliZapMesa').mask('(00) 00000-0000');
+      $('#cliCep').mask('00000-000');
+  });
+
+  function lojaAceitaPedidosOnline() {
+      return statusLoja !== 'fechado';
+  }
+
+  function aplicarStatusLojaDescricao() {
+      const desc = document.getElementById('descLoja');
+      if (!desc) return;
+      if (!lojaAceitaPedidosOnline()) {
+          desc.innerText = 'Estamos fechados — você pode ver o cardápio, mas pedidos estão pausados.';
+      } else {
+          desc.innerText = desc.dataset.enderecoSalvo || 'Faça seu pedido online de forma rápida!';
+      }
+  }
+
+  function aplicarStatusLoja() {
+      const fechado = !lojaAceitaPedidosOnline();
+      const aviso = document.getElementById('avisoLojaFechada');
+      if (aviso) aviso.style.display = fechado ? 'block' : 'none';
+      document.body.classList.toggle('loja-fechada', fechado);
+      aplicarStatusLojaDescricao();
+
+      if (fechado) {
+          carrinho = [];
+          atualizarCarrinhoFlutuante();
+          fecharCheckout();
+      }
+  }
+
+  function avisoRestauranteFechado() {
+      Swal.fire({
+          icon: 'info',
+          title: 'Restaurante fechado',
+          text: 'No momento não estamos aceitando pedidos online. Tente novamente mais tarde.',
+          confirmButtonColor: '#C9A23B'
+      });
+  }
+
+  function carregarDadosLoja() {
+      if (!db) return;
+
+      db.collection('config').doc('empresa').onSnapshot((doc) => {
+          if (!doc.exists) return;
+          let d = doc.data();
+          document.getElementById('nomeLoja').innerText = d.nome || 'BAYTIGRILL';
+          document.title = (d.nome || 'BAYTIGRILL') + ' - Cardápio Digital';
+
+          if (d.logo && (!d.qrCode || d.logo !== d.qrCode)) {
+              document.getElementById('logoLoja').src = d.logo;
+              document.body.style.setProperty('--bg-logo', 'url(' + d.logo + ')');
+          } else {
+              document.getElementById('logoLoja').src = LOGO_PADRAO;
+          }
+
+          if (d.end) {
+              document.getElementById('descLoja').dataset.enderecoSalvo = d.end;
+          }
+
+          pixCopiaColaLoja = (d.pixCopiaCola || '').trim();
+          qrCodeLoja = d.qrCode || '';
+          aplicarPixCardapio();
+          if (d.tel) foneLoja = d.tel.replace(/\D/g, '');
+          if (d.contador !== undefined) numPedidoAtual = d.contador + 1;
+          taxaEntregaLoja = d.taxaEntrega ? Number(d.taxaEntrega) : 0;
+          statusLoja = d.statusLoja || 'aberto';
+          aplicarStatusLoja();
+
+          if (document.getElementById('modalCheckout').style.display === 'flex') {
+              renderizarItensCheckout();
+          }
+      }, () => {
+          mostrarErroFirebase('Erro ao ler configurações. Verifique as regras do Firestore.');
+      });
+
+      db.collection('catalogo').orderBy('nome').onSnapshot((snap) => {
+          catalogoLoja = [];
+          snap.forEach(d => catalogoLoja.push({ id: d.id, ...d.data() }));
+          renderizarProdutos();
+      }, () => {
+          mostrarErroFirebase('Erro ao carregar produtos. Verifique as regras do Firestore.');
+      });
+  }
+
+  function tituloCategoria(cat) {
+      const mapa = {
+          'MARMITAS': '🍱 Marmitas e Pratos Feitos',
+          'ENTRADAS': '🥗 Entradas',
+          'PRATOS PRINCIPAIS': '🍽️ Pratos Principais',
+          'MASSAS E RISOTOS': '🍝 Massas e Risotos',
+          'CARNES E GRELHADOS': '🥩 Carnes e Grelhados',
+          'SOBREMESAS': '🍰 Sobremesas',
+          'CARTA DE VINHOS': '🍷 Carta de Vinhos',
+          'BEBIDAS': '🥤 Bebidas'
+      };
+      return mapa[cat] || cat;
+  }
+
+  function renderizarProdutos() {
+      const loading = document.getElementById('loadingCatalogo');
+      const container = document.getElementById('listaCategoriasCardapio');
+      loading.style.display = 'none';
+      container.innerHTML = '';
+
+      const produtos = catalogoLoja.filter(p => !categoriaEhAdicionalExtra(p.categoria));
+      if (produtos.length === 0) {
+          loading.style.display = 'block';
+          loading.innerHTML = '<p>Nenhum produto disponível no momento.</p>';
+          return;
+      }
+
+      const porCategoria = {};
+      produtos.forEach(p => {
+          let cat = String(p.categoria || 'OUTROS').toUpperCase();
+          if (!porCategoria[cat]) porCategoria[cat] = [];
+          porCategoria[cat].push(p);
+      });
+
+      const categoriasOrdenadas = ORDEM_CATEGORIAS.filter(c => porCategoria[c] && porCategoria[c].length);
+      Object.keys(porCategoria).forEach(c => {
+          if (!categoriasOrdenadas.includes(c)) categoriasOrdenadas.push(c);
+      });
+
+      categoriasOrdenadas.forEach(cat => {
+          const lista = porCategoria[cat];
+          if (!lista || !lista.length) return;
+          let bloco = '<h4 class="categoria-titulo">' + escaparHtml(tituloCategoria(cat)) + '</h4>';
+          lista.forEach(p => {
+              const thumb = p.imagem
+                  ? '<img src="' + escaparHtml(p.imagem) + '" class="produto-thumb" alt="">'
+                  : '';
+              bloco += `
+                  <div class="produto-card">
+                      <div class="produto-card-inner">
+                          ${thumb}
+                          <div class="produto-info">
+                              <h4 class="produto-nome">${escaparHtml(p.nome)}</h4>
+                              <p class="produto-ingred">${escaparHtml(p.ingredientes || '')}</p>
+                              <p class="produto-preco">${formatarMoeda(p.valor)}</p>
+                          </div>
+                      </div>
+                      <button class="btn-add" onclick="modalAddProduto('${p.id}')">+</button>
+                  </div>`;
+          });
+          container.innerHTML += bloco;
+      });
+  }
+
+  function escaparHtml(str) {
+      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function categoriaEhAdicionalExtra(cat) {
+      let c = String(cat || '').toUpperCase();
+      return c === 'ADICIONAIS EXTRAS' || c.includes('ADICIONAL');
+  }
+
+  function obterAdicionaisDoCatalogo() {
+      return catalogoLoja.filter(p => categoriaEhAdicionalExtra(p.categoria));
+  }
+
+  function produtoPermiteAdicionaisExtras(p) {
+      if (!p || categoriaEhAdicionalExtra(p.categoria)) return false;
+      let c = String(p.categoria || '').toUpperCase();
+      if (c === 'BEBIDAS' || c === 'CARTA DE VINHOS' || c === 'SOBREMESAS') return false;
+      return true;
+  }
+
+  function montarHtmlCheckboxesAdicionais() {
+      let lista = obterAdicionaisDoCatalogo();
+      if (lista.length === 0) return '<p style="font-size:12px;color:#888;">Sem adicionais cadastrados no momento.</p>';
+      return lista.map(a => {
+          let nomeEsc = String(a.nome).replace(/"/g, '&quot;');
+          return '<label style="display:flex;justify-content:space-between;padding:8px;margin-bottom:5px;background:#f5f5f5;border:1px solid #ddd;border-radius:8px;cursor:pointer;font-size:13px;"><span><input type="checkbox" class="chk-adicional-extra" data-nome="' + nomeEsc + '" data-valor="' + (Number(a.valor) || 0) + '" onchange="atualizarTotalModalAdicionais()"> ' + escaparHtml(a.nome) + '</span><span style="color:var(--success);font-weight:bold;">+ ' + formatarMoeda(a.valor) + '</span></label>';
+      }).join('');
+  }
+
+  function lerAdicionaisSelecionadosModal() {
+      let sel = [];
+      document.querySelectorAll('.chk-adicional-extra:checked').forEach(chk => {
+          sel.push({ nome: chk.dataset.nome, valor: Number(chk.dataset.valor) || 0 });
+      });
+      return sel;
+  }
+
+  function textoIngredientesComAdicionais(base, adicionais) {
+      let partes = [];
+      if (base) partes.push(String(base).trim());
+      if (adicionais && adicionais.length) partes.push('Adicionais: ' + adicionais.map(a => a.nome).join(', '));
+      return partes.join(' | ');
+  }
+
+  let precoBaseModalAdic = 0;
+  function atualizarTotalModalAdicionais() {
+      let extra = lerAdicionaisSelecionadosModal().reduce((s, a) => s + a.valor, 0);
+      let qtd = parseInt(document.getElementById('qtdModal')?.value) || 1;
+      let el = document.getElementById('totalModalAdic');
+      if (el) el.innerHTML = '<strong style="color:var(--success);font-size:18px;">Total: ' + formatarMoeda((precoBaseModalAdic + extra) * qtd) + '</strong>';
+  }
+
+  function modalAddProduto(id) {
+      if (!lojaAceitaPedidosOnline()) return avisoRestauranteFechado();
+      let p = catalogoLoja.find(x => x.id === id);
+      if (!p) return;
+      precoBaseModalAdic = Number(p.valor) || 0;
+      let blocoAdic = '';
+      if (produtoPermiteAdicionaisExtras(p)) {
+          blocoAdic = '<p style="text-align:left;margin-top:10px;border-top:1px dashed #ddd;padding-top:10px;font-weight:bold;color:var(--bg-dark);">Adicionais extras (opcional):</p><div style="max-height:160px;overflow-y:auto;">' + montarHtmlCheckboxesAdicionais() + '</div>';
+      }
+
+      Swal.fire({
+          title: p.nome,
+          html: `
+              <div style="text-align:left; font-size:13px; color:#555; margin-bottom:15px; font-style:italic;">${escaparHtml(p.ingredientes || '')}</div>
+              <p style="text-align:left; font-weight:bold; font-size:18px; color:var(--success); margin-bottom:8px;">Base: ${formatarMoeda(p.valor)}</p>
+              ${blocoAdic}
+              <span id="totalModalAdic" style="display:block;text-align:center;margin:8px 0;"></span>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; background:#f5f5f5; padding:10px; border-radius:8px;">
+                  <span style="font-weight:bold; color:#333;">Quantidade:</span>
+                  <div style="display:flex; align-items:center; gap:10px;">
+                      <button type="button" onclick="document.getElementById('qtdModal').value=Math.max(1,parseInt(document.getElementById('qtdModal').value)-1);atualizarTotalModalAdicionais()" style="width:30px; height:30px; border-radius:5px; border:1px solid #ccc; background:#fff; font-weight:bold;">-</button>
+                      <input type="number" id="qtdModal" value="1" min="1" readonly style="width:40px; text-align:center; border:none; background:transparent; font-weight:bold; font-size:16px; padding:0;">
+                      <button type="button" onclick="document.getElementById('qtdModal').value=parseInt(document.getElementById('qtdModal').value)+1;atualizarTotalModalAdicionais()" style="width:30px; height:30px; border-radius:5px; border:1px solid #ccc; background:#fff; font-weight:bold;">+</button>
+                  </div>
+              </div>
+              <textarea id="obsModal" placeholder="Alguma observação? Ex: Sem cebola, bem passado..." style="width:100%; padding:10px; border:1px solid #ccc; border-radius:8px; height:60px; box-sizing:border-box; font-family:'Poppins'; resize:none;"></textarea>
+          `,
+          showCancelButton: true,
+          confirmButtonColor: '#C9A23B',
+          cancelButtonColor: '#aaa',
+          confirmButtonText: 'Adicionar ao Pedido',
+          cancelButtonText: 'Cancelar',
+          didOpen: () => atualizarTotalModalAdicionais(),
+          preConfirm: () => ({
+              qtd: parseInt(document.getElementById('qtdModal').value) || 1,
+              obs: document.getElementById('obsModal').value,
+              adicionais: lerAdicionaisSelecionadosModal()
+          })
+      }).then((result) => {
+          if (result.isConfirmed) {
+              let adic = result.value.adicionais || [];
+              let extraVal = adic.reduce((s, a) => s + a.valor, 0);
+              let unit = precoBaseModalAdic + extraVal;
+              let qtd = result.value.qtd;
+              carrinho.push({
+                  idProduto: p.id,
+                  desc: p.nome,
+                  valorUnitario: unit,
+                  valor: unit * qtd,
+                  qtd: qtd,
+                  ingredientes: textoIngredientesComAdicionais(p.ingredientes, adic),
+                  obsCliente: result.value.obs,
+                  data: new Date().toISOString().split('T')[0],
+                  tipo: 'online',
+                  pago: false,
+                  pagoValor: 0,
+                  pronto: false,
+                  notificadoAdmin: false
+              });
+              atualizarCarrinhoFlutuante();
+              Swal.fire({ icon: 'success', title: 'Adicionado!', toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 });
+          }
+      });
+  }
+
+  function atualizarCarrinhoFlutuante() {
+      let barra = document.getElementById('carrinhoFloat');
+      if (carrinho.length === 0) {
+          barra.style.display = 'none';
+          return;
+      }
+      barra.style.display = 'flex';
+      let totalQtd = carrinho.reduce((acc, i) => acc + i.qtd, 0);
+      let totalValor = carrinho.reduce((acc, i) => acc + i.valor, 0);
+      document.getElementById('cartBadge').innerText = totalQtd;
+      document.getElementById('cartTotalFloat').innerText = formatarMoeda(totalValor);
+  }
+
+  function aplicarPixCardapio() {
+      let inputPix = document.getElementById('inputPixCopiaColaApp');
+      let imgPix = document.getElementById('imgPixQrApp');
+      if (!inputPix || !imgPix) return;
+
+      if (qrCodeLoja) {
+          inputPix.value = pixCopiaColaLoja || '';
+          imgPix.onload = () => { imgPix.style.display = 'block'; };
+          imgPix.onerror = () => { imgPix.style.display = 'none'; };
+          imgPix.src = '';
+          imgPix.src = qrCodeLoja;
+          imgPix.style.display = 'block';
+          return;
+      }
+
+      if (pixCopiaColaLoja) {
+          inputPix.value = pixCopiaColaLoja;
+          imgPix.src = '';
+          imgPix.src = 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' + encodeURIComponent(pixCopiaColaLoja) + '&t=' + Date.now();
+          imgPix.style.display = 'block';
+          return;
+      }
+
+      inputPix.value = '';
+      imgPix.src = '';
+      imgPix.style.display = 'none';
+  }
+
+  function abrirCheckout() {
+      if (!lojaAceitaPedidosOnline()) return avisoRestauranteFechado();
+      document.getElementById('modalCheckout').style.display = 'flex';
+      renderizarItensCheckout();
+  }
+
+  function fecharCheckout() {
+      document.getElementById('modalCheckout').style.display = 'none';
+  }
+
+  function renderizarItensCheckout() {
+      let div = document.getElementById('listaItensCheckout');
+      div.innerHTML = '';
+      let total = 0;
+      let isDelivery = document.getElementById('modoDelivery').checked;
+
+      carrinho.forEach((item, idx) => {
+          total += item.valor;
+          let obsHtml = item.obsCliente ? '<div class="item-carrinho-obs">Obs: ' + escaparHtml(item.obsCliente) + '</div>' : '';
+          div.innerHTML += `
+              <div class="item-carrinho">
+                  <div style="flex:1;">
+                      <div class="item-carrinho-nome">${item.qtd}x ${escaparHtml(item.desc)}</div>
+                      ${obsHtml}
+                      <div class="item-carrinho-preco">${formatarMoeda(item.valor)}</div>
+                  </div>
+                  <button class="btn-remove" onclick="removerDoCarrinho(${idx})">Remover</button>
+              </div>`;
+      });
+
+      if (isDelivery && taxaEntregaLoja > 0) {
+          total += taxaEntregaLoja;
+          div.innerHTML += `
+              <div class="item-carrinho" style="background:#faf5e6; border-color:var(--accent);">
+                  <div style="flex:1;">
+                      <div class="item-carrinho-nome">🛵 Taxa de Entrega</div>
+                      <div class="item-carrinho-preco" style="color:var(--accent);">${formatarMoeda(taxaEntregaLoja)}</div>
+                  </div>
+              </div>`;
+      }
+
+      document.getElementById('valorTotalCheckout').innerText = formatarMoeda(total);
+
+      if (carrinho.length === 0) {
+          fecharCheckout();
+          atualizarCarrinhoFlutuante();
+      } else {
+          aplicarPixCardapio();
+      }
+  }
+
+  function removerDoCarrinho(idx) {
+      carrinho.splice(idx, 1);
+      renderizarItensCheckout();
+      atualizarCarrinhoFlutuante();
+  }
+
+  function mudarModoEntrega() {
+      let isDelivery = document.getElementById('modoDelivery').checked;
+      document.getElementById('areaDelivery').style.display = isDelivery ? 'block' : 'none';
+      document.getElementById('areaMesa').style.display = isDelivery ? 'none' : 'block';
+      document.getElementById('tituloEntregaForm').innerText = isDelivery ? 'Endereço de Entrega' : 'Retirada / Mesa';
+      renderizarItensCheckout();
+  }
+
+  document.getElementById('cliPagamento').addEventListener('change', function(e) {
+      document.getElementById('areaTroco').style.display = (e.target.value === 'DINHEIRO') ? 'block' : 'none';
+      document.getElementById('areaPix').style.display = (e.target.value === 'PIX') ? 'block' : 'none';
+  });
+
+  function copiarPixApp() {
+      let pix = (document.getElementById('inputPixCopiaColaApp').value || '').trim();
+      if (!pix) return Swal.fire('PIX não configurado', 'Configure o PIX nas Configurações do sistema.', 'warning');
+      navigator.clipboard.writeText(pix).then(() => {
+          Swal.fire({ icon: 'success', title: 'Copiado!', text: 'Código PIX copiado.', timer: 1500, showConfirmButton: false });
+      });
+  }
+
+  function enviarPedido() {
+      if (!db) return Swal.fire('Erro', 'Firebase não configurado.', 'error');
+      if (!lojaAceitaPedidosOnline()) return avisoRestauranteFechado();
+      if (carrinho.length === 0) return Swal.fire('Ops', 'Seu carrinho está vazio!', 'warning');
+
+      let isDelivery = document.getElementById('modoDelivery').checked;
+
+      let dadosCliente = { itens: [], tipoCadastro: isDelivery ? 'delivery' : 'mesa' };
+      let endCompletoStr = '';
+
+      if (!isDelivery) {
+          let n = document.getElementById('cliNomeMesa').value.trim();
+          if (!n) return Swal.fire('Atenção', 'Informe seu nome ou número da mesa.', 'warning');
+          dadosCliente.nome = n.toUpperCase();
+          endCompletoStr = 'Consumo no Local / Retirada';
+      } else {
+          let n = document.getElementById('cliNome').value.trim();
+          let zap = document.getElementById('cliZap').value.trim();
+          let rua = document.getElementById('cliRua').value.trim();
+          let bairro = document.getElementById('cliBairro').value.trim();
+          let ref = document.getElementById('cliRef').value.trim();
+          if (!n || !zap || !rua || !bairro) return Swal.fire('Atenção', 'Preencha Nome, WhatsApp, Rua e Bairro.', 'warning');
+          dadosCliente.nome = n.toUpperCase();
+          dadosCliente.telefone = zap;
+          endCompletoStr = rua + ' - ' + bairro;
+          if (ref) endCompletoStr += ' (Ref: ' + ref + ')';
+          dadosCliente.endereco = endCompletoStr;
+      }
+
+      let pagamentoForma = document.getElementById('cliPagamento').options[document.getElementById('cliPagamento').selectedIndex].text;
+      let troco = document.getElementById('cliTroco').value;
+      let infoPagamento = pagamentoForma;
+      if (document.getElementById('cliPagamento').value === 'DINHEIRO' && troco) infoPagamento += ' (Troco para R$ ' + troco + ')';
+
+      Swal.fire({ title: 'Enviando Pedido...', didOpen: () => Swal.showLoading() });
+
+      db.collection('config').doc('empresa').get().then((doc) => {
+          if (doc.exists && doc.data().statusLoja === 'fechado') {
+              statusLoja = 'fechado';
+              aplicarStatusLoja();
+              Swal.close();
+              return avisoRestauranteFechado();
+          }
+          let numero = 1;
+          if (doc.exists && doc.data().contador) numero = doc.data().contador + 1;
+
+          let itensFinais = carrinho.map(i => {
+              let ingredFinais = i.ingredientes || '';
+              if (i.obsCliente) ingredFinais += ' | OBS: *' + i.obsCliente + '*';
+              return {
+                  desc: i.desc, qtd: i.qtd, valor: i.valor, data: i.data, tipo: i.tipo,
+                  ingredientes: ingredFinais, numPedido: numero, pago: false, pagoValor: 0,
+                  pronto: false, notificadoAdmin: false
+              };
+          });
+
+          if (isDelivery && taxaEntregaLoja > 0) {
+              itensFinais.push({
+                  desc: '🛵 TAXA DE ENTREGA', qtd: 1, valor: taxaEntregaLoja,
+                  data: new Date().toISOString().split('T')[0], tipo: 'online',
+                  ingredientes: '', numPedido: numero, pago: false, pagoValor: 0,
+                  pronto: true, notificadoAdmin: true
+              });
+          }
+
+          dadosCliente.itens = itensFinais;
+          dadosCliente.novoOnline = true;
+          dadosCliente.pagamento = infoPagamento;
+
+          db.collection('clientes').add(dadosCliente).then(() => {
+              db.collection('config').doc('empresa').update({ contador: numero });
+              carrinho = [];
+              atualizarCarrinhoFlutuante();
+              fecharCheckout();
+
+              Swal.fire({
+                  title: 'Pedido Recebido! 🎉',
+                  text: 'Sua comanda já está na cozinha.',
+                  icon: 'success',
+                  showCancelButton: true,
+                  confirmButtonColor: '#5A7A52',
+                  cancelButtonColor: '#888',
+                  confirmButtonText: 'Avisar no WhatsApp',
+                  cancelButtonText: 'Fechar'
+              }).then((result) => {
+                  if (result.isConfirmed && foneLoja) {
+                      let textoZap = '*NOVO PEDIDO (ONLINE)* 🍽️\n\n*Cliente:* ' + dadosCliente.nome
+                          + '\n*Modo:* ' + (isDelivery ? 'Delivery 🛵' : 'Mesa/Local 🪑')
+                          + '\n*Endereço:* ' + endCompletoStr
+                          + '\n*Pagamento:* ' + infoPagamento + '\n\n*Itens:*';
+                      let valorTotalZap = 0;
+                      itensFinais.forEach(i => {
+                          valorTotalZap += i.valor;
+                          textoZap += '\n- ' + i.qtd + 'x ' + i.desc + ' (R$ ' + i.valor.toFixed(2) + ')';
+                      });
+                      textoZap += '\n\n*Total a pagar:* R$ ' + valorTotalZap.toFixed(2);
+                      window.open('https://wa.me/55' + foneLoja + '?text=' + encodeURIComponent(textoZap), '_blank');
+                  }
+              });
+          });
+      });
+  }
+
+  function formatarMoeda(v) { return Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
+
+  function buscarCepDelivery() {
+      let cep = document.getElementById('cliCep').value.replace(/\D/g, '');
+      if (cep.length === 8) {
+          fetch('https://viacep.com.br/ws/' + cep + '/json/').then(r => r.json()).then(d => {
+              if (!d.erro) {
+                  document.getElementById('cliBairro').value = d.bairro || '';
+                  document.getElementById('cliRua').value = d.logradouro || '';
+              }
+          });
+      }
+  }
+
+  window.onload = carregarDadosLoja;
+</script>
+</body>
+</html>
