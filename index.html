@@ -4772,7 +4772,12 @@
           limparFormBalcaoDia();
           balcaoIrParaNomeAposSync = dados.nome;
           Swal.fire({ icon: 'success', title: 'Lançamento salvo!', timer: 1600, showConfirmButton: false, background: '#3A4536', color: '#F0E6D2' });
-      }).catch(err => Swal.fire('Erro', err.message || 'Não foi possível salvar.', 'error'));
+      }).catch(err => {
+          const msg = (err.message || '').toLowerCase().includes('permission')
+              ? 'Sem permissão no Firebase. Adicione a coleção balcao_dia nas Regras do Firestore (veja firebase-regras-exemplo.txt) e publique.'
+              : (err.message || 'Não foi possível salvar.');
+          Swal.fire('Erro', msg, 'error');
+      });
   }
 
   function irParaClienteBalcaoNaLista(nome) {
