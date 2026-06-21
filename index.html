@@ -1322,7 +1322,18 @@
             <button class="warning" onclick="abrirRelatorios()" style="flex:1; font-size:11px; border-radius:6px; min-width:100px;">📊 RELATÓRIO<br>FINANCEIRO</button>
             <button class="dark" onclick="abrirGraficos()" style="flex:1; font-size:11px; border-radius:6px; min-width:100px;">📈 GRÁFICO<br>PRODUTOS</button>
             <button class="primary" onclick="abrirBalancoGeral()" style="flex:1; font-size:11px; border-radius:6px; min-width:100px;">📅 BALANÇO<br>HISTÓRICO</button>
-            <button id="btnStatusLoja" class="success" onclick="toggleStatusLoja()" style="flex:1; font-size:11px; border-radius:6px; min-width:100px; border: 1px solid #4CAF50;">🟢 DELIVERY<br>ABERTO</button>
+            <button id="btnStatusLoja" class="success" onclick="toggleStatusLoja()" style="flex:1; font-size:11px; border-radius:6px; min-width:100px; border: 1px solid #4CAF50;" title="Controla pedidos pelo cardápio online">🟢 PEDIDOS<br>ONLINE ABERTOS</button>
+        </div>
+
+        <div class="card" style="margin-bottom:20px; padding:18px;">
+            <h4 style="color:var(--accent); margin:0 0 8px; font-size:14px;">📱 Cardápio Digital Online</h4>
+            <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px; line-height:1.5;">Os produtos cadastrados em <strong style="color:var(--text-main);">Cadastrar Produtos</strong> aparecem automaticamente no cardápio online. O botão acima libera ou bloqueia pedidos pelo link.</p>
+            <input type="text" id="linkCardapioDigital" readonly style="width:100%; margin-bottom:10px; font-size:11px; padding:12px; background:var(--input-bg); border:1px solid var(--border-soft); color:var(--text-muted); box-sizing:border-box; border-radius:6px;">
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button type="button" class="primary" onclick="abrirCardapioDigital()" style="flex:1; min-width:120px; font-size:11px; padding:12px;">👁️ ABRIR CARDÁPIO</button>
+                <button type="button" class="warning" onclick="copiarLinkCardapioDigital()" style="flex:1; min-width:120px; font-size:11px; padding:12px;">🔗 COPIAR LINK</button>
+                <button type="button" class="success" onclick="compartilharCardapioWhatsApp()" style="flex:1; min-width:120px; font-size:11px; padding:12px;">📲 ENVIAR NO ZAP</button>
+            </div>
         </div>
 
         <div class="card comandas-inicio-section">
@@ -1345,6 +1356,7 @@
                 <button class="dark" onclick="abrirPainelLateral('acesso')" style="min-width:160px;">👥 Acesso Equipe</button>
                 <button class="dark" onclick="toggleKDS()" style="min-width:160px;">👨‍🍳 Abrir Cozinha</button>
                 <button class="warning" onclick="toggleGarcom()" style="min-width:160px;">🧑‍🍳 Ver Garçons</button>
+                <button class="primary" onclick="abrirCardapioDigital()" style="min-width:160px;">📱 Cardápio Online</button>
             </div>
         </div>
       </div>
@@ -1398,7 +1410,7 @@
       <div id="painel-produtos" class="painel-secao">
         <h2 class="painel-titulo">Cadastrar Produtos</h2>
         <div class="card card--full">
-          <p style="font-size:12px; color:var(--text-muted); margin-top:0; margin-bottom:20px;">Monte o cardápio do restaurante — pratos, bebidas e adicionais usados nos pedidos.</p>
+          <p style="font-size:12px; color:var(--text-muted); margin-top:0; margin-bottom:20px; line-height:1.5;">Monte o cardápio do restaurante — pratos, bebidas e adicionais. <strong style="color:var(--accent);">Tudo cadastrado aqui sincroniza em tempo real</strong> com o cardápio online. Use <strong>Foto do produto</strong> para o cliente ver a imagem no pedido online.</p>
           <h4 style="color:var(--accent); margin-top:0;">Adicionar ao Menu</h4>
           <select id="catCategoria" style="width:100%; margin-bottom:12px;">
               <option value="MARMITAS">Marmitas e Pratos Feitos</option>
@@ -1414,7 +1426,7 @@
           <input type="text" id="catNome" placeholder="Nome do Prato / Bebida" style="width:100%; margin-bottom:12px;">
           <input type="number" id="catValor" placeholder="Preço (R$)" style="width:100%; margin-bottom:12px;">
           <div class="img-upload-box">
-              <label>📷 FOTO DO PRODUTO (opcional)</label>
+              <label>📷 FOTO DO PRODUTO (aparece no cardápio online)</label>
               <input type="file" id="catImagemInput" accept="image/*" onchange="carregarImagemProdutoTemp(this)">
               <img id="catImagemPreview" class="img-upload-preview" style="display:none;" alt="Prévia do produto">
               <button type="button" id="btnRemoverImagemProduto" class="danger" onclick="limparImagemProdutoTemp()" style="display:none; margin-top:8px; font-size:11px; padding:8px 12px;">REMOVER FOTO</button>
@@ -1428,7 +1440,7 @@
               <div id="listaIngredientesTemp" style="margin-top:12px;"></div>
           </div>
           <button class="success" onclick="salvarCatalogo()" style="width:100%; margin-bottom:12px;">➕ CADASTRAR ITEM</button>
-          <button class="dark" onclick="abrirGerenciarCatalogo()" style="width:100%; border-color: var(--accent); color: var(--accent);">📋 EDITAR CARDÁPIO</button>
+          <button class="dark" onclick="abrirGerenciarCatalogo()" style="width:100%; border-color: var(--accent); color: var(--accent);">📋 EDITAR CARDÁPIO (disponível / indisponível)</button>
         </div>
       </div>
 
@@ -1670,6 +1682,13 @@
               <label style="font-size:11px; color:var(--accent); display:block; font-weight:600;">Logo do Restaurante:</label>
               <input type="file" id="logoInput" accept="image/*" style="margin-bottom:15px; font-size: 12px;">
               <button class="warning" onclick="salvarDadosEmpresa()" style="width:100%; margin-bottom:25px; font-size: 13px;">💾 SALVAR INFORMAÇÕES</button>
+              <h4 style="color:var(--text-main); margin-top:0;">Cardápio Digital Online</h4>
+              <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px; line-height:1.5;">Link público para clientes pedirem pelo celular. Produtos, preços, logo e PIX vêm do mesmo Firebase deste sistema.</p>
+              <input type="text" id="linkCardapioDigitalConfig" readonly style="width:100%; margin-bottom:10px; font-size:11px; padding:12px; background:var(--input-bg); border:1px solid var(--border-soft); color:var(--text-muted); box-sizing:border-box;">
+              <button type="button" class="primary" onclick="abrirCardapioDigital()" style="width:100%; margin-bottom:8px; font-size:12px;">👁️ ABRIR CARDÁPIO ONLINE</button>
+              <button type="button" class="warning" onclick="copiarLinkCardapioDigital()" style="width:100%; margin-bottom:8px; font-size:12px;">🔗 COPIAR LINK DO CARDÁPIO</button>
+              <button type="button" class="success" onclick="compartilharCardapioWhatsApp()" style="width:100%; margin-bottom:12px; font-size:12px;">📲 COMPARTILHAR NO WHATSAPP</button>
+              <p style="font-size:11px; color:var(--accent); margin:0 0 25px; padding:10px; background:var(--input-bg); border-radius:6px; border:1px solid var(--border-soft); line-height:1.5;">🟢 Use <strong>Pedidos Online Abertos</strong> no Início para liberar pedidos. 🔴 Com fechado, o cliente vê aviso de restaurante fechado e não consegue pedir.</p>
               <h4 style="color:var(--text-main); margin-top:0;">Segurança do Caixa</h4>
               <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px; line-height:1.5;">Ative para exigir <strong style="color:var(--text-main);">e-mail e senha</strong> no caixa. O gerente sempre usa login. Crie os acessos em <strong>Acesso Equipe</strong>.</p>
               <label style="display:flex; align-items:center; gap:10px; font-size:13px; color:var(--text-main); margin:0 0 25px; padding:12px; background:var(--input-bg); border-radius:6px; border:1px solid var(--border-soft); cursor:pointer;">
@@ -2090,14 +2109,18 @@
 
   function toggleStatusLoja() {
       let novoStatus = empDados.statusLoja === 'fechado' ? 'aberto' : 'fechado';
-      let txt = novoStatus === 'fechado' ? 'Fechar o Delivery?' : 'Abrir o Delivery?';
+      let txt = novoStatus === 'fechado' ? 'Fechar pedidos online?' : 'Abrir pedidos online?';
       Swal.fire({
           title: txt,
-          text: novoStatus === 'fechado' ? 'Os clientes online verão que o delivery está fechado.' : 'O sistema voltará a receber pedidos.',
+          text: novoStatus === 'fechado'
+              ? 'O cardápio online ficará fechado. Clientes verão que o restaurante está fechado e não poderão fazer pedidos.'
+              : 'O cardápio online voltará a aceitar pedidos (delivery e retirada/local).',
           icon: 'warning',
           showCancelButton: true,
           confirmButtonColor: novoStatus === 'fechado' ? '#C62828' : '#2E7D32',
-          confirmButtonText: 'Sim, ' + (novoStatus === 'fechado' ? 'Fechar' : 'Abrir')
+          confirmButtonText: 'Sim, ' + (novoStatus === 'fechado' ? 'Fechar' : 'Abrir'),
+          background: '#3A4536',
+          color: '#F0E6D2'
       }).then((r) => {
           if (!r.isConfirmed) return;
           let novoStatus = empDados.statusLoja === 'fechado' ? 'aberto' : 'fechado';
@@ -2325,17 +2348,54 @@
       if (chk) chk.checked = caixaExigeSenha();
   }
 
+  function obterUrlCardapioDigital() {
+      const path = window.location.pathname.replace(/[^/]*$/, '');
+      return window.location.origin + path + 'cardapio.html';
+  }
+
+  function atualizarLinkCardapioDigital() {
+      const url = obterUrlCardapioDigital();
+      ['linkCardapioDigital', 'linkCardapioDigitalConfig'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.value = url;
+      });
+  }
+
+  function copiarLinkCardapioDigital() {
+      const url = obterUrlCardapioDigital();
+      if (navigator.clipboard) {
+          navigator.clipboard.writeText(url).then(() => {
+              Swal.fire({ icon: 'success', title: 'Link copiado!', text: 'Envie aos clientes pelo WhatsApp ou redes sociais.', timer: 2200, showConfirmButton: false, background: '#3A4536', color: '#F0E6D2' });
+          }).catch(() => Swal.fire('Link do cardápio', url, 'info'));
+      } else {
+          Swal.fire('Link do cardápio', url, 'info');
+      }
+  }
+
+  function abrirCardapioDigital() {
+      window.open(obterUrlCardapioDigital(), '_blank');
+  }
+
+  function compartilharCardapioWhatsApp() {
+      const url = obterUrlCardapioDigital();
+      const nome = (empDados.nome || 'BAYTIGRILL').trim();
+      const msg = 'Olá! Faça seu pedido pelo cardápio digital do *' + nome + '*:\n\n' + url;
+      window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+  }
+
   function atualizarBotaoStatusLoja() {
       let btnStatus = document.getElementById('btnStatusLoja');
       if (!btnStatus) return;
       if (empDados.statusLoja === 'fechado') {
           btnStatus.className = 'danger';
-          btnStatus.innerHTML = '🔴 DELIVERY<br>FECHADO';
+          btnStatus.innerHTML = '🔴 PEDIDOS<br>ONLINE FECHADOS';
           btnStatus.style.borderColor = 'var(--danger)';
+          btnStatus.title = 'Cardápio online fechado — clientes não podem pedir';
       } else {
           btnStatus.className = 'success';
-          btnStatus.innerHTML = '🟢 DELIVERY<br>ABERTO';
+          btnStatus.innerHTML = '🟢 PEDIDOS<br>ONLINE ABERTOS';
           btnStatus.style.borderColor = 'var(--success)';
+          btnStatus.title = 'Cardápio online aberto — clientes podem pedir';
       }
   }
 
@@ -2852,6 +2912,7 @@
       carregarVisualLoginInicial();
       aplicarLogoPadrao();
       atualizarBotoesLoginCaixa();
+      atualizarLinkCardapioDigital();
       iniciarModoSemLogin();
 
       if ('serviceWorker' in navigator) {
@@ -3414,21 +3475,48 @@
   }
 
   // ================= GERENCIAR CARDÁPIO E SALVAR =================
+  function produtoEstaDisponivel(p) {
+      return p && p.disponivel !== false;
+  }
+
+  function alternarDisponibilidadeProduto(id) {
+      let p = catalogo.find(x => x.id === id);
+      if (!p) return;
+      let ficarDisponivel = p.disponivel === false;
+      db.collection('catalogo').doc(id).update({ disponivel: ficarDisponivel }).then(() => {
+          Swal.fire({
+              icon: 'success',
+              title: ficarDisponivel ? 'Item disponível' : 'Item indisponível',
+              text: ficarDisponivel ? 'Voltou a aparecer no cardápio online.' : 'Marcado como INDISPONÍVEL no cardápio online.',
+              timer: 1800,
+              showConfirmButton: false,
+              background: '#3A4536',
+              color: '#F0E6D2'
+          });
+          renderGerenciarCatalogo();
+      });
+  }
+
   function abrirGerenciarCatalogo() { document.getElementById('modalGerenciarCatalogo').style.display = 'flex'; renderGerenciarCatalogo(); }
 
   function renderGerenciarCatalogo() {
       let html = '';
       catalogo.sort((a,b) => String(a.nome||'').localeCompare(String(b.nome||''))).forEach(p => {
           let thumb = p.imagem ? `<img src="${p.imagem}" class="produto-thumb-mini" alt="">` : '';
+          let badgeIndisp = produtoEstaDisponivel(p) ? '' : '<span style="font-size:10px;font-weight:700;color:#fff;background:var(--danger);padding:2px 8px;border-radius:4px;margin-left:6px;">INDISPONÍVEL</span>';
+          let btnDisp = produtoEstaDisponivel(p)
+              ? `<button class="warning" onclick="alternarDisponibilidadeProduto('${p.id}')" style="padding:8px 10px; font-size:11px;" title="Ocultar do cardápio online">🚫</button>`
+              : `<button class="success" onclick="alternarDisponibilidadeProduto('${p.id}')" style="padding:8px 10px; font-size:11px;" title="Liberar no cardápio online">✅</button>`;
           html += `
-          <div style="display:flex; justify-content:space-between; background:var(--input-bg); padding:15px; margin-bottom:8px; border-radius:4px; border:1px solid var(--border-soft); align-items:center; gap:12px;">
+          <div style="display:flex; justify-content:space-between; background:var(--input-bg); padding:15px; margin-bottom:8px; border-radius:4px; border:1px solid var(--border-soft); align-items:center; gap:12px;${produtoEstaDisponivel(p) ? '' : ' opacity:0.75;'}">
               ${thumb}
               <div style="flex:1;">
-                  <div style="font-weight:600; font-size:14px; color:var(--text-main); font-family: 'Poppins', sans-serif;">${p.nome} <span style="font-size:10px; color:#000; background:var(--accent); padding:2px 6px; border-radius:2px; font-family: 'Poppins', sans-serif;">${p.categoria || 'EXTRAS'}</span></div>
+                  <div style="font-weight:600; font-size:14px; color:var(--text-main); font-family: 'Poppins', sans-serif;">${p.nome}${badgeIndisp} <span style="font-size:10px; color:#000; background:var(--accent); padding:2px 6px; border-radius:2px; font-family: 'Poppins', sans-serif;">${p.categoria || 'EXTRAS'}</span></div>
                   <div style="font-size:11px; color:var(--text-muted); font-style:italic;">${p.ingredientes || 'Padrão da Casa'}</div>
                   <div style="color:var(--accent); font-weight:600; font-size:13px; margin-top:5px;">${formatarMoeda(p.valor)}</div>
               </div>
               <div style="display:flex; gap:5px; flex-wrap:wrap;">
+                  ${btnDisp}
                   <button class="dark" onclick="alterarImagemProduto('${p.id}')" style="padding:8px 12px; font-size:12px;" title="Foto">📷</button>
                   <button class="dark" onclick="editarProduto('${p.id}')" style="padding:8px 12px; font-size:12px;">✏️</button>
                   ${p.imagem ? `<button class="dark" onclick="removerImagemProduto('${p.id}')" style="padding:8px 12px; font-size:12px;" title="Remover foto">🖼️✕</button>` : ''}
@@ -3461,15 +3549,20 @@
                  </select>
 
                  <input id="editProdValor" type="number" step="0.01" class="swal2-input" placeholder="Valor (R$)" value="${p.valor}" style="margin-bottom:10px; width:80%;">
-                 <input id="editProdIngred" class="swal2-input" placeholder="Ingredientes principais" value="${p.ingredientes || ''}" style="width:80%;">`,
+                 <input id="editProdIngred" class="swal2-input" placeholder="Ingredientes principais" value="${p.ingredientes || ''}" style="width:80%; margin-bottom:12px;">
+                 <label style="display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;width:80%;margin:0 auto;">
+                     <input type="checkbox" id="editProdDisponivel" ${produtoEstaDisponivel(p) ? 'checked' : ''} style="width:auto;min-width:auto;">
+                     Disponível no cardápio online
+                 </label>`,
           showCancelButton: true, confirmButtonText: 'Atualizar', confirmButtonColor: '#D4AF37', cancelButtonText: 'Cancelar',
           preConfirm: () => {
               let n = document.getElementById('editProdNome').value.trim();
               let c = document.getElementById('editProdCat').value;
               let v = Number(document.getElementById('editProdValor').value.replace(',', '.'));
               let i = document.getElementById('editProdIngred').value.trim();
+              let disp = document.getElementById('editProdDisponivel').checked;
               if(!n || v <= 0) { Swal.showValidationMessage('Nome e Valor são obrigatórios.'); return false; }
-              return { nome: n.toUpperCase(), categoria: c, valor: v, ingredientes: i, imagem: p.imagem || '' };
+              return { nome: n.toUpperCase(), categoria: c, valor: v, ingredientes: i, imagem: p.imagem || '', disponivel: disp };
           }
       }).then((result) => { 
           if(result.isConfirmed) {
@@ -3495,7 +3588,7 @@
       
       if(n && v > 0){ 
           let ingsStr = ingredientesTemp.join(', ');
-          let dados = { nome:n.toUpperCase(), categoria: c, valor:v, ingredientes: ingsStr };
+          let dados = { nome:n.toUpperCase(), categoria: c, valor:v, ingredientes: ingsStr, disponivel: true };
           if (imagemProdutoTemp) dados.imagem = imagemProdutoTemp;
           db.collection("catalogo").add(dados); 
           document.getElementById('catNome').value=''; 
@@ -6434,6 +6527,7 @@
           atualizarPreviewQrConfig();
           atualizarDisplayContadorPedido();
           sincronizarChkExigirSenhaCaixa();
+          atualizarLinkCardapioDigital();
       } 
   }
   
