@@ -1874,7 +1874,7 @@
                   <button type="button" class="warning" onclick="imprimirCupomParcial('marmita')">🖨️ MARMITAS — IMPRIMIR E LANÇAR</button>
                   <button type="button" class="warning" onclick="imprimirCupomParcial('mesa')">🖨️ MESA — IMPRIMIR E LANÇAR</button>
               </div>
-              <p style="font-size:11px;color:var(--text-muted);margin:12px 0 0;line-height:1.5;">Escolha o destino e clique para <strong>imprimir e lançar na comanda em aberto</strong> (pronta para receber o pagamento).</p>
+              <p style="font-size:11px;color:var(--text-muted);margin:12px 0 0;line-height:1.5;">Imprime e lança <strong>toda a comanda</strong> (marmitas, pratos, bebidas, doces…) em aberto para receber. Use <strong>Mesa</strong> se algo for para a cozinha; <strong>Marmitas</strong> se for só balcão/retirada.</p>
           </div>
           <input type="hidden" id="dataEntrada">
         </div>
@@ -6629,6 +6629,15 @@
       return prod && String(prod.categoria || '').toUpperCase() === 'MARMITAS';
   }
 
+  function obterItensComandaParaLancar() {
+      return filtrarItensProducao(carrinhoCompras);
+  }
+
+  function itemProntoAoLancar(i, tipoDestino) {
+      if (tipoDestino === 'marmita') return true;
+      return itemEhMarmita(i);
+  }
+
   function filtrarItensPorTipoCupom(itens, tipo) {
       let prod = filtrarItensProducao(itens);
       if (tipo === 'marmita') return prod.filter(itemEhMarmita);
@@ -6666,18 +6675,12 @@
       concluirPedidoPorTipo(tipo);
   }
 
-  function restanteCarrinhoAposTipo(tipo) {
-      return filtrarItensProducao(carrinhoCompras).filter(i => tipo === 'marmita' ? !itemEhMarmita(i) : itemEhMarmita(i));
-  }
-
   function concluirPedidoPorTipo(tipo) {
       if (pedidoEnviando) return;
 
-      let itensSelecionados = filtrarItensPorTipoCupom(carrinhoCompras, tipo);
+      let itensSelecionados = obterItensComandaParaLancar();
       if (!itensSelecionados.length) {
-          return Swal.fire('Aviso', tipo === 'marmita'
-              ? 'Nenhuma marmita na comanda para lançar.'
-              : 'Nenhum item de mesa/salão na comanda para lançar.', 'info');
+          return Swal.fire('Aviso', 'Nenhum item na comanda para lançar.', 'info');
       }
 
       resolverVinculoPedido().then(({ id, cliente: clienteAtual }) => {
@@ -6690,9 +6693,8 @@
   function executarLancamentoPedidoPorTipo(tipo, id, clienteAtual, itensSelecionados) {
       if (pedidoEnviando) return;
 
-      const cartFicaraVazio = restanteCarrinhoAposTipo(tipo).length === 0;
-      let taxa = cartFicaraVazio ? (Number(document.getElementById('inputTaxa').value) || 0) : 0;
-      let descVal = cartFicaraVazio ? (Number(document.getElementById('inputDesconto').value) || 0) : 0;
+      let taxa = Number(document.getElementById('inputTaxa').value) || 0;
+      let descVal = Number(document.getElementById('inputDesconto').value) || 0;
       let tipoPedido = document.querySelector('input[name="tipoPedido"]:checked').value;
       let numPedido = obterNumPedidoAtual();
       let agora = obterDataHoraLocal();
@@ -6716,7 +6718,7 @@
           horaPedido: agora,
           metaPedido: { ...meta },
           pendenteCaixa,
-          pronto: tipo === 'marmita',
+          pronto: itemProntoAoLancar(i, tipo),
           pago: false,
           pagoValor: 0,
           notificadoAdmin: true
@@ -6738,7 +6740,6 @@
 
       let itensAtuais = Array.isArray(clienteAtual.itens) ? [...clienteAtual.itens] : [];
       let itensFinais = [...itensAtuais, ...itensNovos];
-      let idsEnviados = new Set(itensSelecionados.map(i => i.itemId).filter(Boolean));
 
       pedidoEnviando = true;
       const labelDestino = tipo === 'marmita' ? 'Marmitas / Balcão' : 'Mesa / Salão';
@@ -6750,17 +6751,11 @@
               c.pagamento = '';
               c.novoOnline = false;
           }
-          carrinhoCompras = carrinhoCompras.filter(i => {
-              if (!itemEhProducao(i)) return true;
-              if (i.itemId && idsEnviados.has(i.itemId)) return false;
-              return tipo === 'marmita' ? !itemEhMarmita(i) : itemEhMarmita(i);
-          });
-          if (cartFicaraVazio) {
-              document.getElementById('inputTaxa').value = '';
-              document.getElementById('inputDesconto').value = '';
-          }
+          carrinhoCompras = carrinhoCompras.filter(i => !itemEhProducao(i));
+          document.getElementById('inputTaxa').value = '';
+          document.getElementById('inputDesconto').value = '';
           pedidoEnviando = false;
-          let itensCupom = filtrarItensPorTipoCupom(itensNovos, tipo);
+          let itensCupom = filtrarItensProducao(itensNovos);
           if (c && itensCupom.length) abrirImpressaoCupomProducao(c, itensCupom, meta);
           renderCarrinho();
           avancarContadorAposPedido(numPedido);
@@ -6769,12 +6764,12 @@
           renderComandasInicio();
           abrirPainelLateral('comandas');
           setTimeout(() => abrirComandaDoInicio(id), 250);
-          if (cartFicaraVazio) limparFormularioPedido();
+          limparFormularioPedido();
           const totalLancado = itensNovos.reduce((s, i) => s + (Number(i.valor) || 0), 0);
           Swal.fire({
               icon: 'success',
               title: 'Comanda em aberto!',
-              html: '<p style="font-size:13px;margin:0;">Lançado em <strong>' + escaparHtml(labelDestino) + '</strong></p>'
+              html: '<p style="font-size:13px;margin:0;">Comanda <strong>completa</strong> lançada (' + escaparHtml(labelDestino) + ')</p>'
                   + '<p style="font-size:14px;margin:10px 0 0;color:var(--accent);font-weight:700;">' + formatarMoeda(totalLancado) + ' aguardando recebimento</p>',
               timer: 2800,
               showConfirmButton: false,
@@ -7079,18 +7074,10 @@
   }
 
   function concluirPedido() {
-      if (!carrinhoCompras.length) return Swal.fire('Comanda vazia', 'Adicione itens e escolha MARMITAS ou MESA para lançar.', 'info');
-      let temMarmita = filtrarItensPorTipoCupom(carrinhoCompras, 'marmita').length > 0;
-      let temMesa = filtrarItensPorTipoCupom(carrinhoCompras, 'mesa').length > 0;
-      if (temMarmita && !temMesa) return concluirPedidoPorTipo('marmita');
-      if (temMesa && !temMarmita) return concluirPedidoPorTipo('mesa');
-      return Swal.fire({
-          icon: 'info',
-          title: 'Escolha o destino',
-          text: 'Use o botão MARMITAS ou MESA para lançar cada parte do pedido.',
-          background: '#3A4536',
-          color: '#F0E6D2'
-      });
+      if (!obterItensComandaParaLancar().length) {
+          return Swal.fire('Comanda vazia', 'Adicione itens e clique em MARMITAS ou MESA para lançar.', 'info');
+      }
+      concluirPedidoPorTipo('mesa');
   }
 
   function abrirModalSelecaoProdutos() { 
