@@ -968,8 +968,77 @@
   .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(42, 51, 40, 0.72); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 99999; }
   .modal-content { background: var(--card-elevated); border: 1px solid var(--border-soft); width: 95%; max-width: 550px; max-height: 90vh; overflow-y: auto; padding: 30px; border-radius: 10px; box-shadow: 0 12px 32px rgba(0,0,0,0.2); }
 
-  /* IMPRESSÃO FIXA */
+  /* IMPRESSÃO FIXA — KNUP IM607 / térmica 58mm (384 pts/linha, ESC/POS) */
   #printOverlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #fff; z-index: 9999999; overflow-y: auto; justify-content: center; }
+  #printContent { width: 100%; display: flex; justify-content: center; padding-top: 30px; padding-bottom: 50px; box-sizing: border-box; }
+  .cupom-impressao.cupom-termico-58 {
+      width: 58mm;
+      max-width: 58mm;
+      min-width: 58mm;
+      margin: 0 auto;
+      padding: 1.5mm 2mm 8mm;
+      box-sizing: border-box;
+      font-family: 'Courier New', Courier, 'Liberation Mono', monospace;
+      font-size: 9pt;
+      line-height: 1.3;
+      color: #000;
+      background: #fff;
+      text-align: left;
+      word-wrap: break-word;
+      overflow-wrap: anywhere;
+  }
+  .cupom-termico-58 .cupom-titulo {
+      margin: 0 0 2mm;
+      padding-bottom: 2mm;
+      font-size: 10pt;
+      font-weight: 700;
+      text-align: center;
+      border-bottom: 1px dashed #000;
+      letter-spacing: 0.02em;
+  }
+  .cupom-termico-58 .cupom-subtitulo {
+      font-size: 8pt;
+      text-align: center;
+      margin: 0 0 2mm;
+      font-weight: 600;
+  }
+  .cupom-termico-58 .cupom-meta-table { width: 100%; border-collapse: collapse; font-size: 8.5pt; margin-bottom: 2mm; }
+  .cupom-termico-58 .cupom-meta-table td { padding: 0.5mm 0; vertical-align: top; border: none !important; }
+  .cupom-termico-58 .cupom-meta-table td:last-child { text-align: right; font-weight: 700; }
+  .cupom-termico-58 .cupom-sep { border: none; border-top: 1px dashed #000; margin: 2.5mm 0; height: 0; }
+  .cupom-termico-58 .cupom-sep-solid { border: none; border-top: 1px solid #000; margin: 2.5mm 0; height: 0; }
+  .cupom-termico-58 .cupom-bloco { font-size: 8.5pt; line-height: 1.35; font-weight: 600; }
+  .cupom-termico-58 .cupom-bloco b { font-weight: 700; }
+  .cupom-termico-58 .cupom-stats {
+      border: 1px solid #000;
+      padding: 1.5mm;
+      margin: 2mm 0;
+      font-size: 8pt;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1mm;
+      text-align: center;
+  }
+  .cupom-termico-58 .cupom-secao { font-size: 8.5pt; font-weight: 700; margin: 1mm 0 1.5mm; letter-spacing: 0.03em; }
+  .cupom-termico-58 .cupom-itens-table { width: 100%; border-collapse: collapse; }
+  .cupom-termico-58 .cupom-item-row td { padding: 1.5mm 0; border-bottom: 1px dashed #000 !important; vertical-align: top; }
+  .cupom-termico-58 .cupom-item-nome { font-size: 9.5pt; font-weight: 700; line-height: 1.25; }
+  .cupom-termico-58 .cupom-item-obs { font-size: 8pt; font-weight: 600; margin-top: 1mm; padding-left: 2mm; }
+  .cupom-termico-58 .cupom-item-valor { font-size: 8.5pt; font-weight: 700; text-align: right; white-space: nowrap; }
+  .cupom-termico-58 .cupom-itens-table .cupom-item-row td:last-child { width: 20mm; padding-left: 1mm !important; vertical-align: top; }
+  .cupom-termico-58 .cupom-total { margin-top: 3mm; text-align: right; font-size: 11pt; font-weight: 700; }
+  .cupom-termico-58 .cupom-rodape { font-size: 8pt; text-align: center; font-weight: 600; margin-top: 2mm; font-style: italic; }
+  .cupom-termico-58 .cupom-empresa-nome { margin: 0 0 1mm; font-size: 11pt; font-weight: 700; text-align: center; font-family: 'Courier New', Courier, monospace; color: #000; }
+  .cupom-termico-58 .cupom-empresa-info { font-size: 8pt; margin: 0 0 2mm; text-align: center; line-height: 1.35; color: #000; }
+  .cupom-termico-58 .cupom-troco {
+      margin-top: 3mm;
+      text-align: center;
+      font-size: 8.5pt;
+      border: 1px dashed #000;
+      padding: 2mm;
+  }
+  .cupom-termico-58 .cupom-troco-valor { font-size: 12pt; font-weight: 700; display: block; margin-top: 1mm; }
   #printOverlay .cupom-impressao,
   #printOverlay .cupom-impressao *:not(img) {
       background: #fff !important;
@@ -978,24 +1047,31 @@
       box-shadow: none !important;
       text-shadow: none !important;
   }
-  #printOverlay .cupom-impressao table { border-collapse: collapse !important; border-spacing: 0 !important; }
+  #printOverlay .cupom-impressao table { border-collapse: collapse !important; border-spacing: 0 !important; width: 100% !important; }
   #printOverlay .cupom-impressao td,
   #printOverlay .cupom-impressao th {
-      padding: 4px 0 !important;
+      padding: 0 !important;
       border: none !important;
       border-radius: 0 !important;
       vertical-align: top !important;
+      background: #fff !important;
+      color: #000 !important;
   }
-  #printOverlay .cupom-impressao td:first-child,
-  #printOverlay .cupom-impressao td:last-child {
-      border-left: none !important;
-      border-right: none !important;
-      border-radius: 0 !important;
-  }
+  #printOverlay .cupom-impressao .cupom-item-row td { border-bottom: 1px dashed #000 !important; padding: 1.5mm 0 !important; }
   #printOverlay .cupom-impressao .cupom-logo {
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
       color-adjust: exact !important;
+      text-align: center;
+      margin-bottom: 2mm;
+  }
+  #printOverlay .cupom-impressao .cupom-logo img {
+      display: inline-block;
+      max-width: 46mm !important;
+      width: auto !important;
+      height: auto !important;
+      max-height: 12mm !important;
+      object-fit: contain;
   }
   @media print {
     body * { visibility: hidden !important; }
@@ -1012,9 +1088,37 @@
       print-color-adjust: exact !important;
       color-adjust: exact !important;
     }
-    #printOverlay { display: block !important; position: absolute; left: 0; top: 0; width: 100%; background: #fff !important; margin: 0; padding: 0; }
+    @page {
+      size: 58mm auto;
+      margin: 0;
+    }
+    #printOverlay {
+      display: block !important;
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 58mm !important;
+      max-width: 58mm !important;
+      background: #fff !important;
+      margin: 0;
+      padding: 0;
+      overflow: visible !important;
+    }
+    #printContent {
+      width: 58mm !important;
+      max-width: 58mm !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      display: block !important;
+    }
+    .cupom-impressao.cupom-termico-58 {
+      width: 58mm !important;
+      max-width: 58mm !important;
+      min-width: 58mm !important;
+      padding: 0 1.5mm 4mm !important;
+      page-break-inside: avoid;
+    }
     .print-controls { display: none !important; }
-    @page { margin: 0.5cm; size: auto; }
   }
   
   /* LOGIN */
@@ -1294,10 +1398,11 @@
 <button id="btnSairSessao" type="button" onclick="trocarLogin()">🚪 SAIR / TROCAR ACESSO</button>
 
 <div id="printOverlay">
-    <div class="print-controls" style="position:fixed; top:20px; right:20px; z-index:10000000;">
+    <div class="print-controls" style="position:fixed; top:20px; right:20px; z-index:10000000; text-align:right;">
+        <p style="font-size:11px;color:#333;margin:0 0 8px;max-width:220px;line-height:1.4;background:#f5f5f5;padding:8px 10px;border-radius:4px;border:1px solid #ccc;">Impressora: <strong>KNUP IM607</strong> (58mm). No diálogo de impressão, selecione a IM607 e papel <strong>58mm</strong>.</p>
         <button class="danger" onclick="fecharImpressao()" style="padding:12px 24px; font-size:14px; box-shadow:0 5px 15px rgba(0,0,0,0.5); font-weight:600; border-radius: 4px;">FECHAR IMPRESSÃO</button>
     </div>
-    <div id="printContent" style="width:100%; display:flex; justify-content:center; padding-top:30px; overflow-y:auto; padding-bottom:50px;"></div>
+    <div id="printContent"></div>
 </div>
 
 <div id="loginOverlay">
@@ -1853,7 +1958,9 @@
                   <input type="text" id="descricao" placeholder="Prato selecionado..." readonly style="flex:3; font-weight:600; color:var(--text-main); background: var(--input-bg); border-color: #333;">
                   <input type="number" id="quantidade" value="1" placeholder="Qtd" style="flex:1; text-align:center;">
               </div>
-              <div id="displayIngredientes" style="font-size:12px; color:var(--text-muted); margin-bottom:12px; font-style:italic; min-height:15px; padding-left: 5px;"></div>
+              <div id="displayIngredientes" style="font-size:12px; color:var(--text-muted); margin-bottom:8px; font-style:italic; min-height:15px; padding-left: 5px;"></div>
+              <label for="inputObsItemPedido" style="display:block;font-size:11px;color:var(--accent);font-weight:600;letter-spacing:0.4px;margin-bottom:6px;">OBSERVAÇÕES DO ITEM (opcional)</label>
+              <input type="text" id="inputObsItemPedido" placeholder="Ex: Sem macarrão, sem feijão, ao ponto..." autocomplete="off" style="width:100%;margin-bottom:12px;padding:14px;font-size:14px;box-sizing:border-box;background:var(--input-bg);border:1px solid var(--border-soft);border-radius:6px;">
               <input type="hidden" id="categoriaProdutoSelecionado" value="">
               <div class="row-inputs">
                   <input type="number" id="valorUnitario" placeholder="Valor Un. (R$)" style="flex:1;">
@@ -2759,10 +2866,12 @@
       document.body.style.setProperty('--bg-logo', `url(${src})`);
   }
 
+  const IMPRESSORA_TERMICA = { modelo: 'KNUP IM607', larguraMm: 58, colunas: 32 };
+
   function htmlLogoImpressao(larguraMm) {
       let src = logoBase64 || LOGO_IMPRESSAO_URL;
-      let w = larguraMm || 62;
-      return `<div style="text-align:center;margin-bottom:10px;"><img class="cupom-logo" src="${src}" alt="Logo" style="display:inline-block;max-width:${w}mm;width:auto;height:auto;max-height:18mm;object-fit:contain;"></div>`;
+      let w = larguraMm || 46;
+      return `<div class="cupom-logo"><img src="${src}" alt="Logo" style="max-width:${w}mm;width:auto;height:auto;max-height:12mm;object-fit:contain;"></div>`;
   }
 
   function htmlCabecalhoEmpresaImpressao(opts) {
@@ -2770,15 +2879,29 @@
       let nome = escaparHtml((empDados.nome || 'BAYTIGRILL').trim());
       let end = (empDados.end || '').trim();
       let tel = (empDados.tel || '').trim();
-      let tam = opts.tamanhoTitulo || 18;
+      let termico = !!opts.termico;
+      let tam = opts.tamanhoTitulo || (termico ? 11 : 18);
+      let un = termico ? 'pt' : 'px';
       let align = opts.centralizado !== false ? 'center' : 'left';
-      let html = `<h2 style="margin:0 0 4px;font-size:${tam}px;font-weight:700;text-align:${align};font-family:'Poppins',sans-serif;color:#000;">${nome}</h2>`;
+      let clsNome = termico ? 'cupom-empresa-nome' : '';
+      let clsInfo = termico ? 'cupom-empresa-info' : '';
+      let html = termico
+          ? `<div class="${clsNome}">${nome}</div>`
+          : `<h2 style="margin:0 0 4px;font-size:${tam}${un};font-weight:700;text-align:${align};font-family:'Poppins',sans-serif;color:#000;">${nome}</h2>`;
       if (end || tel) {
-          html += `<p style="font-size:11px;margin:0 0 10px;color:#000;text-align:${align};line-height:1.45;">`;
-          if (end) html += escaparHtml(end);
-          if (end && tel) html += '<br>';
-          if (tel) html += 'Tel: ' + escaparHtml(tel);
-          html += '</p>';
+          if (termico) {
+              html += `<div class="${clsInfo}">`;
+              if (end) html += escaparHtml(end);
+              if (end && tel) html += '<br>';
+              if (tel) html += 'Tel: ' + escaparHtml(tel);
+              html += '</div>';
+          } else {
+              html += `<p style="font-size:11px;margin:0 0 10px;color:#000;text-align:${align};line-height:1.45;">`;
+              if (end) html += escaparHtml(end);
+              if (end && tel) html += '<br>';
+              if (tel) html += 'Tel: ' + escaparHtml(tel);
+              html += '</p>';
+          }
       }
       return html;
   }
@@ -4982,19 +5105,20 @@
   function iniciarSelecaoProdutoGarcom(id) {
       let p = catalogo.find(x => x.id === id);
       if (!p) return;
-      if (!produtoPermiteAdicionaisExtras(p)) {
-          adicionarItemCarrinhoGarcom(p.nome, Number(p.valor) || 0, p.ingredientes || '');
-          return;
-      }
       let precoBase = Number(p.valor) || 0;
       let imgHtml = p.imagem ? `<img src="${p.imagem}" style="width:100%;max-height:160px;object-fit:cover;border-radius:8px;margin-bottom:12px;" alt="">` : '';
+      let blocoAdicionais = '';
+      if (produtoPermiteAdicionaisExtras(p)) {
+          blocoAdicionais = '<p style="text-align:left;font-weight:600;font-size:13px;margin:15px 0 8px;color:#aaa;">ADICIONAIS E ACOMPANHAMENTOS:</p>'
+              + '<div style="max-height:200px;overflow-y:auto;padding-right:5px;">' + montarHtmlCheckboxesAdicionaisCaixa() + '</div>'
+              + '<span id="totalModalAdicCaixa" style="display:block;text-align:center;margin:15px 0;"></span>';
+      }
       Swal.fire({
           title: p.nome,
           html: imgHtml + '<p style="text-align:left;font-size:12px;color:var(--text-muted);margin-bottom:15px;font-style:italic;">' + escaparHtml(p.ingredientes || '') + '</p>'
               + '<p style="font-weight:700;font-size:20px;color:var(--text-main);margin-bottom:12px;">Valor Base: <span style="color:var(--accent);">' + formatarMoeda(p.valor) + '</span></p>'
-              + '<p style="text-align:left;font-weight:600;font-size:13px;margin:15px 0 8px;color:#aaa;">ADICIONAIS E ACOMPANHAMENTOS:</p>'
-              + '<div style="max-height:200px;overflow-y:auto;padding-right:5px;">' + montarHtmlCheckboxesAdicionaisCaixa() + '</div>'
-              + '<span id="totalModalAdicCaixa" style="display:block;text-align:center;margin:15px 0;"></span>',
+              + blocoAdicionais
+              + htmlCampoObservacaoItem('swalObsItemGarcom'),
           showCancelButton: true,
           background: '#3A4536',
           color: '#F0E6D2',
@@ -5002,13 +5126,14 @@
           cancelButtonColor: '#444',
           confirmButtonText: 'Adicionar à comanda',
           cancelButtonText: 'Cancelar',
-          didOpen: () => { precoBaseModalAdicCaixa = precoBase; atualizarTotalModalAdicionaisCaixa(); },
-          preConfirm: () => ({ adicionais: lerAdicionaisSelecionadosCaixa() })
+          didOpen: () => { precoBaseModalAdicCaixa = precoBase; if (produtoPermiteAdicionaisExtras(p)) atualizarTotalModalAdicionaisCaixa(); },
+          preConfirm: () => ({ adicionais: produtoPermiteAdicionaisExtras(p) ? lerAdicionaisSelecionadosCaixa() : [], observacao: lerObservacaoSwal('swalObsItemGarcom') })
       }).then((result) => {
           if (!result.isConfirmed) return;
           let adic = result.value.adicionais || [];
           let unit = precoBase + adic.reduce((s, a) => s + a.valor, 0);
-          adicionarItemCarrinhoGarcom(p.nome, unit, textoIngredientesComAdicionais(p.ingredientes, adic));
+          let ings = textoIngredientesComAdicionais(p.ingredientes, adic);
+          adicionarItemCarrinhoGarcom(p.nome, unit, montarTextoObservacoesItem(ings, result.value.observacao));
       });
   }
 
@@ -6326,30 +6451,30 @@
       let reg = balcaoDiaLista.find(x => x.id === id);
       if (!reg) return;
       let total = calcularTotalBalcao(reg);
-      let logoHtml = htmlLogoImpressao(65);
+      let logoHtml = htmlLogoImpressao(46);
       let itensHtml = (reg.itens || []).map(i =>
-          `<tr><td style="text-align:left;border-bottom:1px dashed #000;padding:8px 0;font-size:12px;font-weight:600;color:#000;background:#fff;">${i.qtd}x ${i.desc}</td>
-          <td style="text-align:right;border-bottom:1px dashed #000;padding:8px 0;font-size:12px;color:#000;background:#fff;">${formatarMoeda(i.valor)}</td></tr>`
+          `<tr class="cupom-item-row"><td><div class="cupom-item-nome">${i.qtd}x ${escaparHtml(i.desc)}</div></td>
+          <td class="cupom-item-valor">${formatarMoeda(i.valor)}</td></tr>`
       ).join('');
       let pagTxt = balcaoEstaPendente(reg) ? 'PENDENTE A RECEBER' : (reg.pagamento || 'RECEBIDO');
       document.getElementById('printContent').innerHTML = `
-          <div class="cupom-impressao" style="width:76mm;margin:0 auto;font-family:'Poppins',sans-serif;text-align:center;color:#000;background:#fff;padding-bottom:24px;">
+          <div class="cupom-impressao cupom-termico-58">
               ${logoHtml}
-              ${htmlCabecalhoEmpresaImpressao()}
-              <div style="font-size:11px;font-weight:700;margin:12px 0;">Comprovante — Balcão</div>
-              <div style="border-top:1px dashed #000;margin:12px 0;"></div>
-              <div style="text-align:left;font-size:12px;line-height:1.6;">
-                  <b>Cliente:</b> ${escaparHtml(reg.nome)}<br>
-                  ${reg.telefone ? '<b>Tel:</b> ' + escaparHtml(reg.telefone) + '<br>' : ''}
-                  ${reg.endereco ? '<b>End.:</b> ' + escaparHtml(reg.endereco) + '<br>' : ''}
-                  <b>Data:</b> ${formatarDataHoraBR(reg.criadoEm || obterDataHoraLocal())}<br>
-                  <b>Pagamento:</b> ${pagTxt}
+              ${htmlCabecalhoEmpresaImpressao({ termico: true })}
+              <div class="cupom-titulo">COMPROVANTE BALCAO</div>
+              <hr class="cupom-sep">
+              <div class="cupom-bloco">
+                  <div><b>Cliente:</b> ${escaparHtml(reg.nome)}</div>
+                  ${reg.telefone ? '<div><b>Tel:</b> ' + escaparHtml(reg.telefone) + '</div>' : ''}
+                  ${reg.endereco ? '<div><b>End.:</b> ' + escaparHtml(reg.endereco) + '</div>' : ''}
+                  <div><b>Data:</b> ${formatarDataHoraBR(reg.criadoEm || obterDataHoraLocal())}</div>
+                  <div><b>Pagamento:</b> ${escaparHtml(pagTxt)}</div>
               </div>
-              <div style="border-top:1px dashed #000;margin:12px 0;"></div>
-              <table style="width:100%;border-collapse:collapse;">${itensHtml}</table>
-              <div style="margin-top:16px;text-align:right;font-size:18px;font-weight:700;">TOTAL: ${formatarMoeda(total)}</div>
-              <div style="border-top:1px dashed #000;margin:16px 0 8px;"></div>
-              <div style="font-size:11px;font-style:italic;">Obrigado pela preferência!</div>
+              <hr class="cupom-sep">
+              <table class="cupom-itens-table">${itensHtml}</table>
+              <div class="cupom-total">TOTAL: ${formatarMoeda(total)}</div>
+              <hr class="cupom-sep">
+              <div class="cupom-rodape">Obrigado pela preferencia!</div>
           </div>`;
       document.getElementById('printOverlay').style.display = 'flex';
       setTimeout(() => window.print(), 500);
@@ -6849,46 +6974,46 @@
 
   function montarHtmlCupomProducao(c, itensProducao, metaOverride) {
       let meta = resolverMetaCupom(c, itensProducao, metaOverride);
-      let tituloCupom = 'COMANDA — COZINHA / GARÇOM';
-      if (metaOverride && metaOverride.tipoCupom === 'marmita') tituloCupom = 'COMANDA — MARMITAS / BALCÃO';
-      else if (metaOverride && metaOverride.tipoCupom === 'mesa') tituloCupom = 'COMANDA — MESA / SALÃO';
-      let logoHtml = htmlLogoImpressao(58);
+      let tituloCupom = 'COMANDA COZINHA/GARCOM';
+      if (metaOverride && metaOverride.tipoCupom === 'marmita') tituloCupom = 'COMANDA MARMITAS/BALCAO';
+      else if (metaOverride && metaOverride.tipoCupom === 'mesa') tituloCupom = 'COMANDA MESA/SALAO';
+      let logoHtml = htmlLogoImpressao(46);
       let linhaLocal = meta.ehDelivery
-          ? `Entrega: ${meta.endereco || '—'}${meta.telefone ? '<br>Tel: ' + meta.telefone : ''}`
-          : `Mesa / Local: ${meta.mesa || '—'}`;
+          ? `Entrega: ${escaparHtml(meta.endereco || '—')}${meta.telefone ? '<br>Tel: ' + escaparHtml(meta.telefone) : ''}`
+          : `Mesa/Local: ${escaparHtml(meta.mesa || '—')}`;
 
       let itensHtml = itensProducao.map(i => {
-          let obs = i.ingredientes ? `<div style="font-size:12px;font-weight:600;margin-top:4px;color:#000;">▸ ${i.ingredientes}</div>` : '';
-          return `<tr><td style="text-align:left;border-bottom:1px dashed #000;padding:10px 0;font-size:15px;color:#000;background:#fff;">
-              <div style="font-weight:800;font-size:16px;color:#000;">[ ] ${i.qtd}x ${i.desc}</div>${obs}
+          let obs = i.ingredientes ? `<div class="cupom-item-obs">* ${escaparHtml(i.ingredientes)}</div>` : '';
+          return `<tr class="cupom-item-row"><td>
+              <div class="cupom-item-nome">[ ] ${i.qtd}x ${escaparHtml(i.desc)}</div>${obs}
           </td></tr>`;
       }).join('');
 
-      return `<div class="cupom-impressao" style="width:76mm;margin:0 auto;font-family:'Poppins',sans-serif;color:#000;background:#fff;padding:12px 8px 24px;box-sizing:border-box;">
+      return `<div class="cupom-impressao cupom-termico-58">
           ${logoHtml}
-          ${htmlCabecalhoEmpresaImpressao({ tamanhoTitulo: 17 })}
-          <h3 style="margin:0 0 8px;font-size:14px;font-weight:800;text-align:center;border-bottom:1px dashed #000;padding-bottom:8px;color:#000;background:#fff;">${tituloCupom}</h3>
-          <table style="width:100%;font-size:12px;border-collapse:collapse;margin-bottom:8px;background:#fff;">
-              <tr><td style="padding:3px 0;font-weight:700;color:#000;background:#fff;border:none;">Data:</td><td style="text-align:right;color:#000;background:#fff;border:none;">${meta.data}</td></tr>
-              <tr><td style="padding:3px 0;font-weight:700;color:#000;background:#fff;border:none;">Hora:</td><td style="text-align:right;color:#000;background:#fff;border:none;">${meta.hora}</td></tr>
-              <tr><td style="padding:3px 0;font-weight:700;color:#000;background:#fff;border:none;">Pedido nº:</td><td style="text-align:right;font-size:14px;font-weight:800;color:#000;background:#fff;border:none;">${formatarNumPedido(meta.numPedido)}</td></tr>
+          ${htmlCabecalhoEmpresaImpressao({ termico: true })}
+          <div class="cupom-titulo">${tituloCupom}</div>
+          <table class="cupom-meta-table">
+              <tr><td>Data:</td><td>${escaparHtml(meta.data)}</td></tr>
+              <tr><td>Hora:</td><td>${escaparHtml(meta.hora)}</td></tr>
+              <tr><td>Pedido n:</td><td>${formatarNumPedido(meta.numPedido)}</td></tr>
           </table>
-          <div style="border-top:2px dashed #000;margin:10px 0;"></div>
-          <div style="text-align:left;font-size:13px;line-height:1.55;font-weight:600;color:#000;background:#fff;">
-              <div><b>Cliente:</b> ${meta.cliente}</div>
-              <div><b>Garçom:</b> ${meta.garcom}</div>
+          <hr class="cupom-sep">
+          <div class="cupom-bloco">
+              <div><b>Cliente:</b> ${escaparHtml(meta.cliente)}</div>
+              <div><b>Garcom:</b> ${escaparHtml(meta.garcom)}</div>
               <div>${linhaLocal}</div>
           </div>
-          <div style="border:1px solid #000;border-radius:0;padding:8px;margin:12px 0;font-size:12px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;text-align:center;color:#000;background:#fff;">
-              <span><b>Pessoas:</b> ${meta.pessoas || '—'}</span>
+          <div class="cupom-stats">
+              <span><b>Pess:</b> ${meta.pessoas || '—'}</span>
               <span><b>Copos:</b> ${meta.copos || '—'}</span>
               <span><b>Pratos:</b> ${meta.pratos || '—'}</span>
           </div>
-          <div style="border-top:2px dashed #000;margin:10px 0;"></div>
-          <div style="text-align:left;font-size:12px;font-weight:800;margin-bottom:6px;letter-spacing:0.5px;color:#000;background:#fff;">ITENS DO PEDIDO</div>
-          <table style="width:100%;border-collapse:collapse;background:#fff;">${itensHtml}</table>
-          <div style="border-top:2px dashed #000;margin:14px 0 8px;"></div>
-          <div style="font-size:11px;text-align:center;font-weight:600;color:#000;background:#fff;">Conferir itens antes de entregar à mesa</div>
+          <hr class="cupom-sep-solid">
+          <div class="cupom-secao">ITENS DO PEDIDO</div>
+          <table class="cupom-itens-table">${itensHtml}</table>
+          <hr class="cupom-sep">
+          <div class="cupom-rodape">Conferir itens antes de entregar</div>
       </div>`;
   }
 
@@ -6981,8 +7106,10 @@
           let prod = catalogo.find(p => String(p.nome || '').toUpperCase() === String(desc).toUpperCase());
           if (prod) cat = prod.categoria || '';
       }
-      let item = { itemId: gerarIdItem(), desc: desc, qtd: qtd, valor: val * qtd, categoria: cat, tipo: document.querySelector('input[name="tipoPedido"]:checked').value, ingredientes: document.getElementById('displayIngredientes').innerText, numPedido: obterNumPedidoAtual(), pago: false, pagoValor: 0, pronto: false, notificadoAdmin: true }; 
-      carrinhoCompras.push(item); renderCarrinho(); document.getElementById('descricao').value = ''; document.getElementById('quantidade').value = '1'; document.getElementById('valorUnitario').value = ''; document.getElementById('displayIngredientes').innerText = ''; document.getElementById('categoriaProdutoSelecionado').value = '';
+      let ingsBase = document.getElementById('displayIngredientes').innerText;
+      let obs = (document.getElementById('inputObsItemPedido')?.value || '').trim();
+      let item = { itemId: gerarIdItem(), desc: desc, qtd: qtd, valor: val * qtd, categoria: cat, tipo: document.querySelector('input[name="tipoPedido"]:checked').value, ingredientes: montarTextoObservacoesItem(ingsBase, obs), numPedido: obterNumPedidoAtual(), pago: false, pagoValor: 0, pronto: false, notificadoAdmin: true }; 
+      carrinhoCompras.push(item); renderCarrinho(); document.getElementById('descricao').value = ''; document.getElementById('quantidade').value = '1'; document.getElementById('valorUnitario').value = ''; document.getElementById('displayIngredientes').innerText = ''; document.getElementById('inputObsItemPedido').value = ''; document.getElementById('categoriaProdutoSelecionado').value = '';
   }
 
   function atualizarTotalCarrinho() {
@@ -6998,7 +7125,10 @@
       let tb = document.getElementById('listaCarrinho'); let area = document.getElementById('carrinhoArea'); tb.innerHTML = '';
       if(carrinhoCompras.length === 0) { area.style.display = 'none'; return; }
       area.style.display = 'block'; 
-      carrinhoCompras.forEach((i, idx) => { tb.innerHTML += `<tr><td style="color:var(--text-main); font-weight:600; border-bottom:1px solid #333; padding:8px 0;">${i.qtd}x ${i.desc}</td><td style="color:var(--accent); font-weight:600; text-align:right; border-bottom:1px solid #333;">${formatarMoeda(i.valor)}</td><td style="text-align:right; width: 40px; border-bottom:1px solid #333;"><button class="danger" onclick="carrinhoCompras.splice(${idx},1);renderCarrinho()" style="padding:4px 8px; font-weight:bold; background: transparent; border: 1px solid var(--danger); color: var(--danger);">X</button></td></tr>`; });
+      carrinhoCompras.forEach((i, idx) => {
+          let obsHtml = i.ingredientes ? `<div style="font-size:11px;color:var(--text-muted);font-style:italic;padding:2px 0 0 4px;">${escaparHtml(i.ingredientes)}</div>` : '';
+          tb.innerHTML += `<tr><td style="color:var(--text-main); font-weight:600; border-bottom:1px solid #333; padding:8px 0;">${i.qtd}x ${escaparHtml(i.desc)}${obsHtml}</td><td style="color:var(--accent); font-weight:600; text-align:right; border-bottom:1px solid #333;">${formatarMoeda(i.valor)}</td><td style="text-align:right; width: 40px; border-bottom:1px solid #333;"><button class="danger" onclick="carrinhoCompras.splice(${idx},1);renderCarrinho()" style="padding:4px 8px; font-weight:bold; background: transparent; border: 1px solid var(--danger); color: var(--danger);">X</button></td></tr>`;
+      });
       atualizarTotalCarrinho();
   }
 
@@ -7022,6 +7152,7 @@
       document.getElementById('quantidade').value = '1';
       document.getElementById('valorUnitario').value = '';
       document.getElementById('displayIngredientes').innerText = '';
+      document.getElementById('inputObsItemPedido').value = '';
       document.getElementById('categoriaProdutoSelecionado').value = '';
       document.querySelector('input[name="tipoPedido"][value="presencial"]').checked = true;
       aplicarTaxaPadrao();
@@ -7144,6 +7275,21 @@
       if (adicionais && adicionais.length) partes.push('Extras: ' + adicionais.map(a => a.nome).join(', '));
       return partes.join(' | ');
   }
+  function montarTextoObservacoesItem(ingredientes, observacao) {
+      let partes = [];
+      let base = String(ingredientes || '').trim();
+      let obs = String(observacao || '').trim();
+      if (base) partes.push(base);
+      if (obs) partes.push('Obs: ' + obs);
+      return partes.join(' | ');
+  }
+  function htmlCampoObservacaoItem(id, placeholder) {
+      return '<label style="display:block;text-align:left;font-size:11px;font-weight:600;color:var(--accent);margin:14px 0 6px;letter-spacing:0.4px;">OBSERVAÇÕES (opcional)</label>'
+          + '<input type="text" id="' + id + '" class="swal2-input" placeholder="' + (placeholder || 'Ex: Sem macarrão, sem feijão...') + '" style="width:92%;margin:0 auto 2px;font-size:13px;">';
+  }
+  function lerObservacaoSwal(id) {
+      return (document.getElementById(id || 'swalObsItemPedido')?.value || '').trim();
+  }
   let precoBaseModalAdicCaixa = 0;
   function atualizarTotalModalAdicionaisCaixa() {
       let extra = lerAdicionaisSelecionadosCaixa().reduce((s, a) => s + a.valor, 0);
@@ -7157,6 +7303,8 @@
       document.getElementById('displayIngredientes').innerText = i;
       document.getElementById('categoriaProdutoSelecionado').value = cat || '';
       document.getElementById('modalSelecaoProdutos').style.display = 'none';
+      let obsEl = document.getElementById('inputObsItemPedido');
+      if (obsEl) { obsEl.value = ''; obsEl.focus(); }
   }
 
   function iniciarSelecaoProdutoCaixa(id) {
@@ -7173,7 +7321,8 @@
               + '<p style="font-weight:700;font-size:20px;color:var(--text-main);margin-bottom:12px;font-family:\'Poppins\',sans-serif;">Valor Base: <span style="color:var(--accent);">' + formatarMoeda(p.valor) + '</span></p>'
               + '<p style="text-align:left;font-weight:600;font-size:13px;margin:15px 0 8px; color:#aaa;">SUGESTÕES E ACOMPANHAMENTOS (Opcional):</p>'
               + '<div style="max-height:180px;overflow-y:auto; padding-right:5px;">' + montarHtmlCheckboxesAdicionaisCaixa() + '</div>'
-              + '<span id="totalModalAdicCaixa" style="display:block;text-align:center;margin:15px 0;"></span>',
+              + '<span id="totalModalAdicCaixa" style="display:block;text-align:center;margin:15px 0;"></span>'
+              + htmlCampoObservacaoItem('swalObsItemCaixa'),
           showCancelButton: true,
           background: '#3A4536',
           color: '#F0E6D2',
@@ -7182,7 +7331,7 @@
           confirmButtonText: '<span style="color:#000; font-weight:bold;">Adicionar ao Pedido</span>',
           cancelButtonText: 'Cancelar',
           didOpen: () => atualizarTotalModalAdicionaisCaixa(),
-          preConfirm: () => ({ adicionais: lerAdicionaisSelecionadosCaixa() })
+          preConfirm: () => ({ adicionais: lerAdicionaisSelecionadosCaixa(), observacao: lerObservacaoSwal('swalObsItemCaixa') })
       }).then((result) => {
           if (!result.isConfirmed) return;
           let adic = result.value.adicionais || [];
@@ -7191,7 +7340,9 @@
           document.getElementById('valorUnitario').value = unit;
           document.getElementById('displayIngredientes').innerText = textoIngredientesComAdicionais(p.ingredientes, adic);
           document.getElementById('categoriaProdutoSelecionado').value = p.categoria || '';
+          document.getElementById('inputObsItemPedido').value = result.value.observacao || '';
           document.getElementById('modalSelecaoProdutos').style.display = 'none';
+          document.getElementById('inputObsItemPedido')?.focus();
       });
   }
 
@@ -8005,16 +8156,22 @@
   function imprimirSelecionados(id) {
       let c = clientes.find(x => x.id === id); if(!c || !Array.isArray(c.itens)) return;
       let total = c.itens.reduce((acc, i) => acc + (i.valor || 0), 0);
-      let logoHtml = htmlLogoImpressao(65);
+      let logoHtml = htmlLogoImpressao(46);
       let dataHoraRef = obterReferenciaHoraComanda(c.itens);
       let textoDataHora = dataHoraRef
           ? dataHoraRef.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
           : formatarDataHoraBR(obterDataHoraLocal());
       let numsPedido = [...new Set(c.itens.map(i => i.numPedido).filter(n => n != null && n !== ''))];
       let linhaPedido = numsPedido.length
-          ? 'Pedido(s) nº: ' + numsPedido.map(n => formatarNumPedido(n)).join(' / ')
+          ? 'Pedido(s) n ' + numsPedido.map(n => formatarNumPedido(n)).join(' / ')
           : 'Pedido: ' + textoDataHora;
-      let itensHtml = c.itens.map(i => `<tr><td style="text-align:left;border-bottom:1px dashed #000;padding:8px 0;font-size:12px;font-weight:600;color:#000;background:#fff;">${i.qtd}x ${i.desc} ${i.ingredientes ? `<br><span style="font-weight:normal;font-size:10px;color:#000;">(${i.ingredientes})</span>` : ''}${(i.horaPedido || i.data) ? `<br><span style="font-weight:normal;font-size:10px;color:#000;">${formatarDataHoraBR(i.horaPedido || i.data)}</span>` : ''}</td><td style="text-align:right;border-bottom:1px dashed #000;padding:8px 0;font-size:12px;font-weight:600;color:#000;background:#fff;">${formatarMoeda(i.valor)}</td></tr>`).join('');
+      let itensHtml = c.itens.map(i => {
+          let obs = i.ingredientes ? `<div class="cupom-item-obs">${escaparHtml(i.ingredientes)}</div>` : '';
+          let hora = (i.horaPedido || i.data) ? `<div class="cupom-item-obs">${formatarDataHoraBR(i.horaPedido || i.data)}</div>` : '';
+          return `<tr class="cupom-item-row"><td>
+              <div class="cupom-item-nome">${i.qtd}x ${escaparHtml(i.desc)}</div>${obs}${hora}
+          </td><td class="cupom-item-valor">${formatarMoeda(i.valor)}</td></tr>`;
+      }).join('');
       
       let pagTexto = c.pagamento || '';
       let trocoHtml = '';
@@ -8022,10 +8179,28 @@
           let partes = pagTexto.split('(Troco para');
           pagTexto = partes[0].trim();
           let valorTroco = partes[1].replace(')','').trim();
-          trocoHtml = `<div style="margin-top:15px; text-align:center; font-size:14px; border: 1px dashed #000; padding: 12px; font-family: 'Poppins', sans-serif;">Atenção: Levar troco para<br><span style="font-size:22px; font-weight:700;">${valorTroco}</span></div>`;
+          trocoHtml = `<div class="cupom-troco">Atencao: Levar troco para<span class="cupom-troco-valor">${escaparHtml(valorTroco)}</span></div>`;
       }
 
-      document.getElementById('printContent').innerHTML = `<div class="cupom-impressao" style="width: 76mm; margin: 0 auto; font-family: 'Poppins', sans-serif; text-align: center; color:#000; background:#fff; padding-bottom:30px;">${logoHtml}${htmlCabecalhoEmpresaImpressao()}<div style="font-size:11px; font-weight:700; margin-bottom:12px;color:#000;">${linhaPedido}<br><span style="font-weight:400;color:#000;">${textoDataHora}</span></div><div style="border-top:1px dashed #000; margin: 15px 0;"></div><div style="text-align:left; font-size:12px; line-height: 1.5;color:#000;"><b>CONTA:</b> ${c.nome}<br>${c.telefone ? `<b>TEL:</b> ${c.telefone}<br>` : ''}<b>MESA/END.:</b> ${c.endereco || 'Salão / Balcão'}<br>${pagTexto ? `<b>PGTO:</b> ${pagTexto}` : ''}</div><div style="border-top:1px dashed #000; margin: 15px 0;"></div><table style="width:100%; border-collapse: collapse;background:#fff;">${itensHtml}</table><div style="margin-top:20px; text-align:right; font-size:18px; font-weight:700; font-family: 'Poppins', sans-serif;color:#000;">TOTAL: ${formatarMoeda(total)}</div>${trocoHtml}<div style="border-top:1px dashed #000; margin: 20px 0;"></div><div style="margin-top:10px; font-size:12px; font-weight:600; font-family: 'Poppins', sans-serif; font-style: italic;color:#000;">Agradecemos a preferência.<br>Volte sempre!</div></div>`;
+      document.getElementById('printContent').innerHTML = `<div class="cupom-impressao cupom-termico-58">
+          ${logoHtml}
+          ${htmlCabecalhoEmpresaImpressao({ termico: true })}
+          <div class="cupom-titulo">NOTA DO CLIENTE</div>
+          <div class="cupom-subtitulo">${escaparHtml(linhaPedido)}<br>${escaparHtml(textoDataHora)}</div>
+          <hr class="cupom-sep">
+          <div class="cupom-bloco">
+              <div><b>Conta:</b> ${escaparHtml(c.nome)}</div>
+              ${c.telefone ? `<div><b>Tel:</b> ${escaparHtml(c.telefone)}</div>` : ''}
+              <div><b>Mesa/End.:</b> ${escaparHtml(c.endereco || 'Salao / Balcao')}</div>
+              ${pagTexto ? `<div><b>Pgto:</b> ${escaparHtml(pagTexto)}</div>` : ''}
+          </div>
+          <hr class="cupom-sep">
+          <table class="cupom-itens-table">${itensHtml}</table>
+          <div class="cupom-total">TOTAL: ${formatarMoeda(total)}</div>
+          ${trocoHtml}
+          <hr class="cupom-sep">
+          <div class="cupom-rodape">Agradecemos a preferencia.<br>Volte sempre!</div>
+      </div>`;
       document.getElementById('printOverlay').style.display = 'flex'; setTimeout(() => window.print(), 500);
   }
   function fecharImpressao() { document.getElementById('printOverlay').style.display = 'none'; document.getElementById('printContent').innerHTML = ''; }
