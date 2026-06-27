@@ -1953,19 +1953,8 @@
               </div>
           </div>
           <div style="background:var(--input-bg); padding:20px; border-radius:6px; border:1px solid var(--border-soft);">
-              <button class="dark" onclick="abrirModalSelecaoProdutos()" style="width:100%; margin-bottom:15px; color: var(--text-main); border-color: var(--accent);">🔍 ACESSAR MENU DIGITAL</button>
-              <div class="row-inputs">
-                  <input type="text" id="descricao" placeholder="Prato selecionado..." readonly style="flex:3; font-weight:600; color:var(--text-main); background: var(--input-bg); border-color: #333;">
-                  <input type="number" id="quantidade" value="1" placeholder="Qtd" style="flex:1; text-align:center;">
-              </div>
-              <div id="displayIngredientes" style="font-size:12px; color:var(--text-muted); margin-bottom:8px; font-style:italic; min-height:15px; padding-left: 5px;"></div>
-              <label for="inputObsItemPedido" style="display:block;font-size:11px;color:var(--accent);font-weight:600;letter-spacing:0.4px;margin-bottom:6px;">OBSERVAÇÕES DO ITEM (opcional)</label>
-              <input type="text" id="inputObsItemPedido" placeholder="Ex: Sem macarrão, sem feijão, ao ponto..." autocomplete="off" style="width:100%;margin-bottom:12px;padding:14px;font-size:14px;box-sizing:border-box;background:var(--input-bg);border:1px solid var(--border-soft);border-radius:6px;">
-              <input type="hidden" id="categoriaProdutoSelecionado" value="">
-              <div class="row-inputs">
-                  <input type="number" id="valorUnitario" placeholder="Valor Un. (R$)" style="flex:1;">
-                  <button class="warning" onclick="adicionarAoCarrinho()" style="flex:1; background: var(--accent); color: #000; font-weight: 700;">LANÇAR ITEM</button>
-              </div>
+              <button class="dark" onclick="abrirModalSelecaoProdutos()" style="width:100%; margin-bottom:10px; color: var(--text-main); border-color: var(--accent);">🔍 ACESSAR MENU DIGITAL</button>
+              <p style="font-size:11px;color:var(--text-muted);margin:0;line-height:1.5;">Toque em <strong style="color:var(--accent);">+ ADD</strong>, informe a <strong>quantidade</strong> e a <strong>observação</strong> — o item entra direto na comanda parcial abaixo.</p>
           </div>
           <div id="carrinhoArea" style="display:none; margin-top:20px; background:var(--input-bg); padding:20px; border-radius:6px; border:1px solid var(--border-soft);">
               <h4 style="color:var(--accent); margin:0 0 15px 0; border-bottom: 1px solid #333; padding-bottom: 10px;">📋 Comanda Parcial</h4>
@@ -7098,18 +7087,34 @@
       atualizarTotalCarrinho();
   }
 
-  function adicionarAoCarrinho() {
-      let desc = document.getElementById('descricao').value; let qtd = Number(document.getElementById('quantidade').value); let valStr = document.getElementById('valorUnitario').value.replace(',','.'); let val = Number(valStr);
-      if(!desc || val <= 0) return Swal.fire('Atenção', 'Selecione um prato/bebida antes de lançar.', 'warning');
-      let cat = (document.getElementById('categoriaProdutoSelecionado')?.value || '').trim();
+  function adicionarItemDiretoCarrinhoCaixa(opts) {
+      let qtd = Math.max(1, Math.floor(Number(opts.qtd) || 1));
+      let unit = Number(opts.valorUnit) || 0;
+      let desc = String(opts.desc || '').trim();
+      if (!desc || unit <= 0) return Swal.fire('Atenção', 'Produto ou valor inválido.', 'warning');
+      let cat = opts.categoria || '';
       if (!cat) {
-          let prod = catalogo.find(p => String(p.nome || '').toUpperCase() === String(desc).toUpperCase());
+          let prod = catalogo.find(p => String(p.nome || '').toUpperCase() === desc.toUpperCase());
           if (prod) cat = prod.categoria || '';
       }
-      let ingsBase = document.getElementById('displayIngredientes').innerText;
-      let obs = (document.getElementById('inputObsItemPedido')?.value || '').trim();
-      let item = { itemId: gerarIdItem(), desc: desc, qtd: qtd, valor: val * qtd, categoria: cat, tipo: document.querySelector('input[name="tipoPedido"]:checked').value, ingredientes: montarTextoObservacoesItem(ingsBase, obs), numPedido: obterNumPedidoAtual(), pago: false, pagoValor: 0, pronto: false, notificadoAdmin: true }; 
-      carrinhoCompras.push(item); renderCarrinho(); document.getElementById('descricao').value = ''; document.getElementById('quantidade').value = '1'; document.getElementById('valorUnitario').value = ''; document.getElementById('displayIngredientes').innerText = ''; document.getElementById('inputObsItemPedido').value = ''; document.getElementById('categoriaProdutoSelecionado').value = '';
+      let item = {
+          itemId: gerarIdItem(),
+          desc: desc,
+          qtd: qtd,
+          valor: unit * qtd,
+          categoria: cat,
+          tipo: document.querySelector('input[name="tipoPedido"]:checked').value,
+          ingredientes: opts.ingredientes || '',
+          numPedido: obterNumPedidoAtual(),
+          pago: false,
+          pagoValor: 0,
+          pronto: false,
+          notificadoAdmin: true
+      };
+      carrinhoCompras.push(item);
+      renderCarrinho();
+      const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 1400, background: '#3A4536', color: '#F0E6D2' });
+      Toast.fire({ icon: 'success', title: qtd + 'x ' + desc + ' na comanda' });
   }
 
   function atualizarTotalCarrinho() {
@@ -7148,12 +7153,6 @@
       let selEl = document.getElementById('clienteSelect');
       if (filtroEl) filtroEl.disabled = false;
       if (selEl) selEl.disabled = false;
-      document.getElementById('descricao').value = '';
-      document.getElementById('quantidade').value = '1';
-      document.getElementById('valorUnitario').value = '';
-      document.getElementById('displayIngredientes').innerText = '';
-      document.getElementById('inputObsItemPedido').value = '';
-      document.getElementById('categoriaProdutoSelecionado').value = '';
       document.querySelector('input[name="tipoPedido"][value="presencial"]').checked = true;
       aplicarTaxaPadrao();
       document.getElementById('dataEntrada').value = obterDataHoraLocal();
@@ -7290,60 +7289,77 @@
   function lerObservacaoSwal(id) {
       return (document.getElementById(id || 'swalObsItemPedido')?.value || '').trim();
   }
+  function htmlCampoQuantidadeItem(id) {
+      return '<label style="display:block;text-align:left;font-size:11px;font-weight:600;color:var(--accent);margin:14px 0 6px;letter-spacing:0.4px;">QUANTIDADE</label>'
+          + '<input type="number" id="' + id + '" class="swal2-input" value="1" min="1" step="1" inputmode="numeric" oninput="atualizarTotalModalAdicionaisCaixa()" style="width:92%;margin:0 auto 2px;font-size:15px;font-weight:700;text-align:center;">';
+  }
+  function lerQuantidadeSwal(id) {
+      return Math.max(1, Math.floor(Number(document.getElementById(id || 'swalQtdItemCaixa')?.value) || 1));
+  }
   let precoBaseModalAdicCaixa = 0;
   function atualizarTotalModalAdicionaisCaixa() {
       let extra = lerAdicionaisSelecionadosCaixa().reduce((s, a) => s + a.valor, 0);
+      let qtd = lerQuantidadeSwal('swalQtdItemCaixa');
       let el = document.getElementById('totalModalAdicCaixa');
-      if (el) el.innerHTML = '<strong style="color:var(--accent);font-size:18px;">Total: ' + formatarMoeda(precoBaseModalAdicCaixa + extra) + '</strong>';
+      if (el) el.innerHTML = '<strong style="color:var(--accent);font-size:18px;">Total: ' + formatarMoeda((precoBaseModalAdicCaixa + extra) * qtd) + '</strong>'
+          + (qtd > 1 ? '<span style="display:block;font-size:11px;color:#aaa;margin-top:4px;">' + qtd + 'x ' + formatarMoeda(precoBaseModalAdicCaixa + extra) + '</span>' : '');
   }
 
-  function selecionarProduto(n, v, i, cat) {
-      document.getElementById('descricao').value = n;
-      document.getElementById('valorUnitario').value = v;
-      document.getElementById('displayIngredientes').innerText = i;
-      document.getElementById('categoriaProdutoSelecionado').value = cat || '';
-      document.getElementById('modalSelecaoProdutos').style.display = 'none';
-      let obsEl = document.getElementById('inputObsItemPedido');
-      if (obsEl) { obsEl.value = ''; obsEl.focus(); }
-  }
-
-  function iniciarSelecaoProdutoCaixa(id) {
-      let p = catalogo.find(x => x.id === id);
-      if (!p) return;
-      if (!produtoPermiteAdicionaisExtras(p)) {
-          selecionarProduto(p.nome, p.valor, p.ingredientes || '', p.categoria || '');
-          return;
-      }
+  function abrirModalItemCaixa(p) {
       precoBaseModalAdicCaixa = Number(p.valor) || 0;
+      let blocoAdic = '';
+      if (produtoPermiteAdicionaisExtras(p)) {
+          blocoAdic = '<p style="text-align:left;font-weight:600;font-size:13px;margin:15px 0 8px;color:#aaa;">SUGESTÕES E ACOMPANHAMENTOS (Opcional):</p>'
+              + '<div style="max-height:160px;overflow-y:auto;padding-right:5px;">' + montarHtmlCheckboxesAdicionaisCaixa() + '</div>';
+      }
       Swal.fire({
           title: p.nome,
-          html: '<p style="text-align:left;font-size:12px;color:var(--text-muted);margin-bottom:15px;font-style:italic;">' + (p.ingredientes || '') + '</p>'
-              + '<p style="font-weight:700;font-size:20px;color:var(--text-main);margin-bottom:12px;font-family:\'Poppins\',sans-serif;">Valor Base: <span style="color:var(--accent);">' + formatarMoeda(p.valor) + '</span></p>'
-              + '<p style="text-align:left;font-weight:600;font-size:13px;margin:15px 0 8px; color:#aaa;">SUGESTÕES E ACOMPANHAMENTOS (Opcional):</p>'
-              + '<div style="max-height:180px;overflow-y:auto; padding-right:5px;">' + montarHtmlCheckboxesAdicionaisCaixa() + '</div>'
-              + '<span id="totalModalAdicCaixa" style="display:block;text-align:center;margin:15px 0;"></span>'
+          html: '<p style="text-align:left;font-size:12px;color:var(--text-muted);margin-bottom:12px;font-style:italic;">' + escaparHtml(p.ingredientes || '') + '</p>'
+              + '<p style="font-weight:700;font-size:18px;color:var(--text-main);margin-bottom:8px;">Valor un.: <span style="color:var(--accent);">' + formatarMoeda(p.valor) + '</span></p>'
+              + blocoAdic
+              + '<span id="totalModalAdicCaixa" style="display:block;text-align:center;margin:12px 0;"></span>'
+              + htmlCampoQuantidadeItem('swalQtdItemCaixa')
               + htmlCampoObservacaoItem('swalObsItemCaixa'),
           showCancelButton: true,
           background: '#3A4536',
           color: '#F0E6D2',
           confirmButtonColor: '#D4AF37',
           cancelButtonColor: '#444',
-          confirmButtonText: '<span style="color:#000; font-weight:bold;">Adicionar ao Pedido</span>',
+          confirmButtonText: '<span style="color:#000;font-weight:bold;">Adicionar à comanda</span>',
           cancelButtonText: 'Cancelar',
-          didOpen: () => atualizarTotalModalAdicionaisCaixa(),
-          preConfirm: () => ({ adicionais: lerAdicionaisSelecionadosCaixa(), observacao: lerObservacaoSwal('swalObsItemCaixa') })
+          didOpen: () => {
+              atualizarTotalModalAdicionaisCaixa();
+              setTimeout(() => document.getElementById('swalQtdItemCaixa')?.focus(), 100);
+          },
+          preConfirm: () => {
+              let qtd = lerQuantidadeSwal('swalQtdItemCaixa');
+              if (qtd < 1) { Swal.showValidationMessage('Informe a quantidade (mínimo 1).'); return false; }
+              return {
+                  qtd,
+                  adicionais: produtoPermiteAdicionaisExtras(p) ? lerAdicionaisSelecionadosCaixa() : [],
+                  observacao: lerObservacaoSwal('swalObsItemCaixa')
+              };
+          }
       }).then((result) => {
           if (!result.isConfirmed) return;
+          let qtd = result.value.qtd;
           let adic = result.value.adicionais || [];
           let unit = precoBaseModalAdicCaixa + adic.reduce((s, a) => s + a.valor, 0);
-          document.getElementById('descricao').value = p.nome;
-          document.getElementById('valorUnitario').value = unit;
-          document.getElementById('displayIngredientes').innerText = textoIngredientesComAdicionais(p.ingredientes, adic);
-          document.getElementById('categoriaProdutoSelecionado').value = p.categoria || '';
-          document.getElementById('inputObsItemPedido').value = result.value.observacao || '';
-          document.getElementById('modalSelecaoProdutos').style.display = 'none';
-          document.getElementById('inputObsItemPedido')?.focus();
+          let ings = montarTextoObservacoesItem(textoIngredientesComAdicionais(p.ingredientes, adic), result.value.observacao);
+          adicionarItemDiretoCarrinhoCaixa({
+              desc: p.nome,
+              qtd,
+              valorUnit: unit,
+              categoria: p.categoria || '',
+              ingredientes: ings
+          });
       });
+  }
+
+  function iniciarSelecaoProdutoCaixa(id) {
+      let p = catalogo.find(x => x.id === id);
+      if (!p) return;
+      abrirModalItemCaixa(p);
   }
 
   // ================= TRADUTOR DE DATAS =================
