@@ -1137,40 +1137,155 @@
   body.role-garcom #btnSairGarcom { display: none !important; }
   body.role-garcom { padding-bottom: 0; }
 
-  /* --- APP GARÇOM (TELA EXCLUSIVA) --- */
+  /* --- APP GARÇOM (TELA EXCLUSIVA — MOBILE FIRST) --- */
   #appGarcom {
-      display: none; flex-direction: column; min-height: 100vh;
+      display: none; flex-direction: column;
+      height: 100vh; height: 100dvh;
+      max-height: 100dvh;
+      overflow: hidden;
       background: linear-gradient(165deg, #2A3328 0%, #1e251c 100%);
   }
   body.role-garcom #appGarcom { display: flex !important; }
+  body.role-garcom { padding-bottom: 0; overflow: hidden; }
+
   .garcom-topbar {
-      display: flex; align-items: center; justify-content: space-between; gap: 10px;
-      padding: calc(10px + env(safe-area-inset-top, 0px)) 16px 10px;
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      padding: calc(8px + env(safe-area-inset-top, 0px)) 12px 8px;
       background: linear-gradient(180deg, var(--primary) 0%, #3A4536 100%);
       border-bottom: 2px solid var(--accent);
-      flex-wrap: wrap;
+      flex-shrink: 0;
   }
-  .garcom-topbar-brand { display: flex; align-items: center; gap: 10px; }
-  .garcom-topbar-brand img { max-height: 36px; }
-  .garcom-topbar-brand span { font-size: 11px; color: var(--accent); letter-spacing: 3px; font-weight: 600; }
-  .garcom-topbar-user { text-align: right; }
-  .garcom-topbar-user strong { display: block; color: #fff; font-size: 14px; }
-  .garcom-topbar-user small { color: var(--text-muted); font-size: 10px; letter-spacing: 1px; }
+  .garcom-topbar-brand { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .garcom-topbar-brand img { max-height: 32px; width: auto; }
+  .garcom-topbar-brand span { font-size: 10px; color: var(--accent); letter-spacing: 2px; font-weight: 600; }
+  .garcom-topbar-user { text-align: right; min-width: 0; flex: 1; }
+  .garcom-topbar-user strong { display: block; color: #fff; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .garcom-topbar-user small { color: var(--text-muted); font-size: 9px; letter-spacing: 1px; }
   .garcom-pedido-num {
       background: var(--accent); color: #1a1a1a; font-weight: 800;
-      padding: 6px 14px; border-radius: 20px; font-size: 13px; letter-spacing: 0.5px;
+      padding: 5px 10px; border-radius: 16px; font-size: 11px; letter-spacing: 0.3px;
+      white-space: nowrap; flex-shrink: 0;
   }
-  .garcom-layout {
-      display: grid; grid-template-columns: 320px 1fr; flex: 1;
-      min-height: 0; gap: 0;
+  .garcom-btn-sair {
+      padding: 8px 10px; font-size: 10px; border-radius: 8px; font-weight: 700;
+      flex-shrink: 0; min-height: 36px;
   }
+
+  .garcom-mesa-resumo { display: none; }
+
+  .garcom-steps {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 10px 12px; background: var(--card-bg);
+      border-bottom: 1px solid var(--border-soft); flex-shrink: 0;
+  }
+  .garcom-step {
+      flex: 1; text-align: center; font-size: 9px; font-weight: 600;
+      color: var(--text-muted); letter-spacing: 0.3px; line-height: 1.3;
+      padding: 6px 4px; border-radius: 8px; max-width: 110px;
+  }
+  .garcom-step-num {
+      display: block; width: 22px; height: 22px; line-height: 22px;
+      margin: 0 auto 4px; border-radius: 50%;
+      background: var(--input-bg); border: 1px solid var(--border-soft);
+      font-size: 11px; font-weight: 700;
+  }
+  .garcom-step.is-active { color: var(--accent); }
+  .garcom-step.is-active .garcom-step-num {
+      background: var(--accent); color: #1a1a1a; border-color: var(--accent);
+  }
+  .garcom-step.is-done { color: var(--success); }
+  .garcom-step.is-done .garcom-step-num {
+      background: rgba(76,175,80,0.2); border-color: var(--success); color: var(--success);
+  }
+
+  .garcom-body {
+      flex: 1; min-height: 0; overflow: hidden;
+      display: flex; flex-direction: column;
+      padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  }
+  .garcom-body.garcom-passo-3 { padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
+  .garcom-passo {
+      display: none; flex-direction: column;
+      flex: 1; min-height: 0; overflow: hidden;
+  }
+  .garcom-passo.is-active { display: flex; }
+
+  .garcom-rodape-passo {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 100;
+      padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+      background: linear-gradient(180deg, rgba(42,51,40,0.98) 0%, #2A3328 100%);
+      border-top: 2px solid var(--border-soft);
+      display: flex; flex-direction: column; gap: 8px;
+  }
+  .garcom-rodape-passo.oculto { display: none; }
+  .garcom-rodape-resumo {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12px; color: var(--text-muted); padding: 0 2px;
+  }
+  .garcom-rodape-resumo strong { color: var(--accent); font-size: 16px; }
+  .garcom-rodape-btns { display: flex; gap: 8px; }
+  .garcom-rodape-btns .btn-enviar-garcom { flex: 1; }
+  .btn-garcom-voltar {
+      padding: 14px 16px; font-size: 13px; font-weight: 600;
+      background: transparent; border: 1px solid var(--border-soft);
+      color: var(--text-main); border-radius: 10px; cursor: pointer;
+      min-height: 48px; touch-action: manipulation;
+  }
+  .btn-garcom-voltar { flex: 0 0 auto; min-width: 90px; }
+
+  .garcom-passo-titulo {
+      padding: 12px 14px 8px; font-size: 12px; font-weight: 700;
+      color: var(--accent); letter-spacing: 1px; text-transform: uppercase;
+      flex-shrink: 0;
+  }
+  .garcom-resumo-final {
+      flex: 1; overflow-y: auto; padding: 0 14px 16px;
+      -webkit-overflow-scrolling: touch;
+  }
+  .garcom-resumo-bloco {
+      background: var(--card-bg); border: 1px solid var(--border-soft);
+      border-radius: 12px; padding: 14px; margin-bottom: 12px;
+  }
+  .garcom-resumo-bloco h4 {
+      margin: 0 0 10px; font-size: 11px; color: var(--accent);
+      letter-spacing: 1px; text-transform: uppercase;
+  }
+  .garcom-resumo-linha { font-size: 13px; line-height: 1.5; margin-bottom: 4px; color: var(--text-main); }
+  .garcom-resumo-item {
+      padding: 10px 0; border-bottom: 1px dashed var(--border-soft);
+      font-size: 13px;
+  }
+  .garcom-resumo-item:last-child { border-bottom: none; }
+  .garcom-lancar-btns {
+      display: flex; flex-direction: column; gap: 10px;
+      padding: 0 14px 16px; flex-shrink: 0;
+  }
+  .btn-lancar-garcom {
+      width: 100%; padding: 16px; font-size: 13px; font-weight: 800;
+      letter-spacing: 0.5px; border-radius: 10px; border: none;
+      cursor: pointer; touch-action: manipulation; min-height: 52px;
+  }
+  .btn-lancar-garcom--marmita { background: linear-gradient(135deg, #C9A23B 0%, #a8862f 100%); color: #1a1a1a; }
+  .btn-lancar-garcom--balcao { background: linear-gradient(135deg, #8B7355 0%, #6d5a44 100%); color: #fff; }
+  .btn-lancar-garcom--cozinha { background: linear-gradient(135deg, var(--primary-soft) 0%, var(--primary) 100%); color: #fff; border: 1px solid var(--accent); }
+  .garcom-mini-carrinho {
+      flex-shrink: 0; max-height: 100px; overflow-y: auto;
+      margin: 0 12px 8px; padding: 8px 10px;
+      background: var(--card-bg); border-radius: 10px;
+      border: 1px solid var(--border-soft); font-size: 11px;
+      display: none;
+  }
+  .garcom-mini-carrinho.visivel { display: block; }
+  .garcom-mini-carrinho span { color: var(--text-muted); }
+
   .garcom-painel-mesa {
-      background: var(--bg-panel); border-right: 1px solid var(--border-soft);
-      padding: 16px; overflow-y: auto;
+      flex: 1; overflow-y: auto;
+      padding: 16px 14px 24px;
       display: flex; flex-direction: column; gap: 12px;
+      -webkit-overflow-scrolling: touch;
   }
   .garcom-painel-mesa h3 {
-      margin: 0; font-size: 13px; color: var(--accent); letter-spacing: 2px;
+      margin: 0; font-size: 12px; color: var(--accent); letter-spacing: 1.5px;
       font-weight: 600; text-transform: uppercase;
   }
   .garcom-field label {
@@ -1178,82 +1293,106 @@
       letter-spacing: 0.5px; margin-bottom: 5px; font-weight: 600;
   }
   .garcom-field input, .garcom-field select {
-      width: 100%; box-sizing: border-box; padding: 14px;
+      width: 100%; box-sizing: border-box; padding: 14px 12px;
       background: var(--input-bg); border: 1px solid var(--border-soft);
-      border-radius: 8px; color: var(--text-main); font-size: 16px;
+      border-radius: 10px; color: var(--text-main); font-size: 16px;
+      min-height: 48px;
   }
   .garcom-field input:focus, .garcom-field select:focus { border-color: var(--accent); outline: none; }
   .garcom-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .btn-garcom-voltar-cardapio {
+      width: 100%; padding: 16px; margin-top: 8px;
+      background: var(--accent); color: #1a1a1a; border: none; border-radius: 10px;
+      font-weight: 700; font-size: 14px; cursor: pointer;
+  }
+
+  .garcom-carrinho-wrap {
+      flex: 1; overflow-y: auto; padding: 12px 14px;
+      -webkit-overflow-scrolling: touch;
+  }
   .garcom-carrinho {
-      flex: 1; background: var(--card-bg); border: 1px solid var(--border-soft);
-      border-radius: 10px; padding: 12px; overflow-y: auto; min-height: 120px;
+      background: var(--card-bg); border: 1px solid var(--border-soft);
+      border-radius: 12px; padding: 4px 12px; min-height: 80px;
   }
   .garcom-carrinho-item {
       display: flex; justify-content: space-between; align-items: flex-start;
-      padding: 10px 0; border-bottom: 1px solid var(--border-soft); gap: 8px;
+      padding: 12px 0; border-bottom: 1px solid var(--border-soft); gap: 10px;
   }
   .garcom-carrinho-item:last-child { border-bottom: none; }
-  .garcom-carrinho-item .nome { font-weight: 600; font-size: 13px; color: var(--text-main); }
-  .garcom-carrinho-item .obs { font-size: 10px; color: var(--text-muted); font-style: italic; margin-top: 3px; }
-  .garcom-carrinho-item .preco { color: var(--accent); font-weight: 700; font-size: 13px; white-space: nowrap; }
-  .garcom-carrinho-item button {
+  .garcom-carrinho-item .nome { font-weight: 600; font-size: 14px; color: var(--text-main); line-height: 1.3; }
+  .garcom-carrinho-item .obs { font-size: 11px; color: var(--text-muted); font-style: italic; margin-top: 4px; line-height: 1.35; }
+  .garcom-carrinho-item .preco { color: var(--accent); font-weight: 700; font-size: 14px; white-space: nowrap; }
+  .garcom-carrinho-item .btn-remover {
       background: transparent; border: 1px solid var(--danger); color: var(--danger);
-      border-radius: 4px; padding: 4px 8px; font-size: 11px; cursor: pointer; margin-top: 4px;
+      border-radius: 6px; padding: 6px 12px; font-size: 11px; cursor: pointer;
+      margin-top: 6px; min-height: 32px; touch-action: manipulation;
   }
   .garcom-total-box {
-      text-align: center; padding: 14px; background: var(--input-bg);
-      border-radius: 10px; border: 1px solid rgba(201,162,59,0.3);
+      text-align: center; padding: 16px; margin: 12px 14px;
+      background: var(--input-bg); border-radius: 12px;
+      border: 1px solid rgba(201,162,59,0.35);
   }
   .garcom-total-box .lbl { font-size: 10px; color: var(--text-muted); letter-spacing: 1px; }
-  .garcom-total-box .val { font-size: 28px; color: var(--accent); font-weight: 700; }
-  .btn-enviar-garcom {
-      width: 100%; padding: 18px; font-size: 14px; font-weight: 800;
-      letter-spacing: 1.5px; border-radius: 10px; border: none;
-      background: linear-gradient(135deg, var(--accent) 0%, #a8862f 100%);
-      color: #1a1a1a; cursor: pointer; touch-action: manipulation;
-  }
-  .btn-enviar-garcom:disabled { opacity: 0.5; cursor: not-allowed; }
+  .garcom-total-box .val { font-size: 32px; color: var(--accent); font-weight: 700; line-height: 1.2; }
+
   .garcom-cardapio-area {
-      display: flex; flex-direction: column; min-height: 0; overflow: hidden;
+      display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden;
   }
   .garcom-cat-bar {
-      display: flex; gap: 6px; padding: 12px 14px; overflow-x: auto;
+      display: flex; gap: 6px; padding: 10px 12px; overflow-x: auto;
       background: var(--card-bg); border-bottom: 1px solid var(--border-soft);
       flex-shrink: 0; -webkit-overflow-scrolling: touch;
   }
   .garcom-cat-btn {
-      flex-shrink: 0; padding: 10px 16px; border-radius: 20px;
+      flex-shrink: 0; padding: 10px 14px; border-radius: 20px;
       background: var(--input-bg); border: 1px solid var(--border-soft);
       color: var(--text-muted); font-size: 11px; font-weight: 600;
       cursor: pointer; white-space: nowrap; font-family: 'Poppins', sans-serif;
+      min-height: 40px; touch-action: manipulation;
   }
   .garcom-cat-btn.active { background: var(--accent); color: #1a1a1a; border-color: var(--accent); }
-  .garcom-busca-wrap { padding: 10px 14px; background: var(--bg-panel); flex-shrink: 0; }
+  .garcom-busca-wrap { padding: 8px 12px; background: var(--bg-panel); flex-shrink: 0; }
   .garcom-busca-wrap input {
       width: 100%; box-sizing: border-box; padding: 14px 16px;
       background: var(--input-bg); border: 1px solid var(--border-soft);
-      border-radius: 10px; color: var(--text-main); font-size: 16px;
+      border-radius: 10px; color: var(--text-main); font-size: 16px; min-height: 48px;
   }
   .garcom-produtos-grid {
-      flex: 1; overflow-y: auto; padding: 14px;
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 12px; align-content: start;
-      padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+      flex: 1; overflow-y: auto; padding: 10px 12px;
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 10px; align-content: start;
+      -webkit-overflow-scrolling: touch;
   }
   .garcom-prod-card {
       background: var(--card-elevated); border: 1px solid var(--border-soft);
-      border-radius: 12px; padding: 14px; cursor: pointer;
-      transition: 0.2s; touch-action: manipulation; min-height: 100px;
+      border-radius: 12px; padding: 12px; cursor: pointer;
+      transition: 0.15s; touch-action: manipulation;
       display: flex; flex-direction: column; justify-content: space-between;
+      min-height: 108px; position: relative;
   }
-  .garcom-prod-card:active { transform: scale(0.97); border-color: var(--accent); }
-  .garcom-prod-card .cat { font-size: 9px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
-  .garcom-prod-card .nome { font-size: 14px; font-weight: 600; color: var(--text-main); margin: 6px 0; line-height: 1.3; }
-  .garcom-prod-card .preco { font-size: 16px; font-weight: 700; color: var(--accent); }
-  .garcom-prod-card .add-hint { font-size: 10px; color: var(--text-muted); margin-top: 6px; }
+  .garcom-prod-card:active { transform: scale(0.98); border-color: var(--accent); }
+  .garcom-prod-card .cat { font-size: 8px; color: var(--text-muted); letter-spacing: 0.5px; text-transform: uppercase; }
+  .garcom-prod-card .nome { font-size: 13px; font-weight: 600; color: var(--text-main); margin: 4px 0; line-height: 1.25; }
+  .garcom-prod-card .preco { font-size: 15px; font-weight: 700; color: var(--accent); }
   .garcom-prod-card .prod-thumb {
-      width: 100%; height: 88px; object-fit: cover; border-radius: 8px;
-      margin-bottom: 8px; background: var(--input-bg);
+      width: 100%; height: 72px; object-fit: cover; border-radius: 8px;
+      margin-bottom: 6px; background: var(--input-bg);
+  }
+  .garcom-prod-card .btn-add-prod {
+      position: absolute; top: 8px; right: 8px;
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--accent); color: #1a1a1a; border: none;
+      font-size: 20px; font-weight: 700; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+      pointer-events: none;
+  }
+
+  .garcom-body.sem-rodape { padding-bottom: 16px; }
+  @media (min-width: 768px) {
+      .garcom-produtos-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 14px; }
+      .garcom-body, .garcom-rodape-passo { max-width: 720px; margin-left: auto; margin-right: auto; width: 100%; }
+      .garcom-rodape-passo { left: 50%; transform: translateX(-50%); }
   }
   .produto-thumb-mini {
       width: 52px; height: 52px; object-fit: cover; border-radius: 6px;
@@ -1344,25 +1483,13 @@
       font-style: italic;
       pointer-events: none;
   }
-  .garcom-vazio { text-align: center; color: var(--text-muted); padding: 40px 20px; font-style: italic; grid-column: 1 / -1; }
 
-  @media (max-width: 900px) {
-      .garcom-layout { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
-      .garcom-painel-mesa {
-          border-right: none; border-bottom: 1px solid var(--border-soft);
-          max-height: 42vh; flex-shrink: 0;
-      }
-      .garcom-produtos-grid { grid-template-columns: repeat(2, 1fr); }
-  }
   @media (max-width: 480px) {
       .cardapio-editor-toolbar { gap: 4px; padding: 8px; }
       .cardapio-editor-toolbar button { min-width: 32px; height: 32px; font-size: 12px; padding: 0 6px; }
       .cardapio-editor-toolbar select { min-width: 88px; height: 32px; font-size: 11px; }
       .header-left .btn-kds-toggle,
       .header-left .btn-garcom-toggle { font-size: 10px !important; padding: 6px 8px !important; }
-      .garcom-produtos-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
-      .garcom-prod-card { padding: 10px; min-height: 90px; }
-      .garcom-prod-card .nome { font-size: 12px; }
   }
 
   /* ABAS E TAGS */
@@ -1446,52 +1573,93 @@
       <img src="logo-baytigrill-sistema.png?v=2" alt="BAYTIGRILL">
       <span>SALÃO</span>
     </div>
-    <div class="garcom-pedido-num" id="garcomNumPedidoDisplay">PEDIDO #1</div>
+    <div class="garcom-pedido-num" id="garcomNumPedidoDisplay">#0001</div>
     <div class="garcom-topbar-user">
       <strong id="garcomNomeDisplay">Garçom</strong>
       <small>ATENDIMENTO</small>
     </div>
-    <button class="danger" onclick="trocarLogin()" style="padding:10px 14px; font-size:11px; border-radius:8px; font-weight:700;">🚪 SAIR</button>
+    <button type="button" class="danger garcom-btn-sair" onclick="trocarLogin()">SAIR</button>
   </header>
-  <div class="garcom-layout">
-    <aside class="garcom-painel-mesa">
-      <h3>Comanda da Mesa</h3>
-      <div class="garcom-field">
-        <label>MESA / LOCAL</label>
-        <input type="text" id="garcomInputMesa" placeholder="Ex: Mesa 12, Varanda, VIP" autocomplete="off" oninput="sincronizarMesaGarcom()">
+
+  <div class="garcom-steps" id="garcomSteps" aria-label="Etapas do pedido">
+    <div class="garcom-step is-active" data-passo="1">
+      <span class="garcom-step-num">1</span>Produtos
+    </div>
+    <div class="garcom-step" data-passo="2">
+      <span class="garcom-step-num">2</span>Dados
+    </div>
+    <div class="garcom-step" data-passo="3">
+      <span class="garcom-step-num">3</span>Lançar
+    </div>
+  </div>
+
+  <div class="garcom-body" id="garcomBody">
+
+    <div class="garcom-passo is-active" id="garcomPasso1">
+      <div class="garcom-passo-titulo">Adicionar produtos</div>
+      <div class="garcom-mini-carrinho" id="garcomMiniCarrinho"></div>
+      <div class="garcom-cardapio-area">
+        <div class="garcom-cat-bar" id="garcomCategorias"></div>
+        <div class="garcom-busca-wrap">
+          <input type="search" id="garcomBuscaProduto" placeholder="🔍 Buscar prato ou bebida..." oninput="renderCardapioGarcom()" autocomplete="off">
+        </div>
+        <div class="garcom-produtos-grid" id="garcomGridProdutos"></div>
       </div>
-      <div class="garcom-field">
-        <label>NOME DO CLIENTE (opcional)</label>
-        <input type="text" id="garcomInputCliente" placeholder="Ex: Sr. Silva" autocomplete="off">
+    </div>
+
+    <div class="garcom-passo" id="garcomPasso2">
+      <div class="garcom-passo-titulo">Dados da mesa</div>
+      <div class="garcom-painel-mesa">
+        <div class="garcom-field">
+          <label>NOME DO CLIENTE</label>
+          <input type="text" id="garcomInputCliente" placeholder="Ex: Sr. Silva" autocomplete="off">
+        </div>
+        <div class="garcom-field">
+          <label>MESA / LOCAL *</label>
+          <input type="text" id="garcomInputMesa" placeholder="Ex: Mesa 12, Balcão" autocomplete="off" oninput="sincronizarMesaGarcom()">
+        </div>
+        <div class="garcom-field">
+          <label>MESA JÁ CADASTRADA</label>
+          <select id="garcomSelectMesa" onchange="selecionarMesaGarcomExistente()">
+            <option value="">— Escolher mesa existente —</option>
+          </select>
+        </div>
+        <div class="garcom-row-3">
+          <div class="garcom-field"><label>PESSOAS</label><input type="number" id="garcomInputPessoas" min="0" inputmode="numeric" placeholder="0"></div>
+          <div class="garcom-field"><label>COPOS</label><input type="number" id="garcomInputCopos" min="0" inputmode="numeric" placeholder="0"></div>
+          <div class="garcom-field"><label>PRATOS</label><input type="number" id="garcomInputPratos" min="0" inputmode="numeric" placeholder="0"></div>
+        </div>
       </div>
-      <div class="garcom-field">
-        <label>MESA EM ABERTO</label>
-        <select id="garcomSelectMesa" onchange="selecionarMesaGarcomExistente()">
-          <option value="">— Nova mesa / digitar acima —</option>
-        </select>
+    </div>
+
+    <div class="garcom-passo" id="garcomPasso3">
+      <div class="garcom-passo-titulo">Revisar e lançar</div>
+      <div class="garcom-resumo-final" id="garcomResumoFinal"></div>
+      <div class="garcom-lancar-btns">
+        <button type="button" class="btn-lancar-garcom btn-lancar-garcom--marmita" id="btnLancarGarcomMarmita" onclick="concluirPedidoGarcomPorTipo('marmita')">🍱 MARMITAS — Imprimir e lançar</button>
+        <button type="button" class="btn-lancar-garcom btn-lancar-garcom--balcao" id="btnLancarGarcomBalcao" onclick="concluirPedidoGarcomPorTipo('balcao')">🏪 BALCÃO — Imprimir e lançar</button>
+        <button type="button" class="btn-lancar-garcom btn-lancar-garcom--cozinha" id="btnLancarGarcomCozinha" onclick="concluirPedidoGarcomPorTipo('mesa')">👨‍🍳 COZINHA / MESA — Imprimir e lançar</button>
+        <button type="button" class="btn-garcom-voltar" style="width:100%;margin-top:4px;" onclick="garcomIrParaPasso(2)">← Voltar aos dados</button>
       </div>
-      <div class="garcom-row-3">
-        <div class="garcom-field"><label>PESSOAS</label><input type="number" id="garcomInputPessoas" min="0" inputmode="numeric" placeholder="0"></div>
-        <div class="garcom-field"><label>COPOS</label><input type="number" id="garcomInputCopos" min="0" inputmode="numeric" placeholder="0"></div>
-        <div class="garcom-field"><label>PRATOS</label><input type="number" id="garcomInputPratos" min="0" inputmode="numeric" placeholder="0"></div>
-      </div>
-      <h3 style="margin-top:8px;">Itens do Pedido</h3>
-      <div class="garcom-carrinho" id="garcomListaCarrinho">
-        <p class="garcom-vazio" style="padding:20px;margin:0;">Toque no cardápio para adicionar pratos</p>
-      </div>
-      <div class="garcom-total-box">
-        <div class="lbl">TOTAL DO PEDIDO</div>
-        <div class="val" id="garcomTotalDisplay">R$ 0,00</div>
-      </div>
-      <button type="button" class="btn-enviar-garcom" id="btnEnviarPedidoGarcom" onclick="concluirPedidoGarcom()">ENVIAR PARA COZINHA E CAIXA</button>
-    </aside>
-    <main class="garcom-cardapio-area">
-      <div class="garcom-cat-bar" id="garcomCategorias"></div>
-      <div class="garcom-busca-wrap">
-        <input type="search" id="garcomBuscaProduto" placeholder="🔍 Buscar no cardápio..." oninput="renderCardapioGarcom()" autocomplete="off">
-      </div>
-      <div class="garcom-produtos-grid" id="garcomGridProdutos"></div>
-    </main>
+    </div>
+
+  </div>
+
+  <div class="garcom-rodape-passo" id="garcomRodape1">
+    <div class="garcom-rodape-resumo">
+      <span id="garcomRodapeQtd">0 itens</span>
+      <strong id="garcomRodapeTotal">R$ 0,00</strong>
+    </div>
+    <div class="garcom-rodape-btns">
+      <button type="button" class="btn-enviar-garcom" id="btnGarcomSalvarPasso1" onclick="garcomSalvarPasso1()">SALVAR E CONTINUAR →</button>
+    </div>
+  </div>
+
+  <div class="garcom-rodape-passo oculto" id="garcomRodape2">
+    <div class="garcom-rodape-btns">
+      <button type="button" class="btn-garcom-voltar" onclick="garcomIrParaPasso(1)">← Voltar</button>
+      <button type="button" class="btn-enviar-garcom" id="btnGarcomSalvarPasso2" onclick="garcomSalvarPasso2()">SALVAR E CONTINUAR →</button>
+    </div>
   </div>
 </div>
 
@@ -2452,6 +2620,7 @@
   let roleUsuarioAtual = 'admin'; let filtroListaAtual = 'todos';
   let nomeGarcomLogado = '';
   let carrinhoGarcom = [];
+  let garcomPassoAtual = 1;
   let categoriaFiltroGarcom = 'TODAS';
   let numPedidoGarcom = 1;
   let garcomPedidoEnviando = false;
@@ -5044,11 +5213,76 @@
       renderCategoriasGarcom();
       renderCardapioGarcom();
       atualizarSelectMesasGarcom();
+      renderCarrinhoGarcom();
+      garcomIrParaPasso(1);
+  }
+
+  function garcomIrParaPasso(n) {
+      garcomPassoAtual = n;
+      [1, 2, 3].forEach(p => {
+          document.getElementById('garcomPasso' + p)?.classList.toggle('is-active', p === n);
+      });
+      document.querySelectorAll('.garcom-step').forEach(el => {
+          let p = Number(el.dataset.passo);
+          el.classList.toggle('is-active', p === n);
+          el.classList.toggle('is-done', p < n);
+      });
+      document.getElementById('garcomRodape1')?.classList.toggle('oculto', n !== 1);
+      document.getElementById('garcomRodape2')?.classList.toggle('oculto', n !== 2);
+      document.getElementById('garcomBody')?.classList.toggle('garcom-passo-3', n === 3);
+      if (n === 1) setTimeout(() => document.getElementById('garcomBuscaProduto')?.focus(), 150);
+      if (n === 2) setTimeout(() => document.getElementById('garcomInputCliente')?.focus(), 150);
+      if (n === 3) renderResumoGarcomPasso3();
+  }
+
+  function garcomSalvarPasso1() {
+      if (!carrinhoGarcom.length) {
+          return Swal.fire('Comanda vazia', 'Adicione pelo menos um produto antes de continuar.', 'warning');
+      }
+      garcomIrParaPasso(2);
+  }
+
+  function garcomSalvarPasso2() {
+      let mesa = (document.getElementById('garcomInputMesa')?.value || '').trim();
+      if (!mesa) {
+          return Swal.fire('Mesa obrigatória', 'Informe a mesa ou local antes de continuar.', 'warning');
+      }
+      garcomIrParaPasso(3);
+  }
+
+  function renderResumoGarcomPasso3() {
+      let box = document.getElementById('garcomResumoFinal');
+      if (!box) return;
+      let mesa = (document.getElementById('garcomInputMesa')?.value || '').trim();
+      let cliente = (document.getElementById('garcomInputCliente')?.value || '').trim();
+      let pessoas = document.getElementById('garcomInputPessoas')?.value || '0';
+      let copos = document.getElementById('garcomInputCopos')?.value || '0';
+      let pratos = document.getElementById('garcomInputPratos')?.value || '0';
+      let total = carrinhoGarcom.reduce((s, i) => s + (Number(i.valor) || 0), 0);
+      let qtdItens = carrinhoGarcom.reduce((s, i) => s + (Number(i.qtd) || 1), 0);
+      let itensHtml = carrinhoGarcom.map(i => `
+          <div class="garcom-resumo-item">
+              <strong>${i.qtd}x</strong> ${escaparHtml(i.desc)}
+              ${i.ingredientes ? '<div style="font-size:11px;color:var(--text-muted);font-style:italic;margin-top:4px;">' + escaparHtml(i.ingredientes) + '</div>' : ''}
+              <div style="text-align:right;color:var(--accent);font-weight:700;margin-top:4px;">${formatarMoeda(i.valor)}</div>
+          </div>`).join('');
+      box.innerHTML = `
+          <div class="garcom-resumo-bloco">
+              <h4>Dados do atendimento</h4>
+              <div class="garcom-resumo-linha"><b>Cliente:</b> ${escaparHtml(cliente || '—')}</div>
+              <div class="garcom-resumo-linha"><b>Mesa/Local:</b> ${escaparHtml(mesa)}</div>
+              <div class="garcom-resumo-linha"><b>Pessoas:</b> ${escaparHtml(pessoas)} · <b>Copos:</b> ${escaparHtml(copos)} · <b>Pratos:</b> ${escaparHtml(pratos)}</div>
+              <div class="garcom-resumo-linha"><b>Garçom:</b> ${escaparHtml(nomeGarcomLogado || '—')}</div>
+          </div>
+          <div class="garcom-resumo-bloco">
+              <h4>Itens (${qtdItens}) — Total ${formatarMoeda(total)}</h4>
+              ${itensHtml || '<p class="garcom-vazio">Nenhum item.</p>'}
+          </div>`;
   }
 
   function sincronizarNumPedidoGarcom() {
       let el = document.getElementById('garcomNumPedidoDisplay');
-      if (el) el.textContent = 'PEDIDO #' + formatarNumPedido(numPedidoGarcom || obterNumPedidoAtual());
+      if (el) el.textContent = '#' + formatarNumPedido(numPedidoGarcom || obterNumPedidoAtual());
   }
 
   function renderCategoriasGarcom() {
@@ -5082,57 +5316,79 @@
           let idEsc = String(p.id).replace(/'/g, "\\'");
           let thumb = p.imagem ? `<img src="${p.imagem}" class="prod-thumb" alt="">` : '';
           return `<div class="garcom-prod-card" onclick="iniciarSelecaoProdutoGarcom('${idEsc}')">
+              <span class="btn-add-prod" aria-hidden="true">+</span>
               ${thumb}
               <div class="cat">${escaparHtml(p.categoria || 'Cardápio')}</div>
               <div class="nome">${escaparHtml(p.nome)}</div>
               <div class="preco">${formatarMoeda(p.valor)}</div>
-              <div class="add-hint">Toque para adicionar</div>
           </div>`;
       }).join('');
   }
 
-  function iniciarSelecaoProdutoGarcom(id) {
-      let p = catalogo.find(x => x.id === id);
-      if (!p) return;
+  function abrirModalItemGarcom(p) {
       let precoBase = Number(p.valor) || 0;
-      let imgHtml = p.imagem ? `<img src="${p.imagem}" style="width:100%;max-height:160px;object-fit:cover;border-radius:8px;margin-bottom:12px;" alt="">` : '';
-      let blocoAdicionais = '';
+      precoBaseModalAdicCaixa = precoBase;
+      let imgHtml = p.imagem ? `<img src="${p.imagem}" style="width:100%;max-height:140px;object-fit:cover;border-radius:8px;margin-bottom:10px;" alt="">` : '';
+      let blocoAdic = '';
       if (produtoPermiteAdicionaisExtras(p)) {
-          blocoAdicionais = '<p style="text-align:left;font-weight:600;font-size:13px;margin:15px 0 8px;color:#aaa;">ADICIONAIS E ACOMPANHAMENTOS:</p>'
-              + '<div style="max-height:200px;overflow-y:auto;padding-right:5px;">' + montarHtmlCheckboxesAdicionaisCaixa() + '</div>'
-              + '<span id="totalModalAdicCaixa" style="display:block;text-align:center;margin:15px 0;"></span>';
+          blocoAdic = '<p style="text-align:left;font-weight:600;font-size:12px;margin:12px 0 6px;color:#aaa;">ADICIONAIS (opcional):</p>'
+              + '<div style="max-height:150px;overflow-y:auto;">' + montarHtmlCheckboxesAdicionaisCaixa() + '</div>';
       }
       Swal.fire({
           title: p.nome,
-          html: imgHtml + '<p style="text-align:left;font-size:12px;color:var(--text-muted);margin-bottom:15px;font-style:italic;">' + escaparHtml(p.ingredientes || '') + '</p>'
-              + '<p style="font-weight:700;font-size:20px;color:var(--text-main);margin-bottom:12px;">Valor Base: <span style="color:var(--accent);">' + formatarMoeda(p.valor) + '</span></p>'
-              + blocoAdicionais
+          html: imgHtml
+              + '<p style="text-align:left;font-size:12px;color:#aaa;margin-bottom:8px;font-style:italic;">' + escaparHtml(p.ingredientes || '') + '</p>'
+              + '<p style="font-weight:700;font-size:17px;margin-bottom:8px;">Un.: <span style="color:var(--accent);">' + formatarMoeda(p.valor) + '</span></p>'
+              + blocoAdic
+              + '<span id="totalModalAdicCaixa" style="display:block;text-align:center;margin:10px 0;"></span>'
+              + htmlCampoQuantidadeItem('swalQtdItemGarcom')
               + htmlCampoObservacaoItem('swalObsItemGarcom'),
           showCancelButton: true,
           background: '#3A4536',
           color: '#F0E6D2',
           confirmButtonColor: '#C9A23B',
           cancelButtonColor: '#444',
-          confirmButtonText: 'Adicionar à comanda',
+          confirmButtonText: '✓ Adicionar',
           cancelButtonText: 'Cancelar',
-          didOpen: () => { precoBaseModalAdicCaixa = precoBase; if (produtoPermiteAdicionaisExtras(p)) atualizarTotalModalAdicionaisCaixa(); },
-          preConfirm: () => ({ adicionais: produtoPermiteAdicionaisExtras(p) ? lerAdicionaisSelecionadosCaixa() : [], observacao: lerObservacaoSwal('swalObsItemGarcom') })
+          didOpen: () => {
+              atualizarTotalModalAdicionaisCaixa();
+              setTimeout(() => document.getElementById('swalQtdItemGarcom')?.focus(), 100);
+          },
+          preConfirm: () => {
+              let qtd = lerQuantidadeSwal('swalQtdItemGarcom');
+              if (qtd < 1) { Swal.showValidationMessage('Informe a quantidade.'); return false; }
+              return {
+                  qtd,
+                  adicionais: produtoPermiteAdicionaisExtras(p) ? lerAdicionaisSelecionadosCaixa() : [],
+                  observacao: lerObservacaoSwal('swalObsItemGarcom')
+              };
+          }
       }).then((result) => {
           if (!result.isConfirmed) return;
+          let qtd = result.value.qtd;
           let adic = result.value.adicionais || [];
           let unit = precoBase + adic.reduce((s, a) => s + a.valor, 0);
-          let ings = textoIngredientesComAdicionais(p.ingredientes, adic);
-          adicionarItemCarrinhoGarcom(p.nome, unit, montarTextoObservacoesItem(ings, result.value.observacao));
+          let ings = montarTextoObservacoesItem(textoIngredientesComAdicionais(p.ingredientes, adic), result.value.observacao);
+          adicionarItemCarrinhoGarcom(p.nome, qtd, unit, ings, p.categoria);
       });
   }
 
-  function adicionarItemCarrinhoGarcom(desc, valorUnit, ingredientes) {
+  function iniciarSelecaoProdutoGarcom(id) {
+      let p = catalogo.find(x => x.id === id);
+      if (!p) return;
+      abrirModalItemGarcom(p);
+  }
+
+  function adicionarItemCarrinhoGarcom(desc, qtd, valorUnit, ingredientes, categoria) {
+      let q = Math.max(1, Math.floor(Number(qtd) || 1));
+      let unit = Number(valorUnit) || 0;
       carrinhoGarcom.push({
           itemId: gerarIdItem(),
           desc: desc,
-          qtd: 1,
-          valor: valorUnit,
+          qtd: q,
+          valor: unit * q,
           tipo: 'presencial',
+          categoria: categoria || '',
           ingredientes: ingredientes || '',
           numPedido: numPedidoGarcom,
           pago: false,
@@ -5141,28 +5397,41 @@
           notificadoAdmin: true
       });
       renderCarrinhoGarcom();
+      const Toast = Swal.mixin({ toast: true, position: 'top', showConfirmButton: false, timer: 1200, background: '#3A4536', color: '#F0E6D2' });
+      Toast.fire({ icon: 'success', title: q + 'x ' + desc });
+      try { navigator.vibrate && navigator.vibrate(30); } catch (e) {}
   }
 
   function renderCarrinhoGarcom() {
-      let box = document.getElementById('garcomListaCarrinho');
-      let totalEl = document.getElementById('garcomTotalDisplay');
-      if (!box) return;
-      if (!carrinhoGarcom.length) {
-          box.innerHTML = '<p class="garcom-vazio" style="padding:20px;margin:0;">Toque no cardápio para adicionar pratos</p>';
-          if (totalEl) totalEl.textContent = formatarMoeda(0);
-          return;
-      }
-      box.innerHTML = carrinhoGarcom.map((i, idx) => `
-          <div class="garcom-carrinho-item">
-              <div style="flex:1;">
-                  <div class="nome">${i.qtd}x ${escaparHtml(i.desc)}</div>
-                  ${i.ingredientes ? '<div class="obs">' + escaparHtml(i.ingredientes) + '</div>' : ''}
-                  <button type="button" onclick="removerItemCarrinhoGarcom(${idx})">Remover</button>
-              </div>
-              <div class="preco">${formatarMoeda(i.valor)}</div>
-          </div>`).join('');
+      let mini = document.getElementById('garcomMiniCarrinho');
+      let rodapeQtd = document.getElementById('garcomRodapeQtd');
+      let rodapeTotal = document.getElementById('garcomRodapeTotal');
+      let btnPasso1 = document.getElementById('btnGarcomSalvarPasso1');
+      if (!mini && !rodapeQtd) return;
+
+      let qtdItens = carrinhoGarcom.reduce((s, i) => s + (Number(i.qtd) || 1), 0);
       let total = carrinhoGarcom.reduce((s, i) => s + (Number(i.valor) || 0), 0);
-      if (totalEl) totalEl.textContent = formatarMoeda(total);
+      let temItens = carrinhoGarcom.length > 0;
+
+      if (rodapeQtd) rodapeQtd.textContent = qtdItens + (qtdItens === 1 ? ' item' : ' itens');
+      if (rodapeTotal) rodapeTotal.textContent = formatarMoeda(total);
+      if (btnPasso1) btnPasso1.disabled = !temItens;
+
+      if (mini) {
+          mini.classList.toggle('visivel', temItens);
+          if (!temItens) {
+              mini.innerHTML = '';
+          } else {
+              mini.innerHTML = carrinhoGarcom.map((i, idx) =>
+                  `<div style="display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px dashed var(--border-soft);">
+                      <span>${i.qtd}x ${escaparHtml(i.desc)}</span>
+                      <button type="button" style="background:none;border:none;color:var(--danger);font-size:10px;cursor:pointer;padding:0;" onclick="removerItemCarrinhoGarcom(${idx})">✕</button>
+                  </div>`
+              ).join('');
+          }
+      }
+
+      if (garcomPassoAtual === 3) renderResumoGarcomPasso3();
   }
 
   function removerItemCarrinhoGarcom(idx) {
@@ -5174,7 +5443,7 @@
       let sel = document.getElementById('garcomSelectMesa');
       if (!sel) return;
       let atual = sel.value;
-      sel.innerHTML = '<option value="">— Nova mesa / digitar acima —</option>';
+      sel.innerHTML = '<option value="">— Escolher mesa existente —</option>';
       clientes
           .filter(c => c.tipoCadastro === 'mesa' || (!c.tipoCadastro && !c.telefone))
           .sort((a, b) => String(a.nome || '').localeCompare(String(b.nome || ''), 'pt-BR'))
@@ -5195,9 +5464,10 @@
   function sincronizarMesaGarcom() {
       let mesa = (document.getElementById('garcomInputMesa')?.value || '').trim().toUpperCase();
       let sel = document.getElementById('garcomSelectMesa');
-      if (!sel || !mesa) return;
-      let found = clientes.find(c => String(c.nome || '').toUpperCase() === mesa);
-      sel.value = found ? found.id : '';
+      if (sel && mesa) {
+          let found = clientes.find(c => String(c.nome || '').toUpperCase() === mesa);
+          sel.value = found ? found.id : '';
+      }
   }
 
   function montarNomeComandaGarcom(mesa, clienteNome) {
@@ -5330,54 +5600,92 @@
   function limparFormularioGarcom() {
       carrinhoGarcom = [];
       document.getElementById('garcomInputCliente').value = '';
+      document.getElementById('garcomInputMesa').value = '';
       document.getElementById('garcomInputPessoas').value = '';
       document.getElementById('garcomInputCopos').value = '';
       document.getElementById('garcomInputPratos').value = '';
+      let sel = document.getElementById('garcomSelectMesa');
+      if (sel) sel.value = '';
       renderCarrinhoGarcom();
+      garcomIrParaPasso(1);
   }
 
-  function concluirPedidoGarcom() {
+  function setBotoesLancarGarcom(enviando) {
+      const labels = {
+          btnLancarGarcomMarmita: '🍱 MARMITAS — Imprimir e lançar',
+          btnLancarGarcomBalcao: '🏪 BALCÃO — Imprimir e lançar',
+          btnLancarGarcomCozinha: '👨‍🍳 COZINHA / MESA — Imprimir e lançar'
+      };
+      Object.keys(labels).forEach(id => {
+          let btn = document.getElementById(id);
+          if (!btn) return;
+          btn.disabled = enviando;
+          btn.textContent = enviando ? 'LANÇANDO...' : labels[id];
+      });
+  }
+
+  function concluirPedidoGarcomPorTipo(tipo) {
       if (garcomPedidoEnviando) return;
       let mesa = (document.getElementById('garcomInputMesa')?.value || '').trim();
-      if (!mesa) return Swal.fire('Mesa obrigatória', 'Informe a mesa ou local do atendimento.', 'warning');
-      if (!carrinhoGarcom.length) return Swal.fire('Comanda vazia', 'Adicione itens do cardápio antes de enviar.', 'warning');
+      if (!mesa) {
+          garcomIrParaPasso(2);
+          return Swal.fire('Mesa obrigatória', 'Informe a mesa antes de lançar.', 'warning');
+      }
+      if (!carrinhoGarcom.length) {
+          garcomIrParaPasso(1);
+          return Swal.fire('Comanda vazia', 'Adicione itens do cardápio antes de lançar.', 'warning');
+      }
       if (!nomeGarcomLogado) return Swal.fire('Identificação', 'Saia e entre novamente informando seu nome.', 'warning');
 
+      let tipoDestino = tipo === 'mesa' ? 'mesa' : 'marmita';
       let clienteNome = (document.getElementById('garcomInputCliente')?.value || '').trim();
       let nomeComanda = montarNomeComandaGarcom(mesa, clienteNome);
       let numPedido = obterNumPedidoAtual();
       let meta = obterMetaPedidoGarcom(numPedido);
+      meta.destinoCozinha = tipo;
+      meta.tipoCupom = tipoDestino;
+      if (tipo === 'balcao' && !meta.mesa) meta.mesa = 'BALCÃO';
       let agora = obterDataHoraLocal();
-      let pendenteCaixa = true;
+      const pendenteCaixa = false;
+      const labelDestino = tipo === 'marmita' ? 'Marmitas' : tipo === 'balcao' ? 'Balcão' : 'Mesa / Cozinha';
 
       garcomPedidoEnviando = true;
-      let btn = document.getElementById('btnEnviarPedidoGarcom');
-      if (btn) { btn.disabled = true; btn.textContent = 'ENVIANDO...'; }
+      setBotoesLancarGarcom(true);
 
       const montarItens = () => carrinhoGarcom.map(i => ({
           ...i,
+          itemId: i.itemId || gerarIdItem(),
           data: agora,
           horaPedido: agora,
           metaPedido: { ...meta },
           pendenteCaixa,
+          pronto: itemProntoAoLancar(i, tipoDestino),
           numPedido: numPedido
       }));
 
       const finalizarSucesso = (idCliente, itensFinais) => {
           let c = clientes.find(x => x.id === idCliente);
-          if (c) c.itens = itensFinais;
-          let itensCupom = filtrarItensProducao(montarItens());
+          if (c) {
+              c.itens = itensFinais;
+              c.pagamento = '';
+              c.novoOnline = false;
+          }
+          let itensNovos = montarItens();
+          let itensCupom = filtrarItensProducao(itensNovos);
           garcomPedidoEnviando = false;
-          if (btn) { btn.disabled = false; btn.textContent = 'ENVIAR PARA COZINHA E CAIXA'; }
+          setBotoesLancarGarcom(false);
           if (c && itensCupom.length) abrirImpressaoCupomProducao(c, itensCupom, meta);
           limparFormularioGarcom();
           avancarContadorAposPedido(numPedido);
           atualizarSelectMesasGarcom();
+          render();
+          const totalLancado = itensNovos.reduce((s, i) => s + (Number(i.valor) || 0), 0);
           Swal.fire({
               icon: 'success',
-              title: 'Pedido enviado!',
-              text: 'Cozinha e caixa foram notificados.',
-              timer: 2200,
+              title: 'Comanda em aberto!',
+              html: '<p style="font-size:13px;margin:0;">Lançada para <strong>' + escaparHtml(labelDestino) + '</strong></p>'
+                  + '<p style="font-size:14px;margin:10px 0 0;color:var(--accent);font-weight:700;">' + formatarMoeda(totalLancado) + ' aguardando recebimento</p>',
+              timer: 2800,
               showConfirmButton: false,
               background: '#3A4536',
               color: '#F0E6D2'
@@ -5386,8 +5694,8 @@
 
       const finalizarErro = (msg) => {
           garcomPedidoEnviando = false;
-          if (btn) { btn.disabled = false; btn.textContent = 'ENVIAR PARA COZINHA E CAIXA'; }
-          Swal.fire('Não foi possível enviar', msg || 'Tente novamente.', 'error');
+          setBotoesLancarGarcom(false);
+          Swal.fire('Não foi possível lançar', msg || 'Tente novamente.', 'error');
       };
 
       resolverClienteIdGarcom(nomeComanda).then(idCliente => {
@@ -5396,11 +5704,17 @@
           let itensNovos = montarItens();
           let itensFinais = [...itensAtuais, ...itensNovos];
           if (!firebaseConfigurado()) {
-              if (clienteAtual) clienteAtual.itens = itensFinais;
+              if (clienteAtual) {
+                  clienteAtual.itens = itensFinais;
+                  clienteAtual.pagamento = '';
+                  clienteAtual.novoOnline = false;
+              }
               finalizarSucesso(idCliente, itensFinais);
               return;
           }
-          db.collection('clientes').doc(idCliente).update({ itens: itensFinais })
+          const payload = { itens: itensFinais, novoOnline: false };
+          if (clienteAtual?.pagamento) payload.pagamento = firebase.firestore.FieldValue.delete();
+          db.collection('clientes').doc(idCliente).update(payload)
               .then(() => finalizarSucesso(idCliente, itensFinais))
               .catch(err => {
                   console.error('Erro pedido garçom:', err);
@@ -7299,7 +7613,8 @@
   let precoBaseModalAdicCaixa = 0;
   function atualizarTotalModalAdicionaisCaixa() {
       let extra = lerAdicionaisSelecionadosCaixa().reduce((s, a) => s + a.valor, 0);
-      let qtd = lerQuantidadeSwal('swalQtdItemCaixa');
+      let qtdEl = document.getElementById('swalQtdItemGarcom') || document.getElementById('swalQtdItemCaixa');
+      let qtd = Math.max(1, Math.floor(Number(qtdEl?.value) || 1));
       let el = document.getElementById('totalModalAdicCaixa');
       if (el) el.innerHTML = '<strong style="color:var(--accent);font-size:18px;">Total: ' + formatarMoeda((precoBaseModalAdicCaixa + extra) * qtd) + '</strong>'
           + (qtd > 1 ? '<span style="display:block;font-size:11px;color:#aaa;margin-top:4px;">' + qtd + 'x ' + formatarMoeda(precoBaseModalAdicCaixa + extra) + '</span>' : '');
