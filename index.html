@@ -980,21 +980,25 @@
       box-sizing: border-box;
       font-family: 'Courier New', Courier, 'Liberation Mono', monospace;
       font-size: 9pt;
+      font-weight: 700;
       line-height: 1.3;
       color: #000;
       background: #fff;
       text-align: left;
       word-wrap: break-word;
       overflow-wrap: anywhere;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
   }
   .cupom-termico-58 .cupom-titulo {
       margin: 0 0 2mm;
       padding-bottom: 2mm;
-      font-size: 10pt;
-      font-weight: 700;
+      font-size: 10.5pt;
+      font-weight: 900;
       text-align: center;
       border-bottom: 1px dashed #000;
-      letter-spacing: 0.02em;
+      letter-spacing: 0.04em;
+      color: #000;
   }
   .cupom-termico-58 .cupom-subtitulo {
       font-size: 8pt;
@@ -1002,13 +1006,20 @@
       margin: 0 0 2mm;
       font-weight: 600;
   }
-  .cupom-termico-58 .cupom-meta-table { width: 100%; border-collapse: collapse; font-size: 8.5pt; margin-bottom: 2mm; }
-  .cupom-termico-58 .cupom-meta-table td { padding: 0.5mm 0; vertical-align: top; border: none !important; }
-  .cupom-termico-58 .cupom-meta-table td:last-child { text-align: right; font-weight: 700; }
+  .cupom-termico-58 .cupom-meta-table { width: 100%; border-collapse: collapse; font-size: 8.5pt; font-weight: 700; margin-bottom: 2mm; }
+  .cupom-termico-58 .cupom-meta-table td { padding: 0.5mm 0; vertical-align: top; border: none !important; font-weight: 700; color: #000; }
+  .cupom-termico-58 .cupom-meta-table td:last-child { text-align: right; font-weight: 900; }
   .cupom-termico-58 .cupom-sep { border: none; border-top: 1px dashed #000; margin: 2.5mm 0; height: 0; }
   .cupom-termico-58 .cupom-sep-solid { border: none; border-top: 1px solid #000; margin: 2.5mm 0; height: 0; }
-  .cupom-termico-58 .cupom-bloco { font-size: 8.5pt; line-height: 1.35; font-weight: 600; }
-  .cupom-termico-58 .cupom-bloco b { font-weight: 700; }
+  .cupom-termico-58 .cupom-bloco { font-size: 9pt; line-height: 1.4; font-weight: 800; color: #000; }
+  .cupom-termico-58 .cupom-bloco b { font-weight: 900; }
+  .cupom-termico-58 .cupom-destaque {
+      font-size: 10pt;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      color: #000;
+      text-transform: uppercase;
+  }
   .cupom-termico-58 .cupom-stats {
       border: 1px solid #000;
       padding: 1.5mm;
@@ -1020,17 +1031,38 @@
       gap: 1mm;
       text-align: center;
   }
-  .cupom-termico-58 .cupom-secao { font-size: 8.5pt; font-weight: 700; margin: 1mm 0 1.5mm; letter-spacing: 0.03em; }
+  .cupom-termico-58 .cupom-secao { font-size: 9pt; font-weight: 900; margin: 1mm 0 1.5mm; letter-spacing: 0.05em; color: #000; }
   .cupom-termico-58 .cupom-itens-table { width: 100%; border-collapse: collapse; }
   .cupom-termico-58 .cupom-item-row td { padding: 1.5mm 0; border-bottom: 1px dashed #000 !important; vertical-align: top; }
-  .cupom-termico-58 .cupom-item-nome { font-size: 9.5pt; font-weight: 700; line-height: 1.25; }
+  .cupom-termico-58 .cupom-item-nome { font-size: 10pt; font-weight: 900; line-height: 1.25; color: #000; }
   .cupom-termico-58 .cupom-item-obs { font-size: 8pt; font-weight: 600; margin-top: 1mm; padding-left: 2mm; }
   .cupom-termico-58 .cupom-item-valor { font-size: 8.5pt; font-weight: 700; text-align: right; white-space: nowrap; }
   .cupom-termico-58 .cupom-itens-table .cupom-item-row td:last-child { width: 20mm; padding-left: 1mm !important; vertical-align: top; }
   .cupom-termico-58 .cupom-total { margin-top: 3mm; text-align: right; font-size: 11pt; font-weight: 700; }
   .cupom-termico-58 .cupom-rodape { font-size: 8pt; text-align: center; font-weight: 600; margin-top: 2mm; font-style: italic; }
-  .cupom-termico-58 .cupom-empresa-nome { margin: 0 0 1mm; font-size: 11pt; font-weight: 700; text-align: center; font-family: 'Courier New', Courier, monospace; color: #000; }
-  .cupom-termico-58 .cupom-empresa-info { font-size: 8pt; margin: 0 0 2mm; text-align: center; line-height: 1.35; color: #000; }
+  .cupom-termico-58 .cupom-empresa-nome {
+      margin: 0 0 1.5mm;
+      font-size: 12pt;
+      font-weight: 900;
+      text-align: center;
+      font-family: 'Courier New', Courier, monospace;
+      color: #000;
+      letter-spacing: 0.06em;
+  }
+  .cupom-termico-58 .cupom-empresa-info {
+      font-size: 9pt;
+      margin: 0 0 2mm;
+      text-align: center;
+      line-height: 1.4;
+      color: #000;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+  }
+  .cupom-termico-58 .cupom-logo-forte img,
+  .cupom-termico-58 .cupom-logo img {
+      filter: grayscale(100%) contrast(2.4) brightness(0.68);
+      -webkit-filter: grayscale(100%) contrast(2.4) brightness(0.68);
+  }
   .cupom-termico-58 .cupom-troco {
       margin-top: 3mm;
       text-align: center;
@@ -1072,6 +1104,8 @@
       height: auto !important;
       max-height: 12mm !important;
       object-fit: contain;
+      filter: grayscale(100%) contrast(2.4) brightness(0.68) !important;
+      -webkit-filter: grayscale(100%) contrast(2.4) brightness(0.68) !important;
   }
   @media print {
     html, body {
@@ -3039,10 +3073,14 @@
 
   const IMPRESSORA_TERMICA = { modelo: 'KNUP IM607', larguraMm: 58, colunas: 32 };
 
+  function htmlDestaqueCupom(texto) {
+      return '<strong class="cupom-destaque">' + escaparHtml(String(texto || '—')) + '</strong>';
+  }
+
   function htmlLogoImpressao(larguraMm) {
       let src = logoBase64 || LOGO_IMPRESSAO_URL;
       let w = larguraMm || 46;
-      return `<div class="cupom-logo"><img src="${src}" alt="Logo" style="max-width:${w}mm;width:auto;height:auto;max-height:12mm;object-fit:contain;"></div>`;
+      return `<div class="cupom-logo cupom-logo-forte"><img src="${src}" alt="Logo" style="max-width:${w}mm;width:auto;height:auto;max-height:12mm;object-fit:contain;"></div>`;
   }
 
   function htmlCabecalhoEmpresaImpressao(opts) {
@@ -6780,7 +6818,7 @@
               <div class="cupom-titulo">COMPROVANTE BALCAO</div>
               <hr class="cupom-sep">
               <div class="cupom-bloco">
-                  <div><b>Cliente:</b> ${escaparHtml(reg.nome)}</div>
+                  <div><b>Cliente:</b> ${htmlDestaqueCupom(reg.nome)}</div>
                   ${reg.telefone ? '<div><b>Tel:</b> ' + escaparHtml(reg.telefone) + '</div>' : ''}
                   ${reg.endereco ? '<div><b>End.:</b> ' + escaparHtml(reg.endereco) + '</div>' : ''}
                   <div><b>Data:</b> ${formatarDataHoraBR(reg.criadoEm || obterDataHoraLocal())}</div>
@@ -7292,32 +7330,33 @@
       return `@page{size:58mm auto;margin:0}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:58mm;min-height:0;height:auto;margin:0;padding:0;background:#fff;overflow:visible}
-.cupom-impressao.cupom-termico-58{width:58mm;max-width:58mm;padding:1mm 1.5mm 1.5mm;font-family:'Courier New',Courier,monospace;font-size:9pt;line-height:1.3;color:#000;background:#fff;word-wrap:break-word;overflow-wrap:anywhere}
-.cupom-titulo{margin:0 0 2mm;padding-bottom:2mm;font-size:10pt;font-weight:700;text-align:center;border-bottom:1px dashed #000}
-.cupom-subtitulo{font-size:8pt;text-align:center;margin:0 0 2mm;font-weight:600}
-.cupom-meta-table{width:100%;border-collapse:collapse;font-size:8.5pt;margin-bottom:2mm}
-.cupom-meta-table td{padding:.5mm 0;vertical-align:top;border:none}
-.cupom-meta-table td:last-child{text-align:right;font-weight:700}
+.cupom-impressao.cupom-termico-58{width:58mm;max-width:58mm;padding:1mm 1.5mm 1.5mm;font-family:'Courier New',Courier,monospace;font-size:9pt;font-weight:700;line-height:1.3;color:#000;background:#fff;word-wrap:break-word;overflow-wrap:anywhere;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.cupom-titulo{margin:0 0 2mm;padding-bottom:2mm;font-size:10.5pt;font-weight:900;text-align:center;border-bottom:1px dashed #000;letter-spacing:.04em;color:#000}
+.cupom-subtitulo{font-size:8.5pt;text-align:center;margin:0 0 2mm;font-weight:800;color:#000}
+.cupom-meta-table{width:100%;border-collapse:collapse;font-size:8.5pt;font-weight:700;margin-bottom:2mm;color:#000}
+.cupom-meta-table td{padding:.5mm 0;vertical-align:top;border:none;font-weight:700;color:#000}
+.cupom-meta-table td:last-child{text-align:right;font-weight:900}
 .cupom-sep{border:none;border-top:1px dashed #000;margin:2mm 0;height:0}
 .cupom-sep-solid{border:none;border-top:1px solid #000;margin:2mm 0;height:0}
-.cupom-bloco{font-size:8.5pt;line-height:1.35;font-weight:600}
-.cupom-bloco b{font-weight:700}
-.cupom-stats{border:1px solid #000;padding:1.5mm;margin:2mm 0;font-size:8pt;display:flex;justify-content:space-between;flex-wrap:wrap;gap:1mm;text-align:center}
-.cupom-secao{font-size:8.5pt;font-weight:700;margin:1mm 0 1.5mm}
+.cupom-bloco{font-size:9pt;line-height:1.4;font-weight:800;color:#000}
+.cupom-bloco b{font-weight:900}
+.cupom-destaque{font-size:10pt;font-weight:900;letter-spacing:.04em;color:#000;text-transform:uppercase}
+.cupom-stats{border:1px solid #000;padding:1.5mm;margin:2mm 0;font-size:8.5pt;font-weight:800;display:flex;justify-content:space-between;flex-wrap:wrap;gap:1mm;text-align:center;color:#000}
+.cupom-secao{font-size:9pt;font-weight:900;margin:1mm 0 1.5mm;letter-spacing:.05em;color:#000}
 .cupom-itens-table{width:100%;border-collapse:collapse}
 .cupom-item-row td{padding:1.5mm 0;border-bottom:1px dashed #000;vertical-align:top}
-.cupom-item-nome{font-size:9.5pt;font-weight:700;line-height:1.25}
-.cupom-item-obs{font-size:8pt;font-weight:600;margin-top:1mm;padding-left:2mm}
-.cupom-item-valor{font-size:8.5pt;font-weight:700;text-align:right;white-space:nowrap}
+.cupom-item-nome{font-size:10pt;font-weight:900;line-height:1.25;color:#000}
+.cupom-item-obs{font-size:8.5pt;font-weight:800;margin-top:1mm;padding-left:2mm;color:#000}
+.cupom-item-valor{font-size:8.5pt;font-weight:900;text-align:right;white-space:nowrap;color:#000}
 .cupom-itens-table .cupom-item-row td:last-child{width:20mm;padding-left:1mm}
-.cupom-total{margin-top:3mm;text-align:right;font-size:11pt;font-weight:700}
-.cupom-rodape{font-size:8pt;text-align:center;font-weight:600;margin-top:2mm;font-style:italic}
-.cupom-empresa-nome{margin:0 0 1mm;font-size:11pt;font-weight:700;text-align:center}
-.cupom-empresa-info{font-size:8pt;margin:0 0 2mm;text-align:center;line-height:1.35}
-.cupom-troco{margin-top:3mm;text-align:center;font-size:8.5pt;border:1px dashed #000;padding:2mm}
-.cupom-troco-valor{font-size:12pt;font-weight:700;display:block;margin-top:1mm}
+.cupom-total{margin-top:3mm;text-align:right;font-size:11pt;font-weight:900;color:#000}
+.cupom-rodape{font-size:8.5pt;text-align:center;font-weight:800;margin-top:2mm;font-style:italic;color:#000}
+.cupom-empresa-nome{margin:0 0 1.5mm;font-size:12pt;font-weight:900;text-align:center;letter-spacing:.06em;color:#000}
+.cupom-empresa-info{font-size:9pt;margin:0 0 2mm;text-align:center;line-height:1.4;font-weight:900;letter-spacing:.02em;color:#000}
+.cupom-troco{margin-top:3mm;text-align:center;font-size:8.5pt;font-weight:800;border:1px dashed #000;padding:2mm;color:#000}
+.cupom-troco-valor{font-size:12pt;font-weight:900;display:block;margin-top:1mm;color:#000}
 .cupom-logo{text-align:center;margin-bottom:2mm}
-.cupom-logo img{display:inline-block;max-width:46mm;width:auto;height:auto;max-height:12mm;object-fit:contain}`;
+.cupom-logo-forte img,.cupom-logo img{display:inline-block;max-width:46mm;width:auto;height:auto;max-height:12mm;object-fit:contain;filter:grayscale(100%) contrast(2.4) brightness(.68);-webkit-filter:grayscale(100%) contrast(2.4) brightness(.68)}`;
   }
 
   function executarImpressaoCupomTermico(htmlCupom) {
@@ -7362,8 +7401,8 @@ html,body{width:58mm;min-height:0;height:auto;margin:0;padding:0;background:#fff
       else if (metaOverride && metaOverride.tipoCupom === 'mesa') tituloCupom = 'COMANDA MESA/SALAO';
       let logoHtml = htmlLogoImpressao(46);
       let linhaLocal = meta.ehDelivery
-          ? `Entrega: ${escaparHtml(meta.endereco || '—')}${meta.telefone ? '<br>Tel: ' + escaparHtml(meta.telefone) : ''}`
-          : `Mesa/Local: ${escaparHtml(meta.mesa || '—')}`;
+          ? `<div><b>Entrega:</b> ${htmlDestaqueCupom(meta.endereco || '—')}${meta.telefone ? '<br><b>Tel:</b> ' + escaparHtml(meta.telefone) : ''}</div>`
+          : `<div><b>Mesa/Local:</b> ${htmlDestaqueCupom(meta.mesa || '—')}</div>`;
 
       let itensHtml = itensProducao.map(i => {
           let obs = i.ingredientes ? `<div class="cupom-item-obs">* ${escaparHtml(i.ingredientes)}</div>` : '';
@@ -7383,9 +7422,9 @@ html,body{width:58mm;min-height:0;height:auto;margin:0;padding:0;background:#fff
           </table>
           <hr class="cupom-sep">
           <div class="cupom-bloco">
-              <div><b>Cliente:</b> ${escaparHtml(meta.cliente)}</div>
-              <div><b>Garcom:</b> ${escaparHtml(meta.garcom)}</div>
-              <div>${linhaLocal}</div>
+              <div><b>Cliente:</b> ${htmlDestaqueCupom(meta.cliente)}</div>
+              <div><b>Garcom:</b> ${escaparHtml(meta.garcom || '—')}</div>
+              ${linhaLocal}
           </div>
           <div class="cupom-stats">
               <span><b>Pess:</b> ${meta.pessoas || '—'}</span>
@@ -8598,7 +8637,7 @@ html,body{width:58mm;min-height:0;height:auto;margin:0;padding:0;background:#fff
           <div class="cupom-subtitulo">${escaparHtml(linhaPedido)}<br>${escaparHtml(textoDataHora)}</div>
           <hr class="cupom-sep">
           <div class="cupom-bloco">
-              <div><b>Conta:</b> ${escaparHtml(c.nome)}</div>
+              <div><b>Conta:</b> ${htmlDestaqueCupom(c.nome)}</div>
               ${c.telefone ? `<div><b>Tel:</b> ${escaparHtml(c.telefone)}</div>` : ''}
               <div><b>Mesa/End.:</b> ${escaparHtml(c.endereco || 'Salao / Balcao')}</div>
               ${pagTexto ? `<div><b>Pgto:</b> ${escaparHtml(pagTexto)}</div>` : ''}
