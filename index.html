@@ -976,7 +976,7 @@
       max-width: 58mm;
       min-width: 58mm;
       margin: 0 auto;
-      padding: 1.5mm 2mm 8mm;
+      padding: 1.5mm 2mm 2mm;
       box-sizing: border-box;
       font-family: 'Courier New', Courier, 'Liberation Mono', monospace;
       font-size: 9pt;
@@ -1074,7 +1074,16 @@
       object-fit: contain;
   }
   @media print {
-    body * { visibility: hidden !important; }
+    html, body {
+      height: auto !important;
+      min-height: 0 !important;
+      max-height: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow: visible !important;
+      background: #fff !important;
+    }
+    body > *:not(#printOverlay) { display: none !important; }
     #printOverlay, #printOverlay * { visibility: visible !important; }
     #printOverlay, #printOverlay .cupom-impressao,
     #printOverlay .cupom-impressao *:not(img) {
@@ -1099,6 +1108,8 @@
       top: 0;
       width: 58mm !important;
       max-width: 58mm !important;
+      height: auto !important;
+      min-height: 0 !important;
       background: #fff !important;
       margin: 0;
       padding: 0;
@@ -1110,13 +1121,15 @@
       padding: 0 !important;
       margin: 0 !important;
       display: block !important;
+      height: auto !important;
     }
     .cupom-impressao.cupom-termico-58 {
       width: 58mm !important;
       max-width: 58mm !important;
       min-width: 58mm !important;
-      padding: 0 1.5mm 4mm !important;
+      padding: 0 1.5mm 1.5mm !important;
       page-break-inside: avoid;
+      height: auto !important;
     }
     .print-controls { display: none !important; }
   }
@@ -1526,7 +1539,7 @@
 
 <div id="printOverlay">
     <div class="print-controls" style="position:fixed; top:20px; right:20px; z-index:10000000; text-align:right;">
-        <p style="font-size:11px;color:#333;margin:0 0 8px;max-width:220px;line-height:1.4;background:#f5f5f5;padding:8px 10px;border-radius:4px;border:1px solid #ccc;">Impressora: <strong>KNUP IM607</strong> (58mm). No diálogo de impressão, selecione a IM607 e papel <strong>58mm</strong>.</p>
+        <p style="font-size:11px;color:#333;margin:0 0 8px;max-width:260px;line-height:1.4;background:#f5f5f5;padding:8px 10px;border-radius:4px;border:1px solid #ccc;">Impressora: <strong>KNUP IM607</strong> (58mm). No diálogo: papel <strong>58mm</strong>, margens <strong>nenhuma</strong>, escala <strong>100%</strong>. No driver da KNUP, desative avanço extra de papel após impressão.</p>
         <button class="danger" onclick="fecharImpressao()" style="padding:12px 24px; font-size:14px; box-shadow:0 5px 15px rgba(0,0,0,0.5); font-weight:600; border-radius: 4px;">FECHAR IMPRESSÃO</button>
     </div>
     <div id="printContent"></div>
@@ -6760,7 +6773,7 @@
           <td class="cupom-item-valor">${formatarMoeda(i.valor)}</td></tr>`
       ).join('');
       let pagTxt = balcaoEstaPendente(reg) ? 'PENDENTE A RECEBER' : (reg.pagamento || 'RECEBIDO');
-      document.getElementById('printContent').innerHTML = `
+      executarImpressaoCupomTermico(`
           <div class="cupom-impressao cupom-termico-58">
               ${logoHtml}
               ${htmlCabecalhoEmpresaImpressao({ termico: true })}
@@ -6778,9 +6791,7 @@
               <div class="cupom-total">TOTAL: ${formatarMoeda(total)}</div>
               <hr class="cupom-sep">
               <div class="cupom-rodape">Obrigado pela preferencia!</div>
-          </div>`;
-      document.getElementById('printOverlay').style.display = 'flex';
-      setTimeout(() => window.print(), 500);
+          </div>`);
   }
 
   function zerarDiaBalcao() {
@@ -7275,6 +7286,75 @@
       };
   }
 
+  let printFrameTermico = null;
+
+  function cssCupomTermico58ParaImpressao() {
+      return `@page{size:58mm auto;margin:0}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:58mm;min-height:0;height:auto;margin:0;padding:0;background:#fff;overflow:visible}
+.cupom-impressao.cupom-termico-58{width:58mm;max-width:58mm;padding:1mm 1.5mm 1.5mm;font-family:'Courier New',Courier,monospace;font-size:9pt;line-height:1.3;color:#000;background:#fff;word-wrap:break-word;overflow-wrap:anywhere}
+.cupom-titulo{margin:0 0 2mm;padding-bottom:2mm;font-size:10pt;font-weight:700;text-align:center;border-bottom:1px dashed #000}
+.cupom-subtitulo{font-size:8pt;text-align:center;margin:0 0 2mm;font-weight:600}
+.cupom-meta-table{width:100%;border-collapse:collapse;font-size:8.5pt;margin-bottom:2mm}
+.cupom-meta-table td{padding:.5mm 0;vertical-align:top;border:none}
+.cupom-meta-table td:last-child{text-align:right;font-weight:700}
+.cupom-sep{border:none;border-top:1px dashed #000;margin:2mm 0;height:0}
+.cupom-sep-solid{border:none;border-top:1px solid #000;margin:2mm 0;height:0}
+.cupom-bloco{font-size:8.5pt;line-height:1.35;font-weight:600}
+.cupom-bloco b{font-weight:700}
+.cupom-stats{border:1px solid #000;padding:1.5mm;margin:2mm 0;font-size:8pt;display:flex;justify-content:space-between;flex-wrap:wrap;gap:1mm;text-align:center}
+.cupom-secao{font-size:8.5pt;font-weight:700;margin:1mm 0 1.5mm}
+.cupom-itens-table{width:100%;border-collapse:collapse}
+.cupom-item-row td{padding:1.5mm 0;border-bottom:1px dashed #000;vertical-align:top}
+.cupom-item-nome{font-size:9.5pt;font-weight:700;line-height:1.25}
+.cupom-item-obs{font-size:8pt;font-weight:600;margin-top:1mm;padding-left:2mm}
+.cupom-item-valor{font-size:8.5pt;font-weight:700;text-align:right;white-space:nowrap}
+.cupom-itens-table .cupom-item-row td:last-child{width:20mm;padding-left:1mm}
+.cupom-total{margin-top:3mm;text-align:right;font-size:11pt;font-weight:700}
+.cupom-rodape{font-size:8pt;text-align:center;font-weight:600;margin-top:2mm;font-style:italic}
+.cupom-empresa-nome{margin:0 0 1mm;font-size:11pt;font-weight:700;text-align:center}
+.cupom-empresa-info{font-size:8pt;margin:0 0 2mm;text-align:center;line-height:1.35}
+.cupom-troco{margin-top:3mm;text-align:center;font-size:8.5pt;border:1px dashed #000;padding:2mm}
+.cupom-troco-valor{font-size:12pt;font-weight:700;display:block;margin-top:1mm}
+.cupom-logo{text-align:center;margin-bottom:2mm}
+.cupom-logo img{display:inline-block;max-width:46mm;width:auto;height:auto;max-height:12mm;object-fit:contain}`;
+  }
+
+  function executarImpressaoCupomTermico(htmlCupom) {
+      if (!htmlCupom) return;
+      if (!printFrameTermico) {
+          printFrameTermico = document.createElement('iframe');
+          printFrameTermico.id = 'printFrameTermico';
+          printFrameTermico.setAttribute('aria-hidden', 'true');
+          printFrameTermico.style.cssText = 'position:fixed;width:0;height:0;border:0;left:0;top:0;opacity:0;pointer-events:none';
+          document.body.appendChild(printFrameTermico);
+      }
+      const win = printFrameTermico.contentWindow;
+      const doc = win.document;
+      const css = cssCupomTermico58ParaImpressao();
+      doc.open();
+      doc.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Cupom</title><style>' + css + '</style></head><body>' + htmlCupom + '</body></html>');
+      doc.close();
+
+      const disparar = () => {
+          const limpar = () => {
+              try { win.removeEventListener('afterprint', limpar); } catch (e) {}
+              if (doc.body) doc.body.innerHTML = '';
+          };
+          try { win.addEventListener('afterprint', limpar); } catch (e) {}
+          try {
+              win.focus();
+              win.print();
+          } catch (e) {
+              limpar();
+              document.getElementById('printContent').innerHTML = htmlCupom;
+              document.getElementById('printOverlay').style.display = 'flex';
+              setTimeout(() => window.print(), 300);
+          }
+      };
+      setTimeout(disparar, 120);
+  }
+
   function montarHtmlCupomProducao(c, itensProducao, metaOverride) {
       let meta = resolverMetaCupom(c, itensProducao, metaOverride);
       let tituloCupom = 'COMANDA COZINHA/GARCOM';
@@ -7322,9 +7402,7 @@
 
   function abrirImpressaoCupomProducao(c, itensProducao, metaOverride) {
       if (!itensProducao || !itensProducao.length) return;
-      document.getElementById('printContent').innerHTML = montarHtmlCupomProducao(c, itensProducao, metaOverride);
-      document.getElementById('printOverlay').style.display = 'flex';
-      setTimeout(() => window.print(), 500);
+      executarImpressaoCupomTermico(montarHtmlCupomProducao(c, itensProducao, metaOverride));
   }
 
   function imprimirComandaProducao(id) {
@@ -8513,7 +8591,7 @@
           trocoHtml = `<div class="cupom-troco">Atencao: Levar troco para<span class="cupom-troco-valor">${escaparHtml(valorTroco)}</span></div>`;
       }
 
-      document.getElementById('printContent').innerHTML = `<div class="cupom-impressao cupom-termico-58">
+      executarImpressaoCupomTermico(`<div class="cupom-impressao cupom-termico-58">
           ${logoHtml}
           ${htmlCabecalhoEmpresaImpressao({ termico: true })}
           <div class="cupom-titulo">NOTA DO CLIENTE</div>
@@ -8531,8 +8609,7 @@
           ${trocoHtml}
           <hr class="cupom-sep">
           <div class="cupom-rodape">Agradecemos a preferencia.<br>Volte sempre!</div>
-      </div>`;
-      document.getElementById('printOverlay').style.display = 'flex'; setTimeout(() => window.print(), 500);
+      </div>`);
   }
   function fecharImpressao() { document.getElementById('printOverlay').style.display = 'none'; document.getElementById('printContent').innerHTML = ''; }
 
