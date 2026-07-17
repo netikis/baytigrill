@@ -54,29 +54,31 @@
   @media (max-width: 600px) { .estoque-form-grid .span-2 { grid-column: span 1; } }
 
   :root {
-      /* Paleta BAYTIGRILL — tons suaves da marca */
+      /* Paleta BAYTIGRILL — tema claro (fundo branco) */
       --primary: #4B5D3F;
       --primary-soft: #5C6F50;
       --accent: #C9A23B;
-      --accent-soft: rgba(201, 162, 59, 0.18);
-      --bg-dark: #2A3328;
-      --bg-panel: #323D30;
-      --card-bg: #3A4536;
-      --card-elevated: #424E3E;
-      --text-main: #E8EDE6;
-      --text-muted: #A8B5A3;
-      --border-soft: #4F5E4A;
-      --input-bg: #2E3830;
-      --success: #5A7A52;
-      --danger: #B85C5C;
+      --accent-soft: rgba(201, 162, 59, 0.14);
+      --bg-dark: #FFFFFF;
+      --bg-panel: #F7F9F6;
+      --card-bg: #FFFFFF;
+      --card-elevated: #F3F6F1;
+      --text-main: #111111;
+      --text-muted: #111111;
+      --border-soft: #D8E2D3;
+      --input-bg: #FFFFFF;
+      --success: #3D7A35;
+      --danger: #C44E4E;
       --warning: #C9A23B;
       --header-offset: 58px;
+      --shadow-card: 0 2px 12px rgba(45, 58, 40, 0.08);
   }
 
   body { 
       font-family: 'Poppins', sans-serif; 
       background-color: var(--bg-dark); 
-      color: var(--text-main); 
+      color: #111111; 
+      font-weight: 600;
       margin: 0; 
       padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); 
       min-height: 100vh;
@@ -97,7 +99,84 @@
 
   h1, h2, h3, h4, .titulo {
       letter-spacing: 0.3px;
-      font-weight: 600;
+      font-weight: 700;
+      color: #111111;
+  }
+
+  /* --- TEXTOS FRACOS → NEGRITO PRETO (painel claro) --- */
+  .main-panels,
+  .main-panels p,
+  .main-panels label,
+  .main-panels li,
+  .main-panels td,
+  .main-panels th,
+  .main-panels h2,
+  .main-panels h3,
+  .main-panels h4,
+  .main-panels h5,
+  .main-panels .painel-titulo,
+  .main-panels .comandas-inicio-vazio,
+  .main-panels .comanda-inicio-tipo,
+  .main-panels .comanda-inicio-info,
+  .main-panels .comanda-inicio-footer,
+  .main-panels .comanda-inicio-nome,
+  .main-panels .dash-stat,
+  .main-panels .dash-stat div,
+  .main-panels .client-name,
+  .main-panels .btn-action,
+  .main-panels .balao-ajuda,
+  .main-panels .balao-titulo {
+      color: #111111 !important;
+      font-weight: 700 !important;
+  }
+  .main-panels strong,
+  .main-panels b {
+      color: #111111 !important;
+      font-weight: 800 !important;
+  }
+  /* Inline styles fracos (muted / accent em fundo branco) */
+  .main-panels [style*="var(--text-muted)"],
+  .main-panels [style*="color:var(--accent)"],
+  .main-panels [style*="color: var(--accent)"] {
+      color: #111111 !important;
+      font-weight: 700 !important;
+  }
+  /* Botões sólidos: texto branco (depois das regras de warning/dark) */
+  .main-panels button.primary,
+  .main-panels button.success,
+  .main-panels button.danger,
+  .main-panels .inicio-acesso-rapido button {
+      color: #fff !important;
+      background: #4B5D3F !important;
+      border-color: #5C6F50 !important;
+  }
+  .main-panels button.success { background: #3D7A35 !important; border-color: #6B8B63 !important; }
+  .main-panels button.danger { background: #C44E4E !important; border-color: #9A6A6A !important; }
+  .main-panels .badge-comandas-inicio,
+  .main-panels .sidebar-badge {
+      color: #fff !important;
+  }
+  /* Valores em vermelho (totais / alertas) */
+  .main-panels .comanda-inicio-footer strong,
+  .main-panels [style*="color:var(--danger)"],
+  .main-panels [style*="color: var(--danger)"] {
+      color: #C44E4E !important;
+      font-weight: 800 !important;
+  }
+  /* Botões outline fracos → texto preto e borda verde */
+  .main-panels button.warning,
+  .main-panels button.dark {
+      color: #111111 !important;
+      font-weight: 700 !important;
+      border-width: 2px !important;
+      border-color: #4B5D3F !important;
+      background: #FFFFFF !important;
+  }
+  .main-panels button.warning:hover,
+  .main-panels button.dark:hover {
+      background: #E8EDE6 !important;
+      color: #111111 !important;
+      filter: none;
   }
 
   /* --- MARCA D'ÁGUA (FUNDO) --- */
@@ -107,7 +186,7 @@
       background-image: var(--bg-logo); background-repeat: no-repeat; 
       background-position: center; background-size: contain; 
       background-color: transparent !important; border: none !important;
-      opacity: 0.04; z-index: -1; pointer-events: none; 
+      opacity: 0.06; z-index: -1; pointer-events: none; 
   }
 
   /* --- SISTEMA DE NOTIFICAÇÕES --- */
@@ -118,7 +197,7 @@
   .alerta-pronto {
       background: var(--card-bg); color: var(--accent); padding: 15px; border-radius: 6px;
       border-left: 6px solid var(--accent); border-right: 1px solid var(--accent); 
-      box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.12);
       pointer-events: auto; display: flex; align-items: center; justify-content: space-between;
       gap: 20px; min-width: 250px; animation: slideInRight 0.4s ease-out;
   }
@@ -174,7 +253,7 @@
   .titulo-garcom { display: none; }
   .faixa-garcons {
       display: none; align-items: center; flex-wrap: wrap; gap: 8px;
-      background: linear-gradient(180deg, #2E3830 0%, var(--bg-dark) 100%);
+      background: linear-gradient(180deg, #FFFFFF 0%, var(--bg-panel) 100%);
       border-bottom: 1px solid var(--accent);
       padding: 8px 14px;
       position: sticky; top: 0; z-index: 40;
@@ -222,8 +301,8 @@
   .sidebar-nav {
       width: 220px;
       min-width: 220px;
-      background: var(--bg-panel);
-      border-right: 1px solid var(--border-soft);
+      background: #323D30;
+      border-right: 1px solid #4F5E4A;
       padding: 12px 0;
       position: sticky;
       top: var(--header-offset);
@@ -237,38 +316,58 @@
   }
   .sidebar-nav-logo {
       padding: 10px 12px 14px;
-      border-bottom: 1px solid var(--border-soft);
+      border-bottom: 1px solid #4F5E4A;
       margin-bottom: 8px;
       text-align: center;
   }
   .sidebar-nav-logo .logo-sub {
-      display: block; font-size: 9px; color: var(--text-muted);
+      display: block; font-size: 9px; color: #C9A23B;
       letter-spacing: 3px; font-weight: 600; margin-top: 8px;
       text-transform: uppercase;
   }
+  .sidebar-nav .logo-frame--sidebar {
+      background: linear-gradient(155deg, #4B5D3F 0%, #354030 100%);
+      border: 1px solid rgba(201, 162, 59, 0.5);
+      border-radius: 12px;
+      padding: 5px 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.22);
+  }
+  .sidebar-nav .logo-frame--sidebar .logo-brand {
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+  }
   .sidebar-item {
       display: flex; align-items: center; gap: 10px;
-      width: 100%; padding: 14px 18px;
+      width: 100%; padding: 12px 16px;
       background: transparent; border: none; border-left: 3px solid transparent;
-      color: var(--text-muted); font-size: 13px; font-weight: 600;
+      color: #FFFFFF; font-size: 12px; font-weight: 700;
+      letter-spacing: 0.4px; line-height: 1.3;
+      text-transform: uppercase;
       text-align: left; cursor: pointer; transition: 0.2s;
       font-family: 'Poppins', sans-serif;
   }
   .sidebar-item:hover {
-      background: var(--card-bg); color: var(--text-main);
-      border-left-color: rgba(201, 162, 59, 0.35);
+      background: #3A4536; color: #FFFFFF;
+      border-left-color: rgba(201, 162, 59, 0.45);
   }
   .sidebar-item.active {
-      background: var(--card-elevated); color: var(--text-main);
-      border-left-color: var(--accent);
+      background: #424E3E; color: #FFFFFF;
+      border-left-color: #C9A23B;
   }
-  .sidebar-item .ico { font-size: 18px; width: 24px; text-align: center; }
+  .sidebar-item .ico { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; }
   .sidebar-item-sair {
       margin-top: auto;
-      border-top: 1px solid var(--border-soft);
-      color: var(--danger) !important;
+      border-top: 1px solid #4F5E4A;
+      color: #B85C5C !important;
+      font-size: 12px !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.4px !important;
+      text-transform: uppercase;
   }
-  .sidebar-item-sair:hover { border-left-color: var(--danger) !important; color: #fff !important; }
+  .sidebar-item-sair:hover {
+      background: #B85C5C !important;
+      border-left-color: #B85C5C !important;
+      color: #fff !important;
+  }
   #btnSairSessao {
       display: none;
       position: fixed;
@@ -323,19 +422,23 @@
   @keyframes fadePainel { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
   .painel-titulo {
       font-family: 'Poppins', sans-serif;
-      font-size: 22px; color: var(--text-main);
+      font-size: 22px; color: #111;
       margin: 0 0 20px 0; padding-bottom: 12px;
-      border-bottom: 1px solid var(--border-soft);
-      font-weight: 600;
+      border-bottom: 2.5px solid #4B5D3F;
+      font-weight: 700;
   }
 
   /* --- COMANDAS NO PAINEL INÍCIO (CAIXA) --- */
+  .comandas-inicio-section {
+      text-align: center;
+  }
   .comandas-inicio-header {
-      display: flex; justify-content: space-between; align-items: center;
+      display: flex; justify-content: center; align-items: center;
       margin-bottom: 16px; flex-wrap: wrap; gap: 10px;
   }
   .comandas-inicio-header h3 {
       margin: 0; color: var(--text-main); font-size: 16px; font-weight: 600;
+      text-align: center; width: 100%;
   }
   .badge-comandas-inicio {
       background: var(--danger); color: #fff; min-width: 26px; height: 26px;
@@ -356,20 +459,39 @@
       background: var(--card-elevated); border: 1px solid var(--border-soft);
       border-radius: 8px; padding: 14px; cursor: pointer; transition: 0.2s;
       border-left: 4px solid var(--accent);
+      text-align: left;
   }
   .comanda-inicio-card:hover { border-color: var(--accent); box-shadow: 0 4px 14px rgba(0,0,0,0.15); }
   .comanda-tipo-mesa { border-left-color: #6B8F5E; }
   .comanda-tipo-delivery { border-left-color: #5D9CEC; }
   .comanda-nova { animation: piscarAlertaLateral 2s ease-in-out infinite; box-shadow: 0 0 0 2px rgba(201,162,59,0.35); }
   .comanda-inicio-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-  .comanda-inicio-tipo { font-size: 10px; font-weight: 700; letter-spacing: 0.5px; color: var(--text-muted); }
+  .comanda-inicio-tipo { font-size: 10px; font-weight: 700; letter-spacing: 0.5px; color: #111; }
   .comanda-inicio-alerta { font-size: 10px; font-weight: 700; background: var(--accent); color: #000; padding: 2px 8px; border-radius: 4px; }
-  .comanda-inicio-nome { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 600; color: var(--text-main); margin-bottom: 6px; }
-  .comanda-inicio-info { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.4; }
-  .comanda-inicio-footer { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+  .comanda-inicio-nome { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 700; color: #111; margin-bottom: 6px; }
+  .comanda-inicio-info { font-size: 11px; color: #111; font-weight: 700; margin-bottom: 10px; line-height: 1.4; }
+  .comanda-inicio-footer { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #111; font-weight: 700; margin-bottom: 10px; }
   .comanda-inicio-footer strong { font-size: 18px; color: var(--danger); font-family: 'Poppins', sans-serif; }
   .comanda-inicio-btn { width: 100%; padding: 10px; font-size: 12px; font-weight: 700; }
-  .comandas-inicio-vazio { text-align: center; color: var(--text-muted); padding: 28px 16px; font-size: 14px; }
+  .comandas-inicio-vazio { text-align: center; color: #111 !important; font-weight: 700 !important; padding: 28px 16px; font-size: 14px; margin: 0 auto; width: 100%; }
+
+  /* --- ACESSO RÁPIDO (INÍCIO) — botões verdes uniformes --- */
+  .inicio-acesso-rapido {
+      display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+  }
+  .inicio-acesso-rapido button {
+      min-width: 160px;
+      background: #4B5D3F !important;
+      border: 1px solid #5C6F50 !important;
+      color: #fff !important;
+      font-weight: 600;
+  }
+  .inicio-acesso-rapido button:hover {
+      background: #5C6F50 !important;
+      border-color: #6B7F5E !important;
+      color: #fff !important;
+      filter: none;
+  }
 
   /* --- TABELA DO DIA (BALCÃO) --- */
   .tabela-dia-section { padding: 0; overflow: hidden; }
@@ -458,6 +580,79 @@
       gap: 10px;
       margin-top: 10px;
   }
+  .cliente-abas {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px;
+  }
+  .cliente-abas .tab-btn {
+      flex: 1; min-width: 180px; padding: 14px 12px; font-size: 12px; letter-spacing: 0.3px;
+  }
+  .sidebar-grupo {
+      display: flex;
+      flex-direction: column;
+  }
+  .sidebar-grupo-toggle {
+      display: flex; align-items: center; gap: 10px;
+      width: 100%; padding: 12px 16px;
+      background: transparent; border: none; border-left: 3px solid transparent;
+      color: #FFFFFF; font-size: 12px; font-weight: 700;
+      letter-spacing: 0.4px; line-height: 1.3;
+      text-transform: uppercase;
+      text-align: left; cursor: pointer; transition: 0.2s;
+      font-family: 'Poppins', sans-serif;
+  }
+  .sidebar-grupo-toggle .ico { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; }
+  .sidebar-grupo-toggle .seta {
+      margin-left: auto; font-size: 10px; opacity: 0.85; transition: transform 0.2s; flex-shrink: 0;
+  }
+  .sidebar-grupo.aberto .sidebar-grupo-toggle .seta { transform: rotate(90deg); }
+  .sidebar-grupo.aberto .sidebar-grupo-toggle,
+  .sidebar-grupo.ativo .sidebar-grupo-toggle {
+      background: #3A4536;
+      border-left-color: rgba(201, 162, 59, 0.45);
+  }
+  .sidebar-subitens {
+      display: none;
+      flex-direction: column;
+      padding: 0 0 6px 0;
+      background: #2A3328;
+  }
+  .sidebar-grupo.aberto .sidebar-subitens { display: flex; }
+  .sidebar-subitem {
+      display: flex; align-items: center; gap: 8px;
+      width: 100%; padding: 10px 14px 10px 46px;
+      background: transparent; border: none; border-left: 3px solid transparent;
+      color: #D8E2D3; font-size: 12px; font-weight: 700;
+      letter-spacing: 0.4px; line-height: 1.3;
+      text-transform: uppercase;
+      text-align: left; cursor: pointer; transition: 0.2s;
+      font-family: 'Poppins', sans-serif;
+  }
+  .sidebar-subitem .ico { font-size: 14px; width: 18px; text-align: center; flex-shrink: 0; }
+  .sidebar-subitem:hover {
+      background: #3A4536; color: #FFFFFF;
+      border-left-color: rgba(201, 162, 59, 0.45);
+  }
+  .sidebar-subitem.active {
+      background: #424E3E; color: #FFFFFF;
+      border-left-color: #C9A23B;
+  }
+  .cliente-campo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+  }
+  .cliente-campo-grid .span-2 { grid-column: 1 / -1; }
+  .cliente-linha-endereco {
+      display: flex;
+      gap: 10px;
+      align-items: stretch;
+  }
+  .cliente-linha-endereco input { margin: 0; }
+  @media (max-width: 640px) {
+      .cliente-campo-grid { grid-template-columns: 1fr; }
+      .cliente-campo-grid .span-2 { grid-column: auto; }
+  }
   .balcao-item-linha {
       display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap;
   }
@@ -466,6 +661,41 @@
   .balcao-avulso-box {
       background: var(--input-bg); padding: 14px; border-radius: 8px;
       border: 1px solid var(--border-soft); margin-bottom: 12px;
+  }
+  .balcao-check-marmita {
+      display: flex !important;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 12px;
+      width: 100%;
+      margin: 4px 0 12px;
+      padding: 10px 12px;
+      box-sizing: border-box;
+      cursor: pointer;
+      border: 2px solid #4B5D3F;
+      border-radius: 8px;
+      background: #FFFFFF;
+      text-align: left;
+  }
+  .balcao-check-marmita input[type="checkbox"] {
+      flex: none !important;
+      width: 28px !important;
+      height: 28px !important;
+      min-width: 28px !important;
+      max-width: 28px !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      accent-color: #4B5D3F;
+      cursor: pointer;
+      align-self: center;
+  }
+  .balcao-check-marmita span {
+      flex: 1;
+      font-size: 13px;
+      color: #111;
+      font-weight: 700;
+      line-height: 1.35;
+      text-align: left;
   }
   .balcao-pacote-box {
       background: rgba(201, 162, 59, 0.08); padding: 14px; border-radius: 8px;
@@ -513,7 +743,7 @@
       left: 0;
       right: 0;
       z-index: 300;
-      background: linear-gradient(180deg, var(--bg-panel) 0%, #2A3328 100%);
+      background: linear-gradient(180deg, var(--bg-panel) 0%, #FFFFFF 100%);
       border-top: 1px solid var(--border-soft);
       padding: 4px 2px calc(4px + env(safe-area-inset-bottom, 0px));
       justify-content: flex-start;
@@ -521,7 +751,7 @@
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
-      box-shadow: 0 -4px 24px rgba(0,0,0,0.35);
+      box-shadow: 0 -2px 16px rgba(0,0,0,0.08);
   }
   .mobile-bottom-nav::-webkit-scrollbar { display: none; }
   .mobile-nav-item {
@@ -535,9 +765,9 @@
       padding: 6px 2px;
       background: transparent;
       border: none;
-      color: var(--text-muted);
+      color: #111111;
       font-size: 10px;
-      font-weight: 600;
+      font-weight: 700;
       min-height: 54px;
       border-radius: 8px;
       position: relative;
@@ -767,9 +997,33 @@
   .container { max-width: 100%; margin: 0 auto; padding: 0; }
   .card { 
       background: var(--card-bg); padding: 25px; border-radius: 10px; 
-      margin-bottom: 20px; border: 1px solid var(--border-soft); 
-      box-shadow: 0 4px 16px rgba(0,0,0,0.15); 
+      margin-bottom: 20px; border: 2.5px solid #4B5D3F; 
+      box-shadow: var(--shadow-card); 
   }
+  /* Balões internos (Lançar Pedido e afins) */
+  .balao-bloco {
+      background: #FFFFFF;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border: 2.5px solid #4B5D3F;
+      box-sizing: border-box;
+  }
+  .balao-bloco > label,
+  .balao-titulo {
+      font-size: 12px !important;
+      color: #111 !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.4px;
+  }
+  .balao-ajuda {
+      font-size: 12px;
+      color: #111 !important;
+      font-weight: 700 !important;
+      line-height: 1.5;
+      margin: 0;
+  }
+  .balao-ajuda strong { color: #111 !important; font-weight: 800; }
   .card--full { width: 100%; max-width: none; box-sizing: border-box; }
   .carrinho-print-actions {
       display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px;
@@ -784,21 +1038,23 @@
       min-width: 56px; text-align: center;
   }
   .card h3 { 
-      color: var(--text-main); margin: 0 0 20px 0; font-size: 20px; 
-      border-bottom: 1px solid var(--border-soft); padding-bottom: 12px; font-style: italic;
+      color: #111; margin: 0 0 20px 0; font-size: 20px; 
+      border-bottom: 2px solid #4B5D3F; padding-bottom: 12px; font-style: normal; font-weight: 700;
   }
 
   /* INPUTS */
   .row-inputs { display: flex; gap: 12px; margin-bottom: 12px; align-items: center; }
   input, select, textarea { 
-      flex: 1; padding: 14px; border-radius: 6px; border: 1px solid var(--border-soft); 
-      background: var(--input-bg); color: var(--text-main); font-family: 'Poppins', sans-serif; font-size: 14px; 
+      flex: 1; padding: 14px; border-radius: 6px; border: 2px solid #6B7B66; 
+      background: var(--input-bg); color: #111; font-family: 'Poppins', sans-serif; font-size: 14px; 
+      font-weight: 600;
       width: 100%; box-sizing: border-box; transition: 0.3s border;
   }
+  input::placeholder, textarea::placeholder { color: #4A5548; font-weight: 600; opacity: 1; }
   input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
 
   .radio-group { display: flex; gap: 20px; align-items: center; }
-  .radio-group label { display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-main); font-size: 14px; font-weight: 400; }
+  .radio-group label { display: flex; align-items: center; gap: 8px; cursor: pointer; color: #111; font-size: 14px; font-weight: 700; }
   .radio-group input[type="radio"] { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
 
   .pedido-vinculo-box { display: flex; flex-direction: column; gap: 10px; }
@@ -823,7 +1079,8 @@
   }
   .pedido-avulso-row span {
       font-size: 13px;
-      color: var(--text-main);
+      color: #111;
+      font-weight: 700;
       line-height: 1.35;
   }
   #clienteSelect {
@@ -831,37 +1088,111 @@
       font-size: 17px;
       padding: 16px 14px;
       line-height: 1.35;
+      font-weight: 700;
+      color: #111;
   }
   #inputNomeAvulso.pedido-nome-avulso {
       width: 100%;
       padding: 16px 14px;
       font-size: 16px;
-      border: 1px solid var(--accent);
+      border: 2px solid #4B5D3F;
       box-sizing: border-box;
   }
 
   /* BOTÕES */
   button { 
-      padding: 12px 18px; border-radius: 4px; cursor: pointer; font-weight: 600; 
+      padding: 12px 18px; border-radius: 4px; cursor: pointer; font-weight: 700; 
       border: 1px solid transparent; color: #fff; font-size: 13px; 
       transition: 0.2s all ease; letter-spacing: 0.5px; 
   }
   button:hover { filter: brightness(1.1); }
   button:active { transform: scale(0.98); }
-  .primary { background: var(--primary); border: 1px solid var(--primary-soft); } 
-  .success { background: var(--success); border: 1px solid #6B8B63; } 
-  .danger { background: var(--danger); border: 1px solid #9A6A6A; } 
-  .dark { background: var(--card-elevated); border: 1px solid var(--border-soft); } 
-  .warning { background: transparent; color: var(--accent); border: 1px solid rgba(201, 162, 59, 0.45); }
-  .warning:hover { background: var(--accent-soft); color: var(--text-main); border-color: var(--accent); }
+  .primary { background: var(--primary); border: 1px solid var(--primary-soft); color: #fff; } 
+  .success { background: var(--success); border: 1px solid #6B8B63; color: #fff; } 
+  .danger { background: var(--danger); border: 1px solid #9A6A6A; color: #fff; } 
+  .dark {
+      background: #FFFFFF !important;
+      border: 2px solid #4B5D3F !important;
+      color: #111111 !important;
+      font-weight: 700 !important;
+  }
+  .dark:hover {
+      background: #E8EDE6 !important;
+      color: #111111 !important;
+      filter: none;
+  }
+  .warning {
+      background: #FFFFFF !important;
+      color: #111111 !important;
+      border: 2px solid #4B5D3F !important;
+      font-weight: 700 !important;
+  }
+  .warning:hover {
+      background: #E8EDE6 !important;
+      color: #111111 !important;
+      border-color: #4B5D3F !important;
+      filter: none;
+  }
 
-  /* HEADER */
+  /* MODAIS — textos legíveis */
+  .modal-content,
+  .modal-content p,
+  .modal-content label,
+  .modal-content li,
+  .modal-content td,
+  .modal-content th,
+  .modal-content h3,
+  .modal-content h4,
+  .modal-content span {
+      color: #111111 !important;
+      font-weight: 700 !important;
+  }
+  .modal-content {
+      background: #FFFFFF !important;
+      border: 2.5px solid #4B5D3F !important;
+  }
+  .modal-content button.primary,
+  .modal-content button.success,
+  .modal-content button.danger {
+      color: #fff !important;
+  }
+  .modal-content button.dark,
+  .modal-content button.warning {
+      color: #111111 !important;
+      background: #FFFFFF !important;
+      border: 2px solid #4B5D3F !important;
+  }
+  .tab-btn {
+      color: #111111 !important;
+      font-weight: 700 !important;
+      border: 2px solid #4B5D3F !important;
+      background: #FFFFFF !important;
+  }
+  .tab-btn.active {
+      background: #4B5D3F !important;
+      color: #fff !important;
+      border-color: #4B5D3F !important;
+  }
+
+  /* HEADER — verde fixo (não segue tema claro do painel) */
   .header { 
       display: flex; justify-content: space-between; align-items: center; 
-      background: linear-gradient(180deg, var(--primary) 0%, var(--bg-panel) 100%); 
+      background: linear-gradient(180deg, #4B5D3F 0%, #323D30 100%); 
       padding: calc(12px + env(safe-area-inset-top, 0px)) 20px 12px; 
-      position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border-soft); 
-      box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+      position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #4F5E4A; 
+      box-shadow: 0 2px 12px rgba(0,0,0,0.22);
+  }
+  .header #userDisplay { color: #E8EDE6 !important; }
+  .header .warning {
+      background: transparent !important; color: #C9A23B !important;
+      border-color: rgba(201, 162, 59, 0.45) !important;
+  }
+  .header .warning:hover {
+      background: rgba(201, 162, 59, 0.18) !important; color: #C9A23B !important;
+      border-color: #C9A23B !important; filter: none;
+  }
+  .header .btn-mobile-menu {
+      border-color: #4F5E4A; background: #3A4536; color: #E8EDE6;
   }
   .header-center { display: flex; align-items: center; gap: 12px; position: absolute; left: 50%; transform: translateX(-50%); }
   .titulo { font-size: 20px; color: #fff; letter-spacing: 2px; white-space: nowrap; margin: 0; font-weight: 600; }
@@ -923,9 +1254,9 @@
 
   /* CLIENT LIST & ACTIONS */
   .client-card { 
-      background: var(--card-elevated); padding: 20px; margin-top: 15px; border-radius: 8px; 
-      border-left: 4px solid var(--accent); border: 1px solid var(--border-soft); border-left-width: 4px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+      background: #FFFFFF; padding: 20px; margin-top: 18px; border-radius: 8px; 
+      border: 3px solid #111111;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.12); 
   }
   .client-name { font-size: 20px; font-weight: 600; color: var(--text-main); font-family: 'Poppins', sans-serif; }
   .saldo-tag { background: var(--input-bg); padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border-soft); font-weight: bold; font-size: 16px; }
@@ -933,16 +1264,31 @@
   .action-buttons { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 8px; }
   .btn-action { 
       flex: 1; min-width: 75px; display: flex; flex-direction: column; align-items: center; justify-content: center; 
-      padding: 10px 5px; font-size: 10px; background: var(--card-bg); border: 1px solid var(--border-soft); border-radius: 6px; font-weight: 600; color: var(--text-muted);
+      padding: 10px 5px; font-size: 10px; background: #FFFFFF; border: 3px solid #111111; border-radius: 6px; font-weight: 700; color: #111111;
   }
   .btn-action span { font-size: 16px; margin-bottom: 6px; display: block; }
-  .btn-action:hover { background: var(--primary-soft); border-color: var(--accent); color: var(--text-main); }
+  .btn-action:hover { background: #E8EDE6; border-color: #111111; color: #111111; filter: none; }
   
   /* TABELA */
   table { width: 100%; border-collapse: separate; border-spacing: 0 6px; }
   td { background: var(--card-bg); padding: 15px; font-size: 14px; color: var(--text-main); vertical-align: middle; border-top: 1px solid var(--border-soft); border-bottom: 1px solid var(--border-soft); }
   td:first-child { border-left: 1px solid var(--border-soft); border-radius: 6px 0 0 6px; } 
   td:last-child { border-right: 1px solid var(--border-soft); border-radius: 0 6px 6px 0; text-align: right; }
+  /* Produtos dentro da comanda — borda preta grossa */
+  .client-card table { border-spacing: 0 10px; }
+  .client-card td {
+      background: #FFFFFF;
+      border-top: 3px solid #111111 !important;
+      border-bottom: 3px solid #111111 !important;
+  }
+  .client-card td:first-child {
+      border-left: 3px solid #111111 !important;
+      border-radius: 8px 0 0 8px;
+  }
+  .client-card td:last-child {
+      border-right: 3px solid #111111 !important;
+      border-radius: 0 8px 8px 0;
+  }
   .item-desc { font-size: 16px; font-weight: 600; color: var(--text-main); display: block; margin-bottom: 4px; }
   .item-ingred { font-size: 12px; color: var(--text-muted); font-style: italic; margin-bottom: 6px; }
   .item-val { font-size: 16px; font-weight: 600; color: var(--accent); }
@@ -1168,11 +1514,56 @@
     .print-controls { display: none !important; }
   }
   
-  /* LOGIN */
-  #loginOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #4B5D3F 0%, #2A3328 70%); z-index: 1000000; flex-direction: column; align-items: center; justify-content: center; }
-  .login-box { background: var(--card-elevated); padding: 40px; border-radius: 12px; border: 1px solid var(--border-soft); width: 85%; max-width: 380px; text-align: center; box-shadow: 0 12px 36px rgba(0,0,0,0.18); }
-  .login-logo-wrap { display: flex; justify-content: center; align-items: center; margin-bottom: 16px; min-height: 110px; }
-  #logoLoginDisplay.visivel { display: block; }
+  /* LOGIN — visual escuro original (independente do tema claro do caixa) */
+  #loginOverlay {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(circle at center, #4B5D3F 0%, #2A3328 70%);
+      z-index: 1000000; flex-direction: column; align-items: center; justify-content: center;
+  }
+  #loginOverlay .login-box {
+      background: #424E3E;
+      padding: 40px; border-radius: 12px;
+      border: 1px solid #4F5E4A;
+      width: 85%; max-width: 380px; text-align: center;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.45);
+      color: #E8EDE6;
+  }
+  #loginOverlay .login-logo-wrap { display: flex; justify-content: center; align-items: center; margin-bottom: 16px; min-height: 110px; }
+  #loginOverlay #logoLoginDisplay.visivel { display: block; }
+  #loginOverlay .titulo,
+  #loginOverlay h2.titulo { color: #fff !important; }
+  #loginOverlay p,
+  #loginOverlay label { color: #A8B5A3; }
+  #loginOverlay #loginCaixaHint strong,
+  #loginOverlay #loginPerfilHint { color: #C9A23B !important; }
+  #loginOverlay #msgLogin { color: #C9A23B !important; }
+  #loginOverlay input,
+  #loginOverlay select {
+      background: #2E3830 !important;
+      color: #E8EDE6 !important;
+      border-color: #4F5E4A !important;
+  }
+  #loginOverlay input::placeholder { color: #7A8878; }
+  #loginOverlay .login-box .primary {
+      background: #4B5D3F; border-color: #5C6F50; color: #fff;
+  }
+  #loginOverlay #btnGerenteLogin {
+      border-color: #C9A23B !important;
+  }
+  #loginOverlay .login-box .warning {
+      background: transparent !important; color: #C9A23B !important; border-color: rgba(201, 162, 59, 0.45) !important;
+  }
+  #loginOverlay .login-box .warning:hover {
+      background: rgba(201, 162, 59, 0.18) !important; color: #C9A23B !important; border-color: #C9A23B !important;
+  }
+  #loginOverlay .login-box .dark {
+      background: #3A4536 !important; border-color: #4F5E4A !important; color: #E8EDE6 !important;
+  }
+  #loginOverlay .login-box .success {
+      background: #5A7A52; border-color: #6B8B63; color: #fff;
+  }
+  #loginOverlay .login-box button[style*="transparent"] { color: #A8B5A3 !important; }
+  #loginOverlay .login-box button[style*="var(--danger)"] { color: #B85C5C !important; }
 
   body.role-func .admin-only { display: none !important; }
   body.role-garcom .admin-only { display: none !important; }
@@ -1540,9 +1931,9 @@
   }
 
   /* ABAS E TAGS */
-  .tab-btn { flex: 1; padding: 12px; background: var(--input-bg); border: 1px solid var(--border-soft); color: var(--text-muted); cursor: pointer; text-align:center; font-weight: 600; border-radius: 6px; transition: 0.2s; }
-  .tab-btn.active { background: var(--primary); color: #FFF; border-color: var(--primary); }
-  .tab-btn:hover:not(.active) { color: var(--text-main); border-color: var(--accent); }
+  .tab-btn { flex: 1; padding: 12px; background: #FFFFFF; border: 2px solid #4B5D3F; color: #111111; cursor: pointer; text-align:center; font-weight: 700; border-radius: 6px; transition: 0.2s; }
+  .tab-btn.active { background: #4B5D3F; color: #FFF; border-color: #4B5D3F; }
+  .tab-btn:hover:not(.active) { color: #111111; border-color: #4B5D3F; background: #E8EDE6; }
   
   .tab-lista { flex: 1; padding: 10px; background: var(--input-bg); border: 1px solid var(--border-soft); color: var(--text-muted); cursor: pointer; text-align:center; font-weight: 600; font-size:12px; border-radius: 6px; transition: 0.2s;}
   .tab-lista.active { background: var(--primary-soft); color: var(--text-main); border-color: var(--accent); }
@@ -1551,7 +1942,7 @@
   .ingrediente-tag { background: var(--input-bg); color: var(--accent); padding: 6px 12px; border-radius: 6px; font-size: 11px; margin: 3px; display: inline-block; border: 1px solid rgba(201, 162, 59, 0.35); cursor: pointer; }
   .ingrediente-tag:hover { background: var(--accent-soft); color: var(--text-main); }
 
-  .dash-stat { flex:1; min-width:110px; background:var(--input-bg); padding:15px 10px; border-radius:8px; border:1px solid var(--border-soft); }
+  .dash-stat { flex:1; min-width:110px; background:var(--card-elevated); padding:15px 10px; border-radius:8px; border:2.5px solid #4B5D3F; }
 
   .swal2-container { z-index: 1000000 !important; }
 </style>
@@ -1561,7 +1952,7 @@
 <div id="modalAlertaOnline" style="display:none; position:fixed; top:80px; right:20px; width:300px; background:var(--card-elevated); border:2px solid var(--accent); border-radius:10px; padding:25px; z-index:9999999; text-align:center; box-shadow: 0 8px 24px rgba(0,0,0,0.2); animation: piscarAlertaLateral 1s infinite;">
     <h1 style="color: var(--accent); font-size: 22px; margin: 0 0 10px 0; font-family: 'Poppins', sans-serif;">🛎️ NOVO PEDIDO</h1>
     <p style="color: var(--text-main); font-size: 13px; margin: 0 0 15px 0;">Pedido online recebido!</p>
-    <h2 id="nomeClienteAlerta" style="color: #FFF; font-size: 18px; text-transform: uppercase; margin: 0 0 20px 0; font-family: 'Poppins', sans-serif;"></h2>
+    <h2 id="nomeClienteAlerta" style="color: var(--text-main); font-size: 18px; text-transform: uppercase; margin: 0 0 20px 0; font-family: 'Poppins', sans-serif;"></h2>
     <button onclick="pararAlertaOnline()" style="background: var(--success); color: #FFF; font-size: 14px; padding: 12px; width: 100%; font-weight: 600; border-radius: 4px; cursor: pointer; border: none;">VISUALIZADO</button>
 </div>
 
@@ -1592,22 +1983,22 @@
         <button id="btnGerenteLogin" class="primary" onclick="selecionarPerfil('gerente')" style="width:100%; margin-bottom:10px; padding:15px; font-size:14px; border-color:var(--accent);">👔 ADMINISTRADOR GERAL (GERENTE)</button>
         <button class="warning" onclick="selecionarPerfil('garcom')" style="width:100%; margin-bottom:10px; padding:15px; font-size:14px;">🧑‍🍳 GARÇOM (SALÃO)</button>
         <button class="dark" onclick="selecionarPerfil('func')" style="width:100%; padding:15px; font-size:14px;">👨‍🍳 COZINHA (PRODUÇÃO)</button>
-        <p id="loginCaixaHint" style="font-size:11px; color:var(--text-muted); margin-top:14px; line-height:1.5;">O caixa entra com <strong style="color:var(--accent);">e-mail e senha</strong> criados em Acesso Equipe. Garçom e cozinha também usam login.</p>
+        <p id="loginCaixaHint" style="font-size:11px; color:#A8B5A3; margin-top:14px; line-height:1.5;">O caixa entra com <strong style="color:#C9A23B;">e-mail e senha</strong> criados em Acesso Equipe. Garçom e cozinha também usam login.</p>
     </div>
     <div id="step-2" style="display:none; margin-top:20px;">
-        <p id="loginPerfilHint" style="font-size:12px; color:var(--accent); margin:0 0 12px; font-weight:600;"></p>
+        <p id="loginPerfilHint" style="font-size:12px; color:#C9A23B; margin:0 0 12px; font-weight:600;"></p>
         <form onsubmit="fazerLogin(event)">
             <input type="email" id="emailInput" placeholder="E-mail" required style="margin-bottom:10px; text-align:center;">
             <input type="password" id="senhaInput" placeholder="Senha" required style="margin-bottom:15px; text-align:center;">
-            <div style="margin-bottom:15px; color:var(--text-muted); font-size:12px;">
+            <div style="margin-bottom:15px; color:#A8B5A3; font-size:12px;">
                 <input type="checkbox" id="chkLembrarEmail" style="width:auto; min-width:auto;"> Lembrar E-mail
             </div>
             <button type="submit" class="success" style="width:100%; padding:15px; font-size:16px; font-weight:700;">ENTRAR</button>
         </form>
-        <div id="msgLogin" style="color:var(--accent); font-weight:bold; margin-top:15px; font-size:13px; min-height:20px;"></div>
+        <div id="msgLogin" style="color:#C9A23B; font-weight:bold; margin-top:15px; font-size:13px; min-height:20px;"></div>
         <div style="display:flex; justify-content:space-between; margin-top:15px;">
-            <button onclick="voltarLogin()" style="background:transparent; color:var(--text-muted); font-size:12px; padding:5px;">⬅ Voltar</button>
-            <button onclick="resetarApp()" style="background:transparent; color:var(--danger); font-size:12px; padding:5px; text-decoration:underline;">🔄 Resetar App</button>
+            <button onclick="voltarLogin()" style="background:transparent; color:#A8B5A3; font-size:12px; padding:5px;">⬅ Voltar</button>
+            <button onclick="resetarApp()" style="background:transparent; color:#B85C5C; font-size:12px; padding:5px; text-decoration:underline;">🔄 Resetar App</button>
         </div>
     </div>
   </div>
@@ -1727,7 +2118,7 @@
     </div>
   </div>
   <div style="display:flex; gap:10px; align-items:center;">
-    <div id="userDisplay" style="font-size:11px; text-align:right; color:var(--text-muted);" class="admin-only">Modo Administrador</div>
+    <div id="userDisplay" style="font-size:11px; text-align:right; color:#E8EDE6;" class="admin-only">Modo Administrador</div>
     <button type="button" class="danger btn-trocar-login admin-only" onclick="trocarLogin()">🚪 SAIR</button>
   </div>
 </header>
@@ -1750,15 +2141,57 @@
         <span class="logo-sub">Restaurante</span>
       </div>
       <button type="button" class="sidebar-item active" data-painel="inicio" onclick="abrirPainelLateral('inicio', this)"><span class="ico">🏠</span> Início <span id="badgeSidebarInicio" class="sidebar-badge" style="display:none">0</span></button>
-      <button type="button" class="sidebar-item" data-painel="cliente" onclick="abrirPainelCliente(this)"><span class="ico">👤</span> Cadastrar Cliente</button>
-      <button type="button" class="sidebar-item" data-painel="produtos" onclick="abrirPainelLateral('produtos', this)"><span class="ico">🍴</span> CADASTRAR PRATOS</button>
-      <button type="button" class="sidebar-item" data-painel="estoque" onclick="abrirPainelLateral('estoque', this)"><span class="ico">📦</span> Estoque / Mercadorias</button>
-      <button type="button" class="sidebar-item" data-painel="mesas" onclick="abrirPainelLateral('mesas', this)"><span class="ico">🪑</span> Cadastrar Mesa</button>
-      <button type="button" class="sidebar-item" data-painel="pedido" onclick="abrirPainelLateral('pedido', this)"><span class="ico">🍽️</span> Lançar Pedido</button>
-      <button type="button" class="sidebar-item" data-painel="comandas" onclick="abrirPainelLateral('comandas', this)"><span class="ico">📋</span> Comandas</button>
-      <button type="button" class="sidebar-item" data-painel="cardapio" onclick="abrirPainelLateral('cardapio', this)"><span class="ico">📅</span> Menu do Dia</button>
-      <button type="button" class="sidebar-item" data-painel="acesso" onclick="abrirPainelLateral('acesso', this)"><span class="ico">👥</span> Acesso Equipe</button>
-      <button type="button" class="sidebar-item" data-painel="config" onclick="abrirPainelLateral('config', this)"><span class="ico">⚙️</span> Configurações</button>
+      <div class="sidebar-grupo" id="menuGrupoClientes">
+        <button type="button" class="sidebar-grupo-toggle" onclick="toggleMenuClientes(event)" aria-expanded="false">
+          <span class="ico">👤</span> CADASTRO DE CLIENTES <span class="seta">▶</span>
+        </button>
+        <div class="sidebar-subitens">
+          <button type="button" class="sidebar-subitem" data-painel="cliente" data-cliente-aba="novo" onclick="abrirCadastroClienteSub('novo', this)"><span class="ico">➕</span> Cadastrar o Cliente</button>
+          <button type="button" class="sidebar-subitem" data-painel="cliente" data-cliente-aba="lista" onclick="abrirCadastroClienteSub('lista', this)"><span class="ico">📋</span> Clientes Cadastrados</button>
+        </div>
+      </div>
+      <div class="sidebar-grupo" id="menuGrupoPratos">
+        <button type="button" class="sidebar-grupo-toggle" onclick="toggleMenuPratos(event)" aria-expanded="false">
+          <span class="ico">🍽️</span> PRATOS/PRODUTOS <span class="seta">▶</span>
+        </button>
+        <div class="sidebar-subitens">
+          <button type="button" class="sidebar-subitem" data-painel="produtos" onclick="abrirPainelLateral('produtos', this)"><span class="ico">🍴</span> Cadastrar Pratos</button>
+          <button type="button" class="sidebar-subitem" data-painel="estoque" onclick="abrirPainelLateral('estoque', this)"><span class="ico">📦</span> Estoque de produtos</button>
+        </div>
+      </div>
+      <div class="sidebar-grupo" id="menuGrupoPedidos">
+        <button type="button" class="sidebar-grupo-toggle" onclick="toggleMenuPedidos(event)" aria-expanded="false">
+          <span class="ico">🧾</span> PEDIDOS/MESAS <span class="seta">▶</span>
+        </button>
+        <div class="sidebar-subitens">
+          <button type="button" class="sidebar-subitem" data-painel="pedido" onclick="abrirPainelLateral('pedido', this)"><span class="ico">🍽️</span> Lançar Pedido</button>
+          <button type="button" class="sidebar-subitem" data-painel="mesas" onclick="abrirPainelLateral('mesas', this)"><span class="ico">🪑</span> Cadastrar Mesa</button>
+        </div>
+      </div>
+      <button type="button" class="sidebar-item" data-painel="comandas" onclick="abrirPainelLateral('comandas', this)"><span class="ico">📋</span> COMANDAS EM ABERTAS</button>
+      <div class="sidebar-grupo" id="menuGrupoCardapio">
+        <button type="button" class="sidebar-grupo-toggle" onclick="toggleMenuCardapio(event)" aria-expanded="false">
+          <span class="ico">📅</span> CARDÁPIO <span class="seta">▶</span>
+        </button>
+        <div class="sidebar-subitens">
+          <button type="button" class="sidebar-subitem" data-painel="cardapio" onclick="abrirPainelLateral('cardapio', this)"><span class="ico">📋</span> Menu do Dia</button>
+          <button type="button" class="sidebar-subitem" data-painel="taxaEntrega" onclick="abrirPainelLateral('taxaEntrega', this)"><span class="ico">🛵</span> Taxa de Entrega</button>
+          <button type="button" class="sidebar-subitem" data-painel="cardapioOnline" onclick="abrirPainelLateral('cardapioOnline', this)"><span class="ico">📱</span> Cardápio Online</button>
+        </div>
+      </div>
+      <div class="sidebar-grupo" id="menuGrupoConfig">
+        <button type="button" class="sidebar-grupo-toggle" onclick="toggleMenuConfig(event)" aria-expanded="false">
+          <span class="ico">⚙️</span> CONFIGURAÇÕES <span class="seta">▶</span>
+        </button>
+        <div class="sidebar-subitens">
+          <button type="button" class="sidebar-subitem" data-painel="endereco" onclick="abrirPainelLateral('endereco', this)"><span class="ico">📍</span> Cadastrar Endereço</button>
+          <button type="button" class="sidebar-subitem" data-painel="chavePix" onclick="abrirPainelLateral('chavePix', this)"><span class="ico">💠</span> Chave PIX</button>
+          <button type="button" class="sidebar-subitem" data-painel="backup" onclick="abrirPainelLateral('backup', this)"><span class="ico">💾</span> Backup</button>
+          <button type="button" class="sidebar-subitem" data-painel="segurancaCaixa" onclick="abrirPainelLateral('segurancaCaixa', this)"><span class="ico">🔐</span> Segurança do Caixa</button>
+          <button type="button" class="sidebar-subitem" data-painel="contadorPedidos" onclick="abrirPainelLateral('contadorPedidos', this)"><span class="ico">🔢</span> Contador de Pedidos</button>
+          <button type="button" class="sidebar-subitem" data-painel="acesso" onclick="abrirPainelLateral('acesso', this)"><span class="ico">👥</span> Acesso Equipe</button>
+        </div>
+      </div>
       <button type="button" class="sidebar-item sidebar-item-sair" onclick="trocarLogin()"><span class="ico">🚪</span> Sair / Trocar acesso</button>
     </nav>
 
@@ -1797,8 +2230,8 @@
         </div>
 
         <div class="card" style="margin-bottom:20px; padding:18px;">
-            <h4 style="color:var(--accent); margin:0 0 8px; font-size:14px;">📱 Cardápio Digital Online</h4>
-            <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px; line-height:1.5;">Os pratos cadastrados em <strong style="color:var(--text-main);">Cadastrar Pratos</strong> aparecem automaticamente no cardápio online. O botão acima libera ou bloqueia pedidos pelo link.</p>
+            <h4 style="color:#111; font-weight:700; margin:0 0 8px; font-size:14px;">📱 Cardápio Digital Online</h4>
+            <p style="font-size:12px; color:#111; font-weight:700; margin:0 0 12px; line-height:1.5;">Os pratos cadastrados em <strong style="color:#111;">Cadastrar Pratos</strong> aparecem automaticamente no cardápio online. O botão acima libera ou bloqueia pedidos pelo link.</p>
             <input type="text" id="linkCardapioDigital" readonly style="width:100%; margin-bottom:10px; font-size:11px; padding:12px; background:var(--input-bg); border:1px solid var(--border-soft); color:var(--text-muted); box-sizing:border-box; border-radius:6px;">
             <div style="display:flex; gap:8px; flex-wrap:wrap;">
                 <button type="button" class="primary" onclick="abrirCardapioDigital()" style="flex:1; min-width:120px; font-size:11px; padding:12px;">👁️ ABRIR CARDÁPIO</button>
@@ -1818,98 +2251,122 @@
         </div>
 
         <div class="card" style="text-align:center; padding:30px;">
-            <p style="color:var(--text-muted); margin:0 0 20px; font-size:14px;">Acesso rápido às operações do restaurante</p>
-            <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
-                <button class="warning" onclick="abrirPainelLateral('pedido')" style="min-width:160px;">🍽️ Novo Pedido</button>
-                <button class="dark" onclick="abrirPainelLateral('mesas')" style="min-width:160px;">🪑 Cadastrar Mesa</button>
-                <button class="primary" onclick="abrirPainelLateral('comandas')" style="min-width:160px;">📋 Ver Comandas</button>
-                <button class="success" onclick="abrirPainelLateral('produtos')" style="min-width:160px;">🍴 CADASTRAR PRATOS</button>
-                <button class="dark" onclick="abrirPainelLateral('estoque')" style="min-width:160px;">📦 Estoque / Mercadorias</button>
-                <button class="dark" onclick="abrirPainelLateral('acesso')" style="min-width:160px;">👥 Acesso Equipe</button>
-                <button class="dark" onclick="toggleKDS()" style="min-width:160px;">👨‍🍳 Abrir Cozinha</button>
-                <button class="warning" onclick="toggleGarcom()" style="min-width:160px;">🧑‍🍳 Ver Garçons</button>
-                <button class="primary" onclick="abrirCardapioDigital()" style="min-width:160px;">📱 Cardápio Online</button>
+            <p style="color:#111; font-weight:700; margin:0 0 20px; font-size:14px;">Acesso rápido às operações do restaurante</p>
+            <div class="inicio-acesso-rapido">
+                <button type="button" onclick="abrirPainelLateral('pedido')">🍽️ Novo Pedido</button>
+                <button type="button" onclick="abrirPainelLateral('mesas')">🪑 Cadastrar Mesa</button>
+                <button type="button" onclick="abrirPainelLateral('comandas')">📋 Ver Comandas</button>
+                <button type="button" onclick="abrirPainelLateral('produtos')">🍴 Cadastrar Pratos</button>
+                <button type="button" onclick="abrirPainelLateral('estoque')">📦 Estoque de produtos</button>
+                <button type="button" onclick="abrirPainelLateral('acesso')">👥 Acesso Equipe</button>
+                <button type="button" onclick="toggleKDS()">👨‍🍳 Abrir Cozinha</button>
+                <button type="button" onclick="toggleGarcom()">🧑‍🍳 Ver Garçons</button>
+                <button type="button" onclick="abrirCardapioDigital()">📱 Cardápio Online</button>
             </div>
         </div>
       </div>
 
       <!-- PAINEL CADASTRAR CLIENTE (BALCÃO) -->
       <div id="painel-cliente" class="painel-secao">
-        <h2 class="painel-titulo">Cadastrar Cliente</h2>
-        <div class="card card--full" id="balcaoFormSecao">
-          <h3 id="tituloFormBalcao" style="color:var(--accent); margin-top:0;">Novo Cliente — Balcão</h3>
-          <p style="font-size:12px; color:var(--text-muted); margin-top:0; margin-bottom:16px; line-height:1.5;">Cadastre vendas do balcão, combos avulsos e produtos do <strong style="color:var(--text-main);">Estoque / Mercadorias</strong>. A baixa no estoque ocorre ao confirmar o pagamento (Receber).</p>
-          <input type="text" id="balcaoNome" placeholder="Nome do cliente" style="margin-bottom:10px;">
-          <input type="text" id="balcaoTelefone" placeholder="Telefone" style="margin-bottom:10px;">
-          <input type="text" id="balcaoEndereco" placeholder="Endereço (opcional)" style="margin-bottom:15px;">
-          <label style="font-size:11px; color:var(--accent); font-weight:600; display:block; margin-bottom:8px;">DO CARDÁPIO</label>
-          <div class="balcao-item-linha">
-              <select id="balcaoProdutoSelect" style="flex:2;">
-                  <option value="">— Escolher do cardápio —</option>
-              </select>
-              <input type="number" id="balcaoItemQtd" value="1" min="1" placeholder="Qtd" style="width:60px; flex:none;">
-              <button type="button" class="warning" onclick="adicionarItemBalcaoModal()" style="flex:none; padding:10px 14px;">+</button>
-          </div>
-          <label style="font-size:11px; color:var(--success); font-weight:600; display:block; margin:16px 0 8px;">DO ESTOQUE (mercadorias cadastradas)</label>
-          <div class="balcao-item-linha" style="margin-bottom:6px;">
-              <input type="text" id="balcaoEstoqueBusca" list="listaEstoqueBalcao" placeholder="Bipe código ou digite o nome..." autocomplete="off" style="flex:2;"
-                onkeydown="if(event.key==='Enter'){event.preventDefault();adicionarItemBalcaoEstoque();}"
-                oninput="atualizarResumoEstoqueBalcao()">
-              <input type="text" id="balcaoEstoqueQtd" value="1" inputmode="decimal" placeholder="Qtd" style="width:60px; flex:none;" autocomplete="off"
-                onkeydown="if(event.key==='Enter'){event.preventDefault();adicionarItemBalcaoEstoque();}">
-              <button type="button" class="success" onclick="adicionarItemBalcaoEstoque()" style="flex:none; padding:10px 12px; font-size:11px; white-space:nowrap;">+ ESTOQUE</button>
-          </div>
-          <datalist id="listaEstoqueBalcao"></datalist>
-          <div id="balcaoEstoqueResumo" style="display:none; font-size:11px; color:var(--text-muted); margin-bottom:12px; padding:8px 10px; background:var(--input-bg); border-radius:6px; border:1px solid var(--border-soft);"></div>
-          <div class="balcao-avulso-box">
-              <label style="font-size:11px; color:var(--accent); font-weight:600; display:block; margin-bottom:10px;">PRODUTO AVULSO / COMBO</label>
-              <input type="text" id="balcaoAvulsoDesc" placeholder="Ex: Combo 20 marmitas, Kit semanal..." style="margin-bottom:10px;">
-              <div class="balcao-item-linha" style="margin-bottom:10px;">
-                  <input type="number" id="balcaoAvulsoQtd" value="1" min="1" placeholder="Qtd" style="width:70px; flex:none;">
-                  <input type="number" id="balcaoAvulsoValor" placeholder="Valor total R$" step="0.01" style="flex:1;">
-                  <button type="button" class="warning" onclick="adicionarItemBalcaoAvulso()" style="flex:none; padding:10px 12px; font-size:11px; white-space:nowrap;">+ AVULSO</button>
+        <h2 class="painel-titulo" id="tituloPainelCliente">Cadastro de Clientes</h2>
+
+        <!-- SUB: CADASTRAR O CLIENTE -->
+        <div id="clienteAbaNovo">
+          <div class="card card--full" id="balcaoFormSecao">
+            <h3 id="tituloFormBalcao" style="color:#111; margin-top:0; font-weight:700;">Cadastrar o Cliente — Balcão</h3>
+            <p class="balao-ajuda" style="margin-top:0; margin-bottom:16px;">Preencha os dados do cliente. Depois, em <strong>Clientes Cadastrados</strong>, use <strong>Adicionar Produtos</strong> para cardápio, avulso/combo e estoque.</p>
+            <div class="cliente-campo-grid">
+              <div class="span-2"><input type="text" id="balcaoNome" placeholder="Nome do cliente *" autocomplete="name"></div>
+              <div class="span-2"><input type="text" id="balcaoTelefone" placeholder="Telefone" inputmode="tel" autocomplete="tel"></div>
+              <div class="span-2 cliente-linha-endereco">
+                <input type="text" id="balcaoEndereco" placeholder="Endereço (rua / logradouro)" autocomplete="street-address">
+                <input type="text" id="balcaoNumero" placeholder="Nº" autocomplete="off" style="max-width:110px; flex:0 0 110px;">
               </div>
-              <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-main); cursor:pointer;">
-                  <input type="checkbox" id="balcaoAvulsoPacoteMarmita" style="width:auto; min-width:auto;">
-                  <span>📦 Controlar retiradas de marmitas (quantidade paga × retiradas por data)</span>
-              </label>
-              <button type="button" class="dark" onclick="ativarPacoteMarmitasSoControle()" style="margin-top:10px; width:100%; padding:10px; font-size:11px; border-color:var(--border-soft); color:var(--text-muted);">Só ativar controle de marmitas (sem adicionar produto)</button>
-          </div>
-          <div class="balcao-itens-lista" id="balcaoItensLista"></div>
-          <div id="balcaoPacoteSecao" class="balcao-pacote-box" style="display:none;">
-              <h4 style="color:var(--accent); margin:0 0 12px; font-size:14px;">📦 Controle de Marmitas</h4>
-              <div class="balcao-item-linha" style="margin-bottom:12px;">
-                  <input type="number" id="balcaoPacoteQtdPaga" min="1" placeholder="Qtd. paga" style="width:100px; flex:none;" onchange="atualizarQtdPagaPacoteMarmita()">
-                  <input type="text" id="balcaoPacoteDescricao" placeholder="Descrição do pacote" style="flex:1;" onchange="atualizarDescPacoteMarmita()">
-              </div>
-              <div id="balcaoPacoteResumo" class="balcao-pacote-resumo"></div>
-              <label style="font-size:11px; color:var(--text-muted); display:block; margin-bottom:8px;">Registrar retirada:</label>
-              <div class="balcao-item-linha" style="margin-bottom:10px;">
-                  <input type="date" id="balcaoRetiradaData" style="flex:1;">
-                  <input type="number" id="balcaoRetiradaQtd" value="1" min="1" placeholder="Qtd" style="width:70px; flex:none;">
-                  <button type="button" class="success" onclick="registrarRetiradaMarmita()" style="flex:none; padding:10px 12px; font-size:11px;">+ RETIRADA</button>
-              </div>
-              <div id="balcaoRetiradasLista" style="max-height:160px; overflow-y:auto;"></div>
-          </div>
-          <div style="text-align:right; font-size:20px; font-weight:700; color:var(--accent); margin:16px 0;">
-              Total: <span id="balcaoModalTotal">R$ 0,00</span>
-          </div>
-          <div style="display:flex; gap:10px; flex-wrap:wrap;">
-              <button type="button" class="success" onclick="salvarBalcaoDia()" style="flex:1; padding:14px; min-width:200px;">💾 SALVAR LANÇAMENTO</button>
-              <button type="button" class="dark" onclick="limparFormBalcaoDia()" style="flex:1; padding:14px; min-width:140px; border-color:var(--border-soft); color:var(--text-muted);">LIMPAR FORMULÁRIO</button>
+              <div><input type="text" id="balcaoBairro" placeholder="Bairro" autocomplete="address-level3"></div>
+              <div><input type="text" id="balcaoCidade" placeholder="Cidade" autocomplete="address-level2"></div>
+            </div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;">
+              <button type="button" class="success" onclick="salvarClienteBalcaoCadastro()" style="flex:1; padding:14px; min-width:200px;">💾 SALVAR CLIENTE</button>
+              <button type="button" class="dark" onclick="limparFormBalcaoDia()" style="flex:1; padding:14px; min-width:140px;">LIMPAR FORMULÁRIO</button>
+            </div>
           </div>
         </div>
-        <div class="card card--full" id="balcaoListaSecao">
-          <h3 style="margin-top:0; color:var(--accent);">Clientes cadastrados hoje</h3>
-          <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px;">Novos lançamentos aparecem como <span class="badge-pendente" style="display:inline-block;">PENDENTE A RECEBER</span> até confirmar o pagamento.</p>
-          <input type="search" id="balcaoBuscaCliente" placeholder="🔍 Buscar por nome, telefone ou produto..." onkeyup="resetPaginaBalcaoERender()" autocomplete="off" style="width:100%; margin-bottom:16px; padding:14px; box-sizing:border-box; background:var(--input-bg); border:1px solid var(--border-soft);">
-          <div id="listaClientesBalcao"></div>
-          <div id="paginacaoBalcaoClientes" class="paginacao-container"></div>
-          <div class="tabela-dia-totais" style="margin-top:16px; border-top:none; padding-top:0;">
-              <span>Pendentes a receber: <strong id="balcaoTotalPendente">R$ 0,00</strong></span>
-              <span>Recebido no balcão: <strong id="balcaoTotalRecebido">R$ 0,00</strong></span>
+
+        <!-- ABA: CLIENTES CADASTRADOS + produtos -->
+        <div id="clienteAbaLista" style="display:none;">
+          <div class="card card--full" id="balcaoListaSecao">
+            <h3 style="margin-top:0; color:#111; font-weight:700;">Clientes cadastrados</h3>
+            <p class="balao-ajuda" style="margin:0 0 12px;">Edite, exclua ou <strong>adicione produtos</strong>. Pendentes aparecem como <span class="badge-pendente" style="display:inline-block;">PENDENTE A RECEBER</span> até confirmar o pagamento.</p>
+            <input type="search" id="balcaoBuscaCliente" placeholder="🔍 Buscar por nome, telefone, bairro ou produto..." onkeyup="resetPaginaBalcaoERender()" autocomplete="off" style="width:100%; margin-bottom:16px; padding:14px; box-sizing:border-box;">
+            <div id="listaClientesBalcao"></div>
+            <div id="paginacaoBalcaoClientes" class="paginacao-container"></div>
+            <div class="tabela-dia-totais" style="margin-top:16px; border-top:none; padding-top:0;">
+                <span>Pendentes a receber: <strong id="balcaoTotalPendente">R$ 0,00</strong></span>
+                <span>Recebido no balcão: <strong id="balcaoTotalRecebido">R$ 0,00</strong></span>
+            </div>
+            <p class="balao-ajuda" style="margin:10px 0 0; text-align:right; font-size:11px;">Pendentes não entram no <strong>Caixa (Recebido)</strong> do Início — só após clicar em Receber.</p>
           </div>
-          <p style="font-size:11px; color:var(--text-muted); margin:10px 0 0; text-align:right;">Pendentes não entram no <strong>Caixa (Recebido)</strong> do Início — só após clicar em Receber.</p>
+
+          <div class="card card--full" id="balcaoProdutosSecao" style="display:none;">
+            <h3 id="tituloProdutosBalcao" style="color:#111; margin-top:0; font-weight:700;">Adicionar produtos</h3>
+            <p id="balcaoClienteSelecionadoInfo" class="balao-ajuda" style="margin-top:0; margin-bottom:16px;"></p>
+            <label style="font-size:12px; color:#111; font-weight:700; display:block; margin-bottom:8px;">DO CARDÁPIO</label>
+            <div class="balcao-item-linha">
+                <select id="balcaoProdutoSelect" style="flex:2;">
+                    <option value="">— Escolher do cardápio —</option>
+                </select>
+                <input type="number" id="balcaoItemQtd" value="1" min="1" placeholder="Qtd" style="width:60px; flex:none;">
+                <button type="button" class="warning" onclick="adicionarItemBalcaoModal()" style="flex:none; padding:10px 14px;">+</button>
+            </div>
+            <label style="font-size:12px; color:#111; font-weight:700; display:block; margin:16px 0 8px;">DO ESTOQUE (mercadorias cadastradas)</label>
+            <div class="balcao-item-linha" style="margin-bottom:6px;">
+                <input type="text" id="balcaoEstoqueBusca" list="listaEstoqueBalcao" placeholder="Bipe código ou digite o nome..." autocomplete="off" style="flex:2;"
+                  onkeydown="if(event.key==='Enter'){event.preventDefault();adicionarItemBalcaoEstoque();}"
+                  oninput="atualizarResumoEstoqueBalcao()">
+                <input type="text" id="balcaoEstoqueQtd" value="1" inputmode="decimal" placeholder="Qtd" style="width:60px; flex:none;" autocomplete="off"
+                  onkeydown="if(event.key==='Enter'){event.preventDefault();adicionarItemBalcaoEstoque();}">
+                <button type="button" class="success" onclick="adicionarItemBalcaoEstoque()" style="flex:none; padding:10px 12px; font-size:11px; white-space:nowrap;">+ ESTOQUE</button>
+            </div>
+            <datalist id="listaEstoqueBalcao"></datalist>
+            <div id="balcaoEstoqueResumo" style="display:none; font-size:12px; color:#111; font-weight:700; margin-bottom:12px; padding:8px 10px; background:#fff; border-radius:6px; border:2px solid #4B5D3F;"></div>
+            <div class="balcao-avulso-box">
+                <label style="font-size:12px; color:#111; font-weight:700; display:block; margin-bottom:10px;">PRODUTO AVULSO / COMBO</label>
+                <input type="text" id="balcaoAvulsoDesc" placeholder="Ex: Combo 20 marmitas, Kit semanal..." style="margin-bottom:10px;">
+                <div class="balcao-item-linha" style="margin-bottom:10px;">
+                    <input type="number" id="balcaoAvulsoQtd" value="1" min="1" placeholder="Qtd" style="width:70px; flex:none;">
+                    <input type="number" id="balcaoAvulsoValor" placeholder="Valor total R$" step="0.01" style="flex:1;">
+                    <button type="button" class="warning" onclick="adicionarItemBalcaoAvulso()" style="flex:none; padding:10px 12px; font-size:11px; white-space:nowrap;">+ AVULSO</button>
+                </div>
+                <label class="balcao-check-marmita" for="balcaoAvulsoPacoteMarmita">
+                    <input type="checkbox" id="balcaoAvulsoPacoteMarmita">
+                    <span>📦 Controlar retiradas de marmitas (quantidade paga × retiradas por data)</span>
+                </label>
+                <button type="button" class="dark" onclick="ativarPacoteMarmitasSoControle()" style="margin-top:10px; width:100%; padding:10px; font-size:11px;">Só ativar controle de marmitas (sem adicionar produto)</button>
+            </div>
+            <div class="balcao-itens-lista" id="balcaoItensLista"></div>
+            <div id="balcaoPacoteSecao" class="balcao-pacote-box" style="display:none;">
+                <h4 style="color:#111; margin:0 0 12px; font-size:14px; font-weight:700;">📦 Controle de Marmitas</h4>
+                <div class="balcao-item-linha" style="margin-bottom:12px;">
+                    <input type="number" id="balcaoPacoteQtdPaga" min="1" placeholder="Qtd. paga" style="width:100px; flex:none;" onchange="atualizarQtdPagaPacoteMarmita()">
+                    <input type="text" id="balcaoPacoteDescricao" placeholder="Descrição do pacote" style="flex:1;" onchange="atualizarDescPacoteMarmita()">
+                </div>
+                <div id="balcaoPacoteResumo" class="balcao-pacote-resumo"></div>
+                <label style="font-size:12px; color:#111; font-weight:700; display:block; margin-bottom:8px;">Registrar retirada:</label>
+                <div class="balcao-item-linha" style="margin-bottom:10px;">
+                    <input type="date" id="balcaoRetiradaData" style="flex:1;">
+                    <input type="number" id="balcaoRetiradaQtd" value="1" min="1" placeholder="Qtd" style="width:70px; flex:none;">
+                    <button type="button" class="success" onclick="registrarRetiradaMarmita()" style="flex:none; padding:10px 12px; font-size:11px;">+ RETIRADA</button>
+                </div>
+                <div id="balcaoRetiradasLista" style="max-height:160px; overflow-y:auto;"></div>
+            </div>
+            <div style="text-align:right; font-size:20px; font-weight:700; color:#111; margin:16px 0;">
+                Total: <span id="balcaoModalTotal">R$ 0,00</span>
+            </div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <button type="button" class="success" onclick="salvarBalcaoDia()" style="flex:1; padding:14px; min-width:200px;">💾 SALVAR PRODUTOS</button>
+                <button type="button" class="dark" onclick="cancelarProdutosBalcao()" style="flex:1; padding:14px; min-width:140px;">CANCELAR</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1954,7 +2411,7 @@
 
       <!-- PAINEL ESTOQUE / MERCADORIAS -->
       <div id="painel-estoque" class="painel-secao">
-        <h2 class="painel-titulo">Estoque / Mercadorias</h2>
+        <h2 class="painel-titulo">Estoque de produtos</h2>
 
         <div class="card card--full estoque-bipe-bar">
           <label>📟 BIPE — BUSCAR OU PUXAR PRODUTO</label>
@@ -2074,7 +2531,7 @@
             <div class="tab-lista" id="tabListaMesa" onclick="setFiltroLista('mesa')">MESAS NO SALÃO</div>
             <div class="tab-lista" id="tabListaDelivery" onclick="setFiltroLista('delivery')">ENTREGAS ATIVAS</div>
         </div>
-        <input type="search" id="searchBox" placeholder="🔍 Filtrar contas em aberto..." onkeyup="resetPaginacaoERender()" autocomplete="new-password" style="padding:16px; margin-bottom:20px; background: var(--input-bg); border: 1px solid var(--border-soft); width:100%; box-sizing:border-box;">
+        <input type="search" id="searchBox" placeholder="🔍 Filtrar contas em aberto..." onkeyup="resetPaginacaoERender()" autocomplete="new-password" style="padding:16px; margin-bottom:20px; background:#FFFFFF; border:3px solid #111111; width:100%; box-sizing:border-box; color:#111; font-weight:700; border-radius:8px;">
         <div id="listaClientes"></div>
         <div id="paginacaoContainer" class="paginacao-container"></div>
       </div>
@@ -2130,33 +2587,47 @@
         <datalist id="opcoesCatalogo"></datalist>
 
         <div class="card">
-          <p style="font-size:12px; color:var(--text-muted); margin-top:0; margin-bottom:16px; line-height:1.5;">Selecione a mesa ou cliente já cadastrado em <strong style="color:var(--accent);">Cadastrar Mesa</strong> e monte a comanda.</p>
-          <h3 style="margin-top:0;">Montar Comanda</h3>
-          <div style="background:var(--input-bg); padding:15px; border-radius:6px; margin-bottom:15px; display:flex; align-items:center; justify-content:space-between; border:1px solid var(--border-soft); flex-wrap:wrap; gap:10px;">
+          <p class="balao-ajuda" style="margin-top:0; margin-bottom:16px;">Selecione a mesa ou cliente já cadastrado em <strong>Cadastrar Mesa</strong> e monte a comanda.</p>
+          <h3 style="margin-top:0; color:#111; font-weight:700; font-style:normal;">Montar Comanda</h3>
+          <div class="balao-bloco" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
               <div class="radio-group">
                   <label><input type="radio" name="tipoPedido" value="presencial" checked onchange="aplicarTaxaPadrao()"> Salão / Retirada</label>
                   <label><input type="radio" name="tipoPedido" value="online" onchange="aplicarTaxaPadrao()"> Entrega</label>
               </div>
               <div style="display:flex; align-items:center; gap:10px;">
-                  <span style="font-size:10px; color:var(--text-muted); font-weight:600; letter-spacing: 1px;">PEDIDO Nº</span>
+                  <span class="balao-titulo" style="font-size:10px; letter-spacing:1px;">PEDIDO Nº</span>
                   <span id="numPedidoDisplay" class="num-pedido-display">0001</span>
                   <input type="hidden" id="numPedido" value="1">
               </div>
           </div>
-          <div class="pedido-vinculo-box" style="background:var(--input-bg); padding:15px; border-radius:6px; margin-bottom:20px; border:1px solid var(--border-soft);">
-              <label style="font-size:11px; color:var(--accent); font-weight:600; letter-spacing: 0.5px;">VINCULAR AO CLIENTE OU MESA:</label>
+          <div class="balao-bloco" id="pedidoEnderecoEntrega" style="display:none;">
+              <label class="balao-titulo" style="display:block; margin-bottom:10px;">ENDEREÇO DE ENTREGA</label>
+              <p class="balao-ajuda" style="margin:0 0 12px;">Informe os dados da entrega. Se vincular um cliente delivery, os campos preenchidos dele entram automaticamente.</p>
+              <div class="cliente-campo-grid">
+                  <div class="span-2"><input type="text" id="pedidoEntregaNome" placeholder="Nome do destinatário" autocomplete="name"></div>
+                  <div class="span-2"><input type="text" id="pedidoEntregaTelefone" placeholder="Telefone" inputmode="tel" autocomplete="tel"></div>
+                  <div class="span-2 cliente-linha-endereco">
+                      <input type="text" id="pedidoEntregaEndereco" placeholder="Endereço (rua / logradouro)" autocomplete="street-address">
+                      <input type="text" id="pedidoEntregaNumero" placeholder="Nº" autocomplete="off" style="max-width:110px; flex:0 0 110px;">
+                  </div>
+                  <div><input type="text" id="pedidoEntregaBairro" placeholder="Bairro" autocomplete="address-level3"></div>
+                  <div><input type="text" id="pedidoEntregaCidade" placeholder="Cidade" autocomplete="address-level2"></div>
+              </div>
+          </div>
+          <div class="pedido-vinculo-box balao-bloco">
+              <label class="balao-titulo">VINCULAR AO CLIENTE OU MESA:</label>
               <input type="search" id="filtroClienteSelect" class="pedido-vinculo-busca" placeholder="🔍 Buscar nome, mesa ou digite avulso..." oninput="onFiltroClientePedido()" autocomplete="off">
               <label class="pedido-avulso-row" for="pedidoModoAvulso">
                   <input type="checkbox" id="pedidoModoAvulso" onchange="toggleModoAvulsoPedido()">
-                  <span>Pedido <strong style="color:var(--accent);">avulso</strong> (sem cadastro — digite o nome abaixo)</span>
+                  <span>Pedido <strong>avulso</strong> (sem cadastro — digite o nome abaixo)</span>
               </label>
               <input type="text" id="inputNomeAvulso" class="pedido-nome-avulso" placeholder="Ex: AVULSO, Balcão, Retirada, Cliente sem cadastro..." oninput="sincronizarNomeAvulsoPedido()" style="display:none;">
               <select id="clienteSelect">
                   <option value="">Selecione a conta ativa...</option>
               </select>
           </div>
-          <div style="background:var(--input-bg); padding:15px; border-radius:6px; margin-bottom:20px; border:1px solid var(--border-soft);">
-              <label style="font-size:11px; color:var(--accent); font-weight:600; letter-spacing: 0.5px; display:block; margin-bottom:10px;">DADOS PARA CUPOM (COZINHA / GARÇOM)</label>
+          <div class="balao-bloco" id="pedidoDadosCupom">
+              <label class="balao-titulo" style="display:block; margin-bottom:10px;">DADOS PARA CUPOM (COZINHA / GARÇOM)</label>
               <div class="row-inputs">
                   <input type="text" id="inputGarcom" placeholder="Nome do garçom" autocomplete="off">
                   <input type="text" id="inputMesaPedido" placeholder="Mesa / local" autocomplete="off">
@@ -2167,25 +2638,25 @@
                   <input type="number" id="inputQtdPratos" placeholder="Pratos" min="0" inputmode="numeric">
               </div>
           </div>
-          <div style="background:var(--input-bg); padding:20px; border-radius:6px; border:1px solid var(--border-soft);">
-              <button class="dark" onclick="abrirModalSelecaoProdutos()" style="width:100%; margin-bottom:10px; color: var(--text-main); border-color: var(--accent);">🔍 ACESSAR MENU DIGITAL</button>
-              <p style="font-size:11px;color:var(--text-muted);margin:0;line-height:1.5;">Toque em <strong style="color:var(--accent);">+ ADD</strong>, informe a <strong>quantidade</strong> e a <strong>observação</strong> — o item entra direto na comanda parcial abaixo.</p>
+          <div class="balao-bloco" style="padding:20px;">
+              <button class="dark" onclick="abrirModalSelecaoProdutos()" style="width:100%; margin-bottom:10px; color:#111; font-weight:700; border:2px solid #4B5D3F; background:#E8EDE6;">🔍 ACESSAR MENU DIGITAL</button>
+              <p class="balao-ajuda">Toque em <strong>+ ADD</strong>, informe a <strong>quantidade</strong> e a <strong>observação</strong> — o item entra direto na comanda parcial abaixo.</p>
           </div>
-          <div id="carrinhoArea" style="display:none; margin-top:20px; background:var(--input-bg); padding:20px; border-radius:6px; border:1px solid var(--border-soft);">
-              <h4 style="color:var(--accent); margin:0 0 15px 0; border-bottom: 1px solid #333; padding-bottom: 10px;">📋 Comanda Parcial</h4>
+          <div id="carrinhoArea" class="balao-bloco" style="display:none; margin-top:20px; padding:20px;">
+              <h4 class="balao-titulo" style="margin:0 0 15px 0; border-bottom:2px solid #4B5D3F; padding-bottom:10px; font-size:15px;">📋 Comanda Parcial</h4>
               <table style="width:100%;"><tbody id="listaCarrinho"></tbody></table>
-              <div style="display:flex; gap:12px; margin-top:20px; border-top:1px solid #333; padding-top:20px;">
-                  <input type="number" id="inputTaxa" placeholder="Tx. Serviço/Frete (R$)" oninput="atualizarTotalCarrinho()" style="flex:1; background:var(--input-bg); border:1px solid var(--border-soft);">
-                  <input type="number" id="inputDesconto" placeholder="Desconto (R$)" oninput="atualizarTotalCarrinho()" style="flex:1; background:var(--input-bg); border:1px solid var(--border-soft);">
+              <div style="display:flex; gap:12px; margin-top:20px; border-top:2px solid #4B5D3F; padding-top:20px;">
+                  <input type="number" id="inputTaxa" placeholder="Tx. Serviço/Frete (R$)" oninput="atualizarTotalCarrinho()" style="flex:1;">
+                  <input type="number" id="inputDesconto" placeholder="Desconto (R$)" oninput="atualizarTotalCarrinho()" style="flex:1;">
               </div>
-              <div style="text-align:right; font-weight:700; color:var(--text-main); font-size:24px; margin:20px 0; font-family: 'Poppins', sans-serif;">
-                  Subtotal: <span id="totalCarrinhoDisplay" style="color: var(--accent);">R$ 0,00</span>
+              <div style="text-align:right; font-weight:800; color:#111; font-size:24px; margin:20px 0; font-family: 'Poppins', sans-serif;">
+                  Subtotal: <span id="totalCarrinhoDisplay" style="color:#111;">R$ 0,00</span>
               </div>
               <div class="carrinho-print-actions">
                   <button type="button" class="warning" onclick="imprimirCupomParcial('marmita')">🖨️ MARMITAS — IMPRIMIR E LANÇAR</button>
                   <button type="button" class="warning" onclick="imprimirCupomParcial('mesa')">🖨️ MESA — IMPRIMIR E LANÇAR</button>
               </div>
-              <p style="font-size:11px;color:var(--text-muted);margin:12px 0 0;line-height:1.5;">Imprime e lança <strong>toda a comanda</strong> (marmitas, pratos, bebidas, doces…) em aberto para receber. Use <strong>Mesa</strong> se algo for para a cozinha; <strong>Marmitas</strong> se for só balcão/retirada.</p>
+              <p class="balao-ajuda" style="margin-top:12px;">Imprime e lança <strong>toda a comanda</strong> (marmitas, pratos, bebidas, doces…) em aberto para receber. Use <strong>Mesa</strong> se algo for para a cozinha; <strong>Marmitas</strong> se for só balcão/retirada.</p>
           </div>
           <input type="hidden" id="dataEntrada">
         </div>
@@ -2267,68 +2738,120 @@
           </div>
           <canvas id="cardapioArteCanvas" style="display:none;" aria-hidden="true"></canvas>
           <div style="display:flex; gap:10px; flex-wrap: wrap;">
-              <button class="success" onclick="salvarCardapioDia()" style="flex:1; min-width: 160px; font-size: 13px;">💾 SALVAR SEMANA</button>
-              <button class="primary" onclick="publicarMenuDoDiaOnline()" style="flex:1; min-width: 160px; font-size: 13px;">🌐 PUBLICAR NO CARDÁPIO ONLINE</button>
-              <button class="dark" onclick="copiarCardapioImagem()" style="flex:1; min-width: 160px; font-size: 13px; border-color:var(--accent); color:var(--accent);">📋 COPIAR IMAGEM</button>
-              <button class="warning" onclick="compartilharCardapioDiaZap()" style="flex:1; min-width: 160px; font-size: 13px; font-weight: 700; color: #000;">📱 ENVIAR WHATSAPP</button>
-              <button class="success" onclick="compartilharMenuDoDiaStatus()" style="flex:1; min-width: 160px; font-size: 13px; background:#25D366; color:#fff;">📲 STATUS WHATSAPP</button>
+              <button type="button" class="primary" onclick="salvarCardapioDia()" style="flex:1; min-width:160px; font-size:13px;">💾 SALVAR SEMANA</button>
+              <button type="button" class="primary" onclick="publicarMenuDoDiaOnline()" style="flex:1; min-width:160px; font-size:13px;">🌐 PUBLICAR NO CARDÁPIO ONLINE</button>
+              <button type="button" class="primary" onclick="copiarCardapioImagem()" style="flex:1; min-width:160px; font-size:13px;">📋 COPIAR IMAGEM</button>
+              <button type="button" class="primary" onclick="compartilharCardapioDiaZap()" style="flex:1; min-width:160px; font-size:13px;">📱 ENVIAR WHATSAPP</button>
+              <button type="button" class="primary" onclick="compartilharMenuDoDiaStatus()" style="flex:1; min-width:160px; font-size:13px;">📲 STATUS WHATSAPP</button>
           </div>
           <p style="font-size:11px; color:var(--text-muted); margin:12px 0 0; line-height:1.5;">Ao <strong>Publicar no Cardápio Online</strong>, o menu de <strong id="cardapioDiaPublicadoLabel">Segunda</strong> aparece no link do cardápio digital para os clientes (atualiza em tempo real).</p>
         </div>
       </div>
 
-      <!-- PAINEL CONFIGURAÇÕES -->
-      <div id="painel-config" class="painel-secao">
-        <h2 class="painel-titulo">Configurações</h2>
+      <!-- PAINEL TAXA DE ENTREGA -->
+      <div id="painel-taxaEntrega" class="painel-secao">
+        <h2 class="painel-titulo">Taxa de Entrega</h2>
         <div class="card">
           <div style="max-width: 520px;">
-              <h4 style="color:var(--text-main); margin-top:0;">Identidade Visual</h4>
+              <p class="balao-ajuda" style="margin-top:0; margin-bottom:16px;">Valor padrão cobrado nos pedidos de entrega.</p>
+              <input type="number" id="confEmpTaxa" placeholder="Valor da Taxa Padrão (R$)" style="margin-bottom:15px;">
+              <button type="button" class="primary" onclick="salvarTaxaEntregaEmpresa()" style="width:100%; font-size: 13px;">💾 SALVAR</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAINEL CARDÁPIO ONLINE -->
+      <div id="painel-cardapioOnline" class="painel-secao">
+        <h2 class="painel-titulo">Cardápio Online</h2>
+        <div class="card">
+          <div style="max-width: 520px;">
+              <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px; line-height:1.5;">Link público para clientes pedirem pelo celular. Produtos, preços, logo e PIX vêm do mesmo Firebase deste sistema.</p>
+              <input type="text" id="linkCardapioDigitalConfig" readonly style="width:100%; margin-bottom:10px; font-size:11px; padding:12px; background:var(--input-bg); border:1px solid var(--border-soft); color:var(--text-muted); box-sizing:border-box;">
+              <button type="button" class="primary" onclick="abrirCardapioDigital()" style="width:100%; margin-bottom:8px; font-size:12px;">👁️ ABRIR CARDÁPIO ONLINE</button>
+              <button type="button" class="warning" onclick="copiarLinkCardapioDigital()" style="width:100%; margin-bottom:8px; font-size:12px;">🔗 COPIAR LINK DO CARDÁPIO</button>
+              <button type="button" class="success" onclick="compartilharCardapioWhatsApp()" style="width:100%; margin-bottom:12px; font-size:12px;">📲 COMPARTILHAR NO WHATSAPP</button>
+              <p style="font-size:11px; color:var(--accent); margin:0; padding:10px; background:var(--input-bg); border-radius:6px; border:1px solid var(--border-soft); line-height:1.5;">🟢 Use <strong>Pedidos Online Abertos</strong> no Início para liberar pedidos. 🔴 Com fechado, o cliente vê aviso de restaurante fechado e não consegue pedir.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAINEL CADASTRAR ENDEREÇO -->
+      <div id="painel-endereco" class="painel-secao">
+        <h2 class="painel-titulo">Cadastrar Endereço</h2>
+        <div class="card">
+          <div style="max-width: 520px;">
+              <p class="balao-ajuda" style="margin-top:0; margin-bottom:16px;">Nome, endereço e telefone do restaurante (aparecem no cardápio e nos cupons).</p>
               <input type="text" id="confEmpNome" placeholder="Nome do Restaurante" style="margin-bottom:10px;">
               <input type="text" id="confEmpEnd" placeholder="Endereço Completo" style="margin-bottom:10px;">
               <input type="text" id="confEmpTel" placeholder="Telefone / Reservas" style="margin-bottom:15px;">
-              <h4 style="color:var(--text-main); margin-top:15px; margin-bottom:10px;">Taxa de Entrega</h4>
-              <input type="number" id="confEmpTaxa" placeholder="Valor da Taxa Padrão (R$)" style="margin-bottom:15px;">
-              <h4 style="color:var(--text-main); margin-top:15px; margin-bottom:10px;">Chave PIX</h4>
+              <label style="font-size:11px; color:var(--accent); display:block; font-weight:600;">Logo do Restaurante:</label>
+              <input type="file" id="logoInput" accept="image/*" style="margin-bottom:15px; font-size: 12px;">
+              <button type="button" class="primary" onclick="salvarEnderecoEmpresa()" style="width:100%; font-size: 13px;">💾 SALVAR</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAINEL CHAVE PIX -->
+      <div id="painel-chavePix" class="painel-secao">
+        <h2 class="painel-titulo">Chave PIX</h2>
+        <div class="card">
+          <div style="max-width: 520px;">
+              <p class="balao-ajuda" style="margin-top:0; margin-bottom:16px;">Código PIX Copia e Cola e QR Code usados no pagamento.</p>
               <label style="font-size:11px; color:var(--text-muted); display:block;">Código PIX Copia e Cola:</label>
-              <textarea id="confEmpPix" placeholder="Cole aqui o código PIX..." rows="3" style="width:100%; margin-bottom:10px; font-size:12px; font-family:'Poppins',sans-serif; resize:vertical; background: var(--input-bg); color: #fff; border: 1px solid #444; border-radius: 4px; padding: 10px; box-sizing:border-box;"></textarea>
+              <textarea id="confEmpPix" placeholder="Cole aqui o código PIX..." rows="3" style="width:100%; margin-bottom:10px; font-size:12px; font-family:'Poppins',sans-serif; resize:vertical; background: var(--input-bg); color: var(--text-main); border: 1px solid var(--border-soft); border-radius: 4px; padding: 10px; box-sizing:border-box;"></textarea>
               <label style="font-size:11px; color:var(--text-muted); display:block;">Imagem do QR Code (opcional):</label>
               <input type="file" id="qrInput" accept="image/*" style="margin-bottom:10px; font-size: 12px;">
               <div id="qrPreviewBox" style="display:none; text-align:center; margin-bottom:15px; padding:15px; background:var(--input-bg); border-radius:6px; border:1px solid var(--border-soft);">
                   <img id="confEmpQrPreview" src="" alt="QR PIX" style="max-width:160px; max-height:160px; border:1px solid var(--accent); border-radius:4px; padding:5px;">
               </div>
               <button type="button" class="danger" onclick="removerQrPix()" style="width:100%; margin-bottom:15px; font-size:11px;">REMOVER QR PIX</button>
-              <label style="font-size:11px; color:var(--accent); display:block; font-weight:600;">Logo do Restaurante:</label>
-              <input type="file" id="logoInput" accept="image/*" style="margin-bottom:15px; font-size: 12px;">
-              <button class="warning" onclick="salvarDadosEmpresa()" style="width:100%; margin-bottom:25px; font-size: 13px;">💾 SALVAR INFORMAÇÕES</button>
-              <h4 style="color:var(--text-main); margin-top:0;">Cardápio Digital Online</h4>
-              <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px; line-height:1.5;">Link público para clientes pedirem pelo celular. Produtos, preços, logo e PIX vêm do mesmo Firebase deste sistema.</p>
-              <input type="text" id="linkCardapioDigitalConfig" readonly style="width:100%; margin-bottom:10px; font-size:11px; padding:12px; background:var(--input-bg); border:1px solid var(--border-soft); color:var(--text-muted); box-sizing:border-box;">
-              <button type="button" class="primary" onclick="abrirCardapioDigital()" style="width:100%; margin-bottom:8px; font-size:12px;">👁️ ABRIR CARDÁPIO ONLINE</button>
-              <button type="button" class="warning" onclick="copiarLinkCardapioDigital()" style="width:100%; margin-bottom:8px; font-size:12px;">🔗 COPIAR LINK DO CARDÁPIO</button>
-              <button type="button" class="success" onclick="compartilharCardapioWhatsApp()" style="width:100%; margin-bottom:12px; font-size:12px;">📲 COMPARTILHAR NO WHATSAPP</button>
-              <p style="font-size:11px; color:var(--accent); margin:0 0 25px; padding:10px; background:var(--input-bg); border-radius:6px; border:1px solid var(--border-soft); line-height:1.5;">🟢 Use <strong>Pedidos Online Abertos</strong> no Início para liberar pedidos. 🔴 Com fechado, o cliente vê aviso de restaurante fechado e não consegue pedir.</p>
-              <h4 style="color:var(--text-main); margin-top:0;">Segurança do Caixa</h4>
-              <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px; line-height:1.5;">Ative para exigir <strong style="color:var(--text-main);">e-mail e senha</strong> no caixa. O gerente sempre usa login. Crie os acessos em <strong>Acesso Equipe</strong>.</p>
-              <label style="display:flex; align-items:center; gap:10px; font-size:13px; color:var(--text-main); margin:0 0 25px; padding:12px; background:var(--input-bg); border-radius:6px; border:1px solid var(--border-soft); cursor:pointer;">
-                  <input type="checkbox" id="chkExigirSenhaCaixa" onchange="toggleExigirSenhaCaixa(this.checked)" style="width:18px; height:18px; accent-color:var(--accent);">
-                  <span>Exigir senha no caixa (gerência)</span>
-              </label>
-              <h4 style="color:var(--text-main); margin-top:0;">Contador de Pedidos</h4>
-              <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px; line-height:1.5;">Automático: 0001, 0002, 0003… O número sobe a cada pedido confirmado.</p>
-              <div style="background:var(--input-bg); padding:14px; border-radius:6px; border:1px solid var(--border-soft); margin-bottom:12px; text-align:center;">
-                  <span style="font-size:11px; color:var(--text-muted);">Próximo pedido</span>
-                  <div id="confContadorDisplay" class="num-pedido-display" style="font-size:28px; margin-top:6px;">0001</div>
-              </div>
-              <button type="button" class="warning" onclick="zerarContadorPedidos('dia')" style="width:100%; margin-bottom:8px; font-size:12px;">🔄 ZERAR CONTADOR (DIA / TURNO)</button>
-              <button type="button" class="dark" onclick="zerarContadorPedidos('mes')" style="width:100%; margin-bottom:25px; font-size:12px; border-color:var(--accent); color:var(--accent);">📅 ZERAR CONTADOR (MÊS)</button>
-              <h4 style="color:var(--text-muted); margin-top:0;">Backup de Segurança</h4>
+              <button type="button" class="primary" onclick="salvarChavePixEmpresa()" style="width:100%; font-size: 13px;">💾 SALVAR</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAINEL BACKUP -->
+      <div id="painel-backup" class="painel-secao">
+        <h2 class="painel-titulo">Backup de Segurança</h2>
+        <div class="card">
+          <div style="max-width: 520px;">
+              <p class="balao-ajuda" style="margin-top:0; margin-bottom:16px;">Exporte os dados do sistema ou restaure a partir de um arquivo .json.</p>
               <button class="dark" onclick="baixarBackup()" style="width:100%; margin-bottom:15px;">⬇️ EXPORTAR DADOS</button>
               <div style="border-top:1px solid var(--border-soft); padding-top:15px;">
                   <label style="font-size:11px; color:#666;">Restaurar (.json):</label>
                   <input type="file" id="inputBackup" accept=".json" style="margin-top:5px; margin-bottom:10px; font-size: 11px;">
                   <button class="danger" onclick="restaurarBackup()" style="width:100%;">🔄 IMPORTAR ARQUIVO</button>
               </div>
-              <button class="danger" onclick="trocarLogin()" style="width:100%; margin-top:25px;">🚪 SAIR / TROCAR DE ACESSO</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAINEL SEGURANÇA DO CAIXA -->
+      <div id="painel-segurancaCaixa" class="painel-secao">
+        <h2 class="painel-titulo">Segurança do Caixa</h2>
+        <div class="card">
+          <div style="max-width: 520px;">
+              <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px; line-height:1.5;">Ative para exigir <strong style="color:var(--text-main);">e-mail e senha</strong> no caixa. O gerente sempre usa login. Crie os acessos em <strong>Acesso Equipe</strong>.</p>
+              <label style="display:flex; align-items:center; gap:10px; font-size:13px; color:var(--text-main); margin:0; padding:12px; background:var(--input-bg); border-radius:6px; border:1px solid var(--border-soft); cursor:pointer;">
+                  <input type="checkbox" id="chkExigirSenhaCaixa" onchange="toggleExigirSenhaCaixa(this.checked)" style="width:18px; height:18px; accent-color:var(--accent);">
+                  <span>Exigir senha no caixa (gerência)</span>
+              </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAINEL CONTADOR DE PEDIDOS -->
+      <div id="painel-contadorPedidos" class="painel-secao">
+        <h2 class="painel-titulo">Contador de Pedidos</h2>
+        <div class="card">
+          <div style="max-width: 520px;">
+              <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px; line-height:1.5;">Automático: 0001, 0002, 0003… O número sobe a cada pedido confirmado.</p>
+              <div style="background:var(--input-bg); padding:14px; border-radius:6px; border:1px solid var(--border-soft); margin-bottom:12px; text-align:center;">
+                  <span style="font-size:11px; color:var(--text-muted);">Próximo pedido</span>
+                  <div id="confContadorDisplay" class="num-pedido-display" style="font-size:28px; margin-top:6px;">0001</div>
+              </div>
+              <button type="button" class="warning" onclick="zerarContadorPedidos('dia')" style="width:100%; margin-bottom:8px; font-size:12px;">🔄 ZERAR CONTADOR (DIA / TURNO)</button>
+              <button type="button" class="dark" onclick="zerarContadorPedidos('mes')" style="width:100%; font-size:12px; border-color:var(--accent); color:var(--accent);">📅 ZERAR CONTADOR (MÊS)</button>
           </div>
         </div>
       </div>
@@ -2347,12 +2870,12 @@
     <span class="mico">🍽️</span><span>Pedido</span>
   </button>
   <button type="button" class="mobile-nav-item" data-painel="comandas" onclick="abrirPainelLateral('comandas', this)">
-    <span class="mico">📋</span><span>Comandas</span>
+    <span class="mico">📋</span><span>Abertas</span>
   </button>
   <button type="button" class="mobile-nav-item" data-painel="cardapio" onclick="abrirPainelLateral('cardapio', this)">
-    <span class="mico">📅</span><span>Menu</span>
+    <span class="mico">📅</span><span>Cardápio</span>
   </button>
-  <button type="button" class="mobile-nav-item" data-painel="cliente" onclick="abrirPainelCliente(this)">
+  <button type="button" class="mobile-nav-item" data-painel="cliente" onclick="abrirCadastroClienteSub('novo', this)">
     <span class="mico">👤</span><span>Cliente</span>
   </button>
   <button type="button" class="mobile-nav-item" data-painel="produtos" onclick="abrirPainelLateral('produtos', this)">
@@ -2407,8 +2930,8 @@
 
 <div class="modal" id="modalGraficos">
     <div class="modal-content">
-        <h3 style="text-align:center; color:var(--accent);">Estatísticas do Menu</h3>
-        <p style="text-align:center; font-size:12px; color:var(--text-muted); margin-bottom: 20px;">Volume de saída por prato/item.</p>
+        <h3 style="text-align:center; color:#111; font-weight:700;">Estatísticas do Menu</h3>
+        <p style="text-align:center; font-size:13px; color:#111; font-weight:700; margin-bottom: 20px;">Volume de saída por prato/item.</p>
         
         <div style="display:flex; margin-bottom:20px; gap:8px;">
             <div class="tab-btn active" id="btnGrafHoje" onclick="gerarGraficoProdutos('hoje')">DIA</div>
@@ -2416,11 +2939,11 @@
             <div class="tab-btn" id="btnGrafMes" onclick="gerarGraficoProdutos('mes')">MÊS</div>
         </div>
 
-        <div style="background:#FDFDFD; padding:20px; border-radius:6px; margin-bottom:20px; position: relative; height: 320px;">
+        <div style="background:#FDFDFD; padding:20px; border-radius:6px; margin-bottom:20px; position: relative; height: 320px; border:2px solid #4B5D3F;">
             <canvas id="graficoProdutos"></canvas>
         </div>
         
-        <button class="dark" onclick="fecharCaixa(periodoGraficoAtual)" style="width:100%; margin-bottom:15px; border-color: #555;">📦 ARQUIVAR PERÍODO SELECIONADO</button>
+        <button class="dark" onclick="fecharCaixa(periodoGraficoAtual)" style="width:100%; margin-bottom:15px;">📦 ARQUIVAR PERÍODO SELECIONADO</button>
         <button class="danger" onclick="document.getElementById('modalGraficos').style.display='none'" style="width:100%;">VOLTAR</button>
     </div>
 </div>
@@ -4046,6 +4569,7 @@
       if (syncJaIniciado) return;
       syncJaIniciado = true;
       inicializarEstacaoImpressaoCaixa();
+      carregarBalcaoLocal();
       db.collection("clientes").orderBy("nome").onSnapshot((snap) => { 
           clientes = []; let chamouBeep = false;
           snap.forEach((d) => {
@@ -4134,16 +4658,27 @@
       }, err => {});
 
       db.collection('balcao_dia').where('dia', '==', obterDataLocal()).onSnapshot(snap => {
-          balcaoDiaLista = [];
-          snap.forEach(d => balcaoDiaLista.push({ id: d.id, ...d.data() }));
+          const mapa = {};
+          // Mantém clientes locais do dia que ainda não estão na nuvem
+          balcaoDiaLista.forEach(r => {
+              if (r && r.id && String(r.id).startsWith('local_') && normalizarData(r.dia || '') === normalizarData(obterDataLocal())) {
+                  mapa[r.id] = r;
+              }
+          });
+          snap.forEach(d => { mapa[d.id] = { id: d.id, ...d.data() }; });
+          balcaoDiaLista = Object.values(mapa);
           balcaoDiaLista.sort((a, b) => String(a.nome || '').localeCompare(String(b.nome || ''), 'pt-BR', { sensitivity: 'base' }));
+          salvarBalcaoLocal();
           renderListaClientesBalcao();
           if (balcaoIrParaNomeAposSync) {
               irParaClienteBalcaoNaLista(balcaoIrParaNomeAposSync);
               balcaoIrParaNomeAposSync = null;
           }
           atualizarDashboard();
-      }, err => { console.warn('balcao_dia:', err.message); carregarBalcaoLocal(); });
+      }, err => {
+          console.warn('balcao_dia:', err.message);
+          carregarBalcaoLocal();
+      });
   }
 
   function trocarLogin() {
@@ -5057,12 +5592,37 @@
   function abrirPainelLateral(id, btnEl) {
       fecharMenuMobile();
       document.querySelectorAll('.painel-secao').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.sidebar-item, .mobile-nav-item').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.sidebar-item, .mobile-nav-item, .sidebar-subitem').forEach(b => b.classList.remove('active'));
       let painel = document.getElementById('painel-' + id);
       if (painel) painel.classList.add('active');
       if (btnEl) btnEl.classList.add('active');
       else {
-          document.querySelectorAll('.sidebar-item[data-painel="' + id + '"], .mobile-nav-item[data-painel="' + id + '"]').forEach(btn => btn.classList.add('active'));
+          document.querySelectorAll('.sidebar-item[data-painel="' + id + '"], .sidebar-subitem[data-painel="' + id + '"], .mobile-nav-item[data-painel="' + id + '"]').forEach(btn => btn.classList.add('active'));
+      }
+      const grupoCli = document.getElementById('menuGrupoClientes');
+      if (grupoCli) {
+          if (id === 'cliente') grupoCli.classList.add('ativo', 'aberto');
+          else grupoCli.classList.remove('ativo');
+      }
+      const grupoPratos = document.getElementById('menuGrupoPratos');
+      if (grupoPratos) {
+          if (id === 'produtos' || id === 'estoque') grupoPratos.classList.add('ativo', 'aberto');
+          else grupoPratos.classList.remove('ativo');
+      }
+      const grupoPedidos = document.getElementById('menuGrupoPedidos');
+      if (grupoPedidos) {
+          if (id === 'pedido' || id === 'mesas') grupoPedidos.classList.add('ativo', 'aberto');
+          else grupoPedidos.classList.remove('ativo');
+      }
+      const grupoCardapio = document.getElementById('menuGrupoCardapio');
+      if (grupoCardapio) {
+          if (id === 'cardapio' || id === 'taxaEntrega' || id === 'cardapioOnline') grupoCardapio.classList.add('ativo', 'aberto');
+          else grupoCardapio.classList.remove('ativo');
+      }
+      const grupoConfig = document.getElementById('menuGrupoConfig');
+      if (grupoConfig) {
+          if (id === 'acesso' || id === 'endereco' || id === 'chavePix' || id === 'backup' || id === 'segurancaCaixa' || id === 'contadorPedidos') grupoConfig.classList.add('ativo', 'aberto');
+          else grupoConfig.classList.remove('ativo');
       }
       window.scrollTo({ top: 0, behavior: 'smooth' });
       if (id === 'acesso') carregarListaUsuariosEquipe();
@@ -5073,11 +5633,131 @@
       }
       if (id === 'cardapio') { atualizarUiImportacaoCardapioDia(); agendarPreviewCardapioArte(); }
       if (id === 'estoque') iniciarPainelEstoque();
+      if (id === 'endereco' || id === 'chavePix' || id === 'taxaEntrega' || id === 'cardapioOnline' || id === 'segurancaCaixa' || id === 'contadorPedidos') atualizarInputsEmpresa();
+  }
+
+  function toggleMenuClientes(ev) {
+      if (ev) { ev.preventDefault(); ev.stopPropagation(); }
+      const grupo = document.getElementById('menuGrupoClientes');
+      if (!grupo) return;
+      grupo.classList.toggle('aberto');
+      const btn = grupo.querySelector('.sidebar-grupo-toggle');
+      if (btn) btn.setAttribute('aria-expanded', grupo.classList.contains('aberto') ? 'true' : 'false');
+  }
+
+  function toggleMenuPratos(ev) {
+      if (ev) { ev.preventDefault(); ev.stopPropagation(); }
+      const grupo = document.getElementById('menuGrupoPratos');
+      if (!grupo) return;
+      grupo.classList.toggle('aberto');
+      const btn = grupo.querySelector('.sidebar-grupo-toggle');
+      if (btn) btn.setAttribute('aria-expanded', grupo.classList.contains('aberto') ? 'true' : 'false');
+  }
+
+  function toggleMenuPedidos(ev) {
+      if (ev) { ev.preventDefault(); ev.stopPropagation(); }
+      const grupo = document.getElementById('menuGrupoPedidos');
+      if (!grupo) return;
+      grupo.classList.toggle('aberto');
+      const btn = grupo.querySelector('.sidebar-grupo-toggle');
+      if (btn) btn.setAttribute('aria-expanded', grupo.classList.contains('aberto') ? 'true' : 'false');
+  }
+
+  function toggleMenuCardapio(ev) {
+      if (ev) { ev.preventDefault(); ev.stopPropagation(); }
+      const grupo = document.getElementById('menuGrupoCardapio');
+      if (!grupo) return;
+      grupo.classList.toggle('aberto');
+      const btn = grupo.querySelector('.sidebar-grupo-toggle');
+      if (btn) btn.setAttribute('aria-expanded', grupo.classList.contains('aberto') ? 'true' : 'false');
+  }
+
+  function toggleMenuConfig(ev) {
+      if (ev) { ev.preventDefault(); ev.stopPropagation(); }
+      const grupo = document.getElementById('menuGrupoConfig');
+      if (!grupo) return;
+      grupo.classList.toggle('aberto');
+      const btn = grupo.querySelector('.sidebar-grupo-toggle');
+      if (btn) btn.setAttribute('aria-expanded', grupo.classList.contains('aberto') ? 'true' : 'false');
+  }
+
+  function abrirCadastroClienteSub(aba, btnEl) {
+      abrirPainelLateral('cliente', btnEl || null);
+      document.querySelectorAll('.sidebar-subitem').forEach(b => b.classList.remove('active'));
+      const alvo = btnEl || document.querySelector('.sidebar-subitem[data-cliente-aba="' + aba + '"]');
+      if (alvo) alvo.classList.add('active');
+      const grupo = document.getElementById('menuGrupoClientes');
+      if (grupo) grupo.classList.add('aberto', 'ativo');
+      if (aba === 'lista') {
+          mostrarAbaCliente('lista');
+      } else {
+          mostrarAbaCliente('novo');
+          prepararFormBalcaoDia(null);
+      }
   }
 
   function abrirPainelCliente(btnEl, idEdicao) {
-      prepararFormBalcaoDia(idEdicao || null);
-      abrirPainelLateral('cliente', btnEl || document.querySelector('.sidebar-item[data-painel="cliente"]'));
+      if (idEdicao) {
+          abrirCadastroClienteSub('lista', document.querySelector('.sidebar-subitem[data-cliente-aba="lista"]'));
+          setTimeout(() => adicionarProdutosBalcaoCliente(idEdicao), 50);
+      } else {
+          abrirCadastroClienteSub('novo', btnEl || document.querySelector('.sidebar-subitem[data-cliente-aba="novo"]'));
+      }
+  }
+
+  function mostrarAbaCliente(aba) {
+      const novo = document.getElementById('clienteAbaNovo');
+      const lista = document.getElementById('clienteAbaLista');
+      const ehLista = aba === 'lista';
+      if (novo) novo.style.display = ehLista ? 'none' : 'block';
+      if (lista) lista.style.display = ehLista ? 'block' : 'none';
+      const titulo = document.getElementById('tituloPainelCliente');
+      if (titulo) titulo.textContent = ehLista ? 'Clientes Cadastrados' : 'Cadastrar o Cliente';
+      document.querySelectorAll('.sidebar-subitem[data-cliente-aba]').forEach(b => {
+          b.classList.toggle('active', b.getAttribute('data-cliente-aba') === aba);
+      });
+      const grupo = document.getElementById('menuGrupoClientes');
+      if (grupo) grupo.classList.add('aberto', 'ativo');
+      if (ehLista) {
+          if (!balcaoDiaLista.length) carregarBalcaoLocal();
+          else renderListaClientesBalcao();
+      }
+      if (!ehLista) {
+          const prod = document.getElementById('balcaoProdutosSecao');
+          if (prod) prod.style.display = 'none';
+      }
+  }
+
+  function lerDadosFormClienteBalcao() {
+      return {
+          nome: (document.getElementById('balcaoNome')?.value || '').trim(),
+          telefone: (document.getElementById('balcaoTelefone')?.value || '').trim(),
+          endereco: (document.getElementById('balcaoEndereco')?.value || '').trim(),
+          numero: (document.getElementById('balcaoNumero')?.value || '').trim(),
+          bairro: (document.getElementById('balcaoBairro')?.value || '').trim(),
+          cidade: (document.getElementById('balcaoCidade')?.value || '').trim()
+      };
+  }
+
+  function preencherDadosFormClienteBalcao(reg) {
+      document.getElementById('balcaoNome').value = reg?.nome || '';
+      document.getElementById('balcaoTelefone').value = reg?.telefone || '';
+      document.getElementById('balcaoEndereco').value = reg?.endereco || '';
+      const num = document.getElementById('balcaoNumero');
+      const bai = document.getElementById('balcaoBairro');
+      const cid = document.getElementById('balcaoCidade');
+      if (num) num.value = reg?.numero || '';
+      if (bai) bai.value = reg?.bairro || '';
+      if (cid) cid.value = reg?.cidade || '';
+  }
+
+  function formatarEnderecoBalcaoResumo(reg) {
+      const partes = [];
+      if (reg.endereco) partes.push(reg.endereco + (reg.numero ? ', ' + reg.numero : ''));
+      else if (reg.numero) partes.push('Nº ' + reg.numero);
+      if (reg.bairro) partes.push(reg.bairro);
+      if (reg.cidade) partes.push(reg.cidade);
+      return partes.filter(Boolean).join(' — ');
   }
 
   function toggleKDS() {
@@ -5927,7 +6607,7 @@
   }
 
   function irLancarPedidoMesa(clienteId) {
-      abrirPainelLateral('pedido', document.querySelector('.sidebar-item[data-painel="pedido"]'));
+      abrirPainelLateral('pedido', document.querySelector('.sidebar-subitem[data-painel="pedido"], .sidebar-item[data-painel="pedido"]'));
       const sel = document.getElementById('clienteSelect');
       if (sel) {
           atualizarSelect();
@@ -6018,8 +6698,47 @@
   }
 
   function editarBalcaoCliente(id) {
-      abrirPainelCliente(null, id);
+      mostrarAbaCliente('novo');
+      prepararFormBalcaoDia(id);
       setTimeout(() => document.getElementById('balcaoFormSecao')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
+  }
+
+  function adicionarProdutosBalcaoCliente(id) {
+      mostrarAbaCliente('lista');
+      balcaoDiaEditId = id || null;
+      balcaoDiaItensTemp = [];
+      balcaoPacoteMarmitasTemp = null;
+      let reg = balcaoDiaLista.find(x => x.id === id);
+      if (!reg) return Swal.fire('Aviso', 'Cliente não encontrado.', 'warning');
+      balcaoDiaItensTemp = (reg.itens || []).map(i => ({ ...i }));
+      balcaoPacoteMarmitasTemp = reg.pacoteMarmitas ? { ...reg.pacoteMarmitas, retiradas: (reg.pacoteMarmitas.retiradas || []).map(r => ({ ...r })) } : null;
+      const info = document.getElementById('balcaoClienteSelecionadoInfo');
+      if (info) {
+          const end = formatarEnderecoBalcaoResumo(reg);
+          info.innerHTML = `Cliente: <strong>${escaparHtml(reg.nome || '')}</strong>` +
+              (reg.telefone ? ` • ${escaparHtml(reg.telefone)}` : '') +
+              (end ? `<br>${escaparHtml(end)}` : '') +
+              `<br>Use o cardápio, estoque ou produto avulso/combo abaixo.`;
+      }
+      const titulo = document.getElementById('tituloProdutosBalcao');
+      if (titulo) titulo.textContent = 'Adicionar produtos — ' + (reg.nome || 'Cliente');
+      const prod = document.getElementById('balcaoProdutosSecao');
+      if (prod) prod.style.display = 'block';
+      const dataRet = document.getElementById('balcaoRetiradaData');
+      if (dataRet) dataRet.value = obterDataLocal();
+      atualizarSelectProdutosBalcao();
+      renderItensBalcaoModal();
+      renderPacoteMarmitasBalcao();
+      setTimeout(() => prod?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+  }
+
+  function cancelarProdutosBalcao() {
+      const prod = document.getElementById('balcaoProdutosSecao');
+      if (prod) prod.style.display = 'none';
+      balcaoDiaEditId = null;
+      balcaoDiaItensTemp = [];
+      balcaoPacoteMarmitasTemp = null;
+      renderItensBalcaoModal();
   }
 
   function renderListaClientesBalcao() {
@@ -6034,7 +6753,7 @@
       if (termo) {
           lista = lista.filter(reg => {
               let texto = [
-                  reg.nome, reg.telefone, reg.endereco,
+                  reg.nome, reg.telefone, reg.endereco, reg.numero, reg.bairro, reg.cidade,
                   reg.pacoteMarmitas?.descricao,
                   ...(Array.isArray(reg.itens) ? reg.itens.map(i => i.desc) : [])
               ].join(' ').toLowerCase();
@@ -6050,14 +6769,15 @@
       let pagina = lista.slice(inicio, inicio + BALCAO_ITENS_POR_PAGINA);
 
       if (!lista.length) {
-          box.innerHTML = '<p class="tabela-dia-vazio" style="margin:0;">Nenhum cliente cadastrado. Preencha o formulário acima e clique em Salvar.</p>';
+          box.innerHTML = '<p class="tabela-dia-vazio" style="margin:0;">Nenhum cliente cadastrado. Use o menu <strong>Cadastro de Clientes → Cadastrar o Cliente</strong>.</p>';
       } else {
           box.innerHTML = pagina.map(reg => {
               let total = calcularTotalBalcao(reg);
               let itensHtml = (reg.itens || []).map(i =>
-                  `<div>• <b>${i.qtd}x</b> ${escaparHtml(i.desc)} — <span style="color:var(--accent);">${formatarMoeda(i.valor)}</span></div>`
-              ).join('') || '<span style="color:var(--text-muted);">—</span>';
-              let contato = [reg.telefone, reg.endereco].filter(Boolean).map(escaparHtml);
+                  `<div>• <b>${i.qtd}x</b> ${escaparHtml(i.desc)} — <span style="color:#111;font-weight:700;">${formatarMoeda(i.valor)}</span></div>`
+              ).join('') || '<span style="color:#111;font-weight:700;">Sem produtos ainda — clique em Adicionar Produtos</span>';
+              let endResumo = formatarEnderecoBalcaoResumo(reg);
+              let contato = [reg.telefone, endResumo].filter(Boolean).map(escaparHtml);
               let pagBadge = badgeStatusBalcao(reg);
               let btnReceber = balcaoEstaPendente(reg) ? `<button type="button" class="tabela-dia-acoes-btn" style="color:var(--success);border-color:var(--success);" onclick="receberBalcaoDia('${reg.id}')">💳 Receber</button>` : '';
               let cardClass = balcaoEstaPendente(reg) ? 'balcao-cliente-card balcao-cliente-card--pendente' : 'balcao-cliente-card';
@@ -6071,12 +6791,13 @@
                   </div>
                   <div class="balcao-cliente-card-itens">${itensHtml}${htmlResumoPacoteMarmita(reg)}</div>
                   <div class="balcao-cliente-card-rodape">
-                      <strong style="color:var(--accent); font-size:16px;">Total: ${formatarMoeda(total)}</strong>
+                      <strong style="color:#111; font-size:16px;">Total: ${formatarMoeda(total)}</strong>
                       <div style="display:flex; gap:6px; flex-wrap:wrap;">
                           <button type="button" class="tabela-dia-acoes-btn" onclick="editarBalcaoCliente('${reg.id}')">✏️ Editar</button>
+                          <button type="button" class="tabela-dia-acoes-btn" style="color:var(--success);border-color:var(--success);" onclick="adicionarProdutosBalcaoCliente('${reg.id}')">🛒 Produtos</button>
                           <button type="button" class="tabela-dia-acoes-btn" onclick="imprimirBalcaoDia('${reg.id}')">🖨️ Imprimir</button>
                           ${btnReceber}
-                          <button type="button" class="tabela-dia-acoes-btn" style="color:var(--danger);border-color:var(--danger);" onclick="excluirBalcaoDia('${reg.id}')">🗑️</button>
+                          <button type="button" class="tabela-dia-acoes-btn" style="color:var(--danger);border-color:var(--danger);" onclick="excluirBalcaoDia('${reg.id}')">🗑️ Excluir</button>
                       </div>
                   </div>
               </div>`;
@@ -6117,6 +6838,23 @@
 
   function salvarBalcaoLocal() {
       try { localStorage.setItem(obterChaveBalcaoLocal(), JSON.stringify(balcaoDiaLista)); } catch (e) {}
+  }
+
+  function upsertBalcaoNaLista(reg) {
+      if (!reg || !reg.id) return;
+      const limpo = {};
+      Object.keys(reg).forEach(k => {
+          if (reg[k] !== undefined && !(reg[k] && typeof reg[k] === 'object' && typeof reg[k].isEqual === 'function')) {
+              limpo[k] = reg[k];
+          }
+      });
+      if (!Array.isArray(limpo.itens)) limpo.itens = [];
+      const idx = balcaoDiaLista.findIndex(x => x.id === limpo.id);
+      if (idx >= 0) balcaoDiaLista[idx] = { ...balcaoDiaLista[idx], ...limpo };
+      else balcaoDiaLista.push(limpo);
+      balcaoDiaLista.sort((a, b) => String(a.nome || '').localeCompare(String(b.nome || ''), 'pt-BR', { sensitivity: 'base' }));
+      salvarBalcaoLocal();
+      renderListaClientesBalcao();
   }
 
   function calcularTotalBalcao(reg) {
@@ -6423,7 +7161,7 @@
       if (!termo) return Swal.fire('Aviso', 'Bipe ou digite o produto do estoque.', 'info');
       if (isNaN(qtd) || qtd <= 0) return Swal.fire('Erro', 'Quantidade inválida.', 'error');
       const p = buscarProdutoEstoqueBalcao(termo);
-      if (!p) return Swal.fire('Aviso', 'Produto não encontrado no estoque. Cadastre em Estoque / Mercadorias.', 'warning');
+      if (!p) return Swal.fire('Aviso', 'Produto não encontrado no estoque. Cadastre em Estoque de produtos.', 'warning');
       const disp = disponivelEstoqueBalcao(p);
       if (qtd > disp + 0.00001) {
           return Swal.fire({
@@ -6558,26 +7296,18 @@
       balcaoDiaItensTemp = [];
       balcaoPacoteMarmitasTemp = null;
       let titulo = document.getElementById('tituloFormBalcao');
-      if (titulo) titulo.textContent = id ? 'Editar Cliente — Balcão' : 'Novo Cliente — Balcão';
+      if (titulo) titulo.textContent = id ? 'Editar Cliente — Balcão' : 'Cadastrar o Cliente — Balcão';
       if (id) {
           let reg = balcaoDiaLista.find(x => x.id === id);
-          if (reg) {
-              document.getElementById('balcaoNome').value = reg.nome || '';
-              document.getElementById('balcaoTelefone').value = reg.telefone || '';
-              document.getElementById('balcaoEndereco').value = reg.endereco || '';
-              balcaoDiaItensTemp = (reg.itens || []).map(i => ({ ...i }));
-              balcaoPacoteMarmitasTemp = reg.pacoteMarmitas ? { ...reg.pacoteMarmitas, retiradas: (reg.pacoteMarmitas.retiradas || []).map(r => ({ ...r })) } : null;
-          }
+          if (reg) preencherDadosFormClienteBalcao(reg);
+          else preencherDadosFormClienteBalcao(null);
       } else {
-          document.getElementById('balcaoNome').value = '';
-          document.getElementById('balcaoTelefone').value = '';
-          document.getElementById('balcaoEndereco').value = '';
+          preencherDadosFormClienteBalcao(null);
       }
       const dataRet = document.getElementById('balcaoRetiradaData');
       if (dataRet) dataRet.value = obterDataLocal();
-      atualizarSelectProdutosBalcao();
-      renderItensBalcaoModal();
-      renderPacoteMarmitasBalcao();
+      const prod = document.getElementById('balcaoProdutosSecao');
+      if (prod && !id) prod.style.display = 'none';
   }
 
   function limparFormBalcaoDia() {
@@ -6588,16 +7318,16 @@
       abrirPainelCliente(null, id || null);
   }
 
-  function salvarBalcaoDia() {
-      let nome = (document.getElementById('balcaoNome')?.value || '').trim();
-      if (!nome) return Swal.fire('Aviso', 'Informe o nome do cliente.', 'warning');
-      if (!balcaoDiaItensTemp.length) return Swal.fire('Aviso', 'Adicione pelo menos um produto.', 'warning');
+  function salvarClienteBalcaoCadastro() {
+      let form = lerDadosFormClienteBalcao();
+      if (!form.nome) return Swal.fire('Aviso', 'Informe o nome do cliente.', 'warning');
       let dados = {
-          nome: nome.toUpperCase(),
-          telefone: (document.getElementById('balcaoTelefone')?.value || '').trim(),
-          endereco: (document.getElementById('balcaoEndereco')?.value || '').trim(),
-          itens: balcaoDiaItensTemp.map(i => ({ ...i })),
-          total: calcularTotalBalcao({ itens: balcaoDiaItensTemp }),
+          nome: form.nome.toUpperCase(),
+          telefone: form.telefone,
+          endereco: form.endereco,
+          numero: form.numero,
+          bairro: form.bairro,
+          cidade: form.cidade,
           dia: obterDataLocal(),
           criadoEm: obterDataHoraLocal(),
           pago: false,
@@ -6607,62 +7337,120 @@
       if (balcaoDiaEditId) {
           let antigo = balcaoDiaLista.find(x => x.id === balcaoDiaEditId);
           if (antigo) {
+              dados.itens = Array.isArray(antigo.itens) ? antigo.itens.map(i => ({ ...i })) : [];
+              dados.total = calcularTotalBalcao({ itens: dados.itens });
               dados.pago = antigo.pago;
               dados.pendenteReceber = balcaoEstaPendente(antigo);
               dados.pagamento = antigo.pagamento || '';
               dados.criadoEm = antigo.criadoEm || dados.criadoEm;
+              if (antigo.pacoteMarmitas) dados.pacoteMarmitas = antigo.pacoteMarmitas;
+          } else {
+              dados.itens = [];
+              dados.total = 0;
           }
+      } else {
+          dados.itens = [];
+          dados.total = 0;
       }
+      persistirRegistroBalcao(dados, { msgOk: balcaoDiaEditId ? 'Cliente atualizado!' : 'Cliente cadastrado!', irLista: true });
+  }
+
+  function salvarBalcaoDia() {
+      if (!balcaoDiaEditId) {
+          return Swal.fire('Aviso', 'Selecione um cliente em Clientes Cadastrados e clique em Adicionar Produtos.', 'info');
+      }
+      let antigo = balcaoDiaLista.find(x => x.id === balcaoDiaEditId);
+      if (!antigo) return Swal.fire('Aviso', 'Cliente não encontrado.', 'warning');
+      if (!balcaoDiaItensTemp.length && !balcaoPacoteMarmitasTemp) {
+          return Swal.fire('Aviso', 'Adicione pelo menos um produto (cardápio, estoque ou avulso).', 'warning');
+      }
+      let dados = {
+          nome: antigo.nome,
+          telefone: antigo.telefone || '',
+          endereco: antigo.endereco || '',
+          numero: antigo.numero || '',
+          bairro: antigo.bairro || '',
+          cidade: antigo.cidade || '',
+          itens: balcaoDiaItensTemp.map(i => ({ ...i })),
+          total: calcularTotalBalcao({ itens: balcaoDiaItensTemp }),
+          dia: obterDataLocal(),
+          criadoEm: antigo.criadoEm || obterDataHoraLocal(),
+          pago: antigo.pago,
+          pendenteReceber: balcaoEstaPendente(antigo),
+          pagamento: antigo.pagamento || ''
+      };
       const pacote = normalizarPacoteMarmitas(balcaoPacoteMarmitasTemp);
       if (pacote) dados.pacoteMarmitas = pacote;
-      if (!firebaseConfigurado()) {
-          if (!pacote && balcaoDiaEditId) delete dados.pacoteMarmitas;
-          const antigoLocal = balcaoDiaEditId ? balcaoDiaLista.find(x => x.id === balcaoDiaEditId) : null;
-          const aplicarSalvo = () => {
-              if (balcaoDiaEditId) {
-                  let idx = balcaoDiaLista.findIndex(x => x.id === balcaoDiaEditId);
-                  if (idx >= 0) balcaoDiaLista[idx] = { ...dados, id: balcaoDiaEditId };
-              } else {
-                  balcaoDiaLista.push({ ...dados, id: 'local_' + Date.now() });
-              }
-              salvarBalcaoLocal();
-              limparFormBalcaoDia();
+      persistirRegistroBalcao(dados, { msgOk: 'Produtos salvos!', irLista: true, aposOk: cancelarProdutosBalcao });
+  }
+
+  function persistirRegistroBalcao(dados, opcoes) {
+      opcoes = opcoes || {};
+      const pacote = dados.pacoteMarmitas ? normalizarPacoteMarmitas(dados.pacoteMarmitas) : null;
+      if (pacote) dados.pacoteMarmitas = pacote;
+      else delete dados.pacoteMarmitas;
+      if (!Array.isArray(dados.itens)) dados.itens = [];
+      if (dados.total == null) dados.total = calcularTotalBalcao({ itens: dados.itens });
+
+      const finalizarUi = (idSalvo) => {
+          upsertBalcaoNaLista({ ...dados, id: idSalvo });
+          limparFormBalcaoDia();
+          if (typeof opcoes.aposOk === 'function') opcoes.aposOk();
+          if (opcoes.irLista) {
+              mostrarAbaCliente('lista');
               irParaClienteBalcaoNaLista(dados.nome);
-              Swal.fire({ icon: 'success', title: 'Salvo!', timer: 1500, showConfirmButton: false });
-          };
-          if (antigoLocal && antigoLocal.pago) {
+          }
+          Swal.fire({ icon: 'success', title: opcoes.msgOk || 'Salvo!', timer: 1600, showConfirmButton: false });
+      };
+
+      if (!firebaseConfigurado()) {
+          const antigoLocal = balcaoDiaEditId ? balcaoDiaLista.find(x => x.id === balcaoDiaEditId) : null;
+          const idLocal = balcaoDiaEditId || ('local_' + Date.now());
+          const aplicarSalvo = () => finalizarUi(idLocal);
+          if (antigoLocal && antigoLocal.pago && Array.isArray(dados.itens)) {
               ajustarEstoqueEdicaoBalcaoPago(antigoLocal, dados.itens).then(aplicarSalvo);
           } else {
               aplicarSalvo();
           }
           return;
       }
-      if (!pacote && balcaoDiaEditId) dados.pacoteMarmitas = firebase.firestore.FieldValue.delete();
+
       const antigoFb = balcaoDiaEditId ? balcaoDiaLista.find(x => x.id === balcaoDiaEditId) : null;
-      Swal.fire({ title: 'Salvando...', didOpen: () => Swal.showLoading() });
+      const dadosFb = { ...dados };
+      if (!pacote && balcaoDiaEditId) dadosFb.pacoteMarmitas = firebase.firestore.FieldValue.delete();
+
+      Swal.fire({ title: 'Salvando...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
       const salvarFb = () => {
-          let prom = balcaoDiaEditId
-              ? db.collection('balcao_dia').doc(balcaoDiaEditId).set(dados, { merge: true })
-              : db.collection('balcao_dia').add(dados);
-          return prom;
+          return balcaoDiaEditId
+              ? db.collection('balcao_dia').doc(balcaoDiaEditId).set(dadosFb, { merge: true }).then(() => ({ id: balcaoDiaEditId }))
+              : db.collection('balcao_dia').add(dadosFb);
       };
-      const fluxo = (antigoFb && antigoFb.pago)
+      const fluxo = (antigoFb && antigoFb.pago && Array.isArray(dados.itens))
           ? ajustarEstoqueEdicaoBalcaoPago(antigoFb, dados.itens).then(salvarFb)
           : salvarFb();
-      fluxo.then(() => {
+      fluxo.then((ref) => {
           Swal.close();
-          limparFormBalcaoDia();
+          const idSalvo = balcaoDiaEditId || (ref && ref.id) || ('local_' + Date.now());
           balcaoIrParaNomeAposSync = dados.nome;
-          Swal.fire({ icon: 'success', title: 'Lançamento salvo!', timer: 1600, showConfirmButton: false, background: '#3A4536', color: '#F0E6D2' });
+          finalizarUi(idSalvo);
       }).catch(err => {
+          // Mesmo se o Firebase falhar, salva localmente para não perder o cliente
+          const idLocal = balcaoDiaEditId || ('local_' + Date.now());
+          upsertBalcaoNaLista({ ...dados, id: idLocal });
+          limparFormBalcaoDia();
+          if (opcoes.irLista) {
+              mostrarAbaCliente('lista');
+              irParaClienteBalcaoNaLista(dados.nome);
+          }
           const msg = (err.message || '').toLowerCase().includes('permission')
-              ? 'Sem permissão no Firebase. Adicione a coleção balcao_dia nas Regras do Firestore (veja firebase-regras-exemplo.txt) e publique.'
-              : (err.message || 'Não foi possível salvar.');
-          Swal.fire('Erro', msg, 'error');
+              ? 'Sem permissão no Firebase. O cliente foi salvo neste computador. Publique as regras do Firestore (coleção balcao_dia).'
+              : ('Salvo neste computador. Nuvem: ' + (err.message || 'falha ao sincronizar'));
+          Swal.fire('Atenção', msg, 'warning');
       });
   }
 
   function irParaClienteBalcaoNaLista(nome) {
+      mostrarAbaCliente('lista');
       let busca = document.getElementById('balcaoBuscaCliente');
       if (busca) busca.value = '';
       let lista = [...balcaoDiaLista].sort((a, b) =>
@@ -6825,7 +7613,7 @@
               <div class="cupom-bloco">
                   <div><b>Cliente:</b> ${htmlDestaqueCupom(reg.nome)}</div>
                   ${reg.telefone ? '<div><b>Tel:</b> ' + escaparHtml(reg.telefone) + '</div>' : ''}
-                  ${reg.endereco ? '<div><b>End.:</b> ' + escaparHtml(reg.endereco) + '</div>' : ''}
+                  ${formatarEnderecoBalcaoResumo(reg) ? '<div><b>End.:</b> ' + escaparHtml(formatarEnderecoBalcaoResumo(reg)) + '</div>' : ''}
                   <div><b>Data:</b> ${formatarDataHoraBR(reg.criadoEm || obterDataHoraLocal())}</div>
                   <div><b>Pagamento:</b> ${escaparHtml(pagTxt)}</div>
               </div>
@@ -7058,7 +7846,7 @@
           }).join('');
 
           lista.innerHTML += `
-            <div class="client-card" data-cliente-id="${c.id}"${c.novoOnline ? ' style="border-left-color:var(--accent); box-shadow:0 0 0 2px rgba(212,175,55,0.35);"' : ''}>
+            <div class="client-card" data-cliente-id="${c.id}"${c.novoOnline ? ' style="box-shadow:0 0 0 3px rgba(201,162,59,0.55);"' : ''}>
               <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:12px;">
                   <div>
                       <div class="client-name">${c.nome}${c.novoOnline ? ' <span style="font-size:11px; background:var(--accent); color:#000; padding:3px 8px; border-radius:4px; font-family:Poppins,sans-serif; font-style:normal;">🛎️ NOVO ONLINE</span>' : ''}</div>
@@ -7075,7 +7863,7 @@
                   <button class="btn-action" style="color:var(--danger); border-color: #4a1515;" onclick="cancelarPedido('${c.id}')"><span>🚫</span>CANCELAR TUDO</button>
                   <button class="btn-action" style="color:var(--accent); border-color: #4a3e15;" onclick="limparMesa('${c.id}')"><span>🍽️</span>LIBERAR MESA</button>
                   <button class="btn-action act-del admin-only" onclick="excluirCliente('${c.id}')"><span>🗑️</span>EXCLUIR</button>
-                  <button class="btn-action" style="background:var(--success); color:#FFF; border-color: var(--success);" onclick="pagarSelecionados('${c.id}')"><span>💳</span>PAGAR SELEÇÃO</button>
+                  <button class="btn-action" style="background:#3D7A35; color:#FFF; border-color:#111111;" onclick="pagarSelecionados('${c.id}')"><span>💳</span>PAGAR SELEÇÃO</button>
               </div>
               <table style="width:100%">${itensHtml}</table>
           </div>`;
@@ -7132,6 +7920,16 @@
           let c = clientes.find(x => x.id === id);
           if (c) return c;
       }
+      let tipo = document.querySelector('input[name="tipoPedido"]:checked')?.value;
+      if (tipo === 'online') {
+          let nome = (document.getElementById('pedidoEntregaNome')?.value || '').trim();
+          return {
+              nome: nome || 'DELIVERY',
+              tipoCadastro: 'delivery',
+              telefone: (document.getElementById('pedidoEntregaTelefone')?.value || '').trim(),
+              endereco: formatarEnderecoEntregaPedido()
+          };
+      }
       let mesa = (document.getElementById('inputMesaPedido')?.value || '').trim();
       return { nome: mesa || 'BALCÃO', tipoCadastro: 'mesa', endereco: '' };
   }
@@ -7144,11 +7942,11 @@
       let idCli = document.getElementById('clienteSelect')?.value;
       let cli = clientes.find(c => c.id === idCli);
       if (cli) {
-          meta.cliente = cli.nome;
-          if (!meta.mesa) meta.mesa = cli.tipoCadastro === 'mesa' ? cli.nome : (meta.mesa || 'BALCÃO');
+          meta.cliente = meta.nomeEntrega || cli.nome;
+          if (!meta.mesa) meta.mesa = cli.tipoCadastro === 'mesa' ? cli.nome : (meta.mesa || 'DELIVERY');
       } else {
-          meta.cliente = meta.mesa || 'BALCÃO';
-          if (!meta.mesa) meta.mesa = 'BALCÃO';
+          meta.cliente = meta.nomeEntrega || meta.mesa || 'BALCÃO';
+          if (!meta.mesa) meta.mesa = meta.tipoPedido === 'online' ? 'DELIVERY' : 'BALCÃO';
       }
       return meta;
   }
@@ -7284,14 +8082,40 @@
           });
   }
 
+  function formatarEnderecoEntregaPedido() {
+      const end = (document.getElementById('pedidoEntregaEndereco')?.value || '').trim();
+      const num = (document.getElementById('pedidoEntregaNumero')?.value || '').trim();
+      const bairro = (document.getElementById('pedidoEntregaBairro')?.value || '').trim();
+      const cidade = (document.getElementById('pedidoEntregaCidade')?.value || '').trim();
+      const partes = [];
+      if (end) partes.push(end + (num ? ', ' + num : ''));
+      else if (num) partes.push('Nº ' + num);
+      if (bairro) partes.push(bairro);
+      if (cidade) partes.push(cidade);
+      return partes.join(' — ');
+  }
+
   function obterMetaPedidoForm() {
-      return {
+      const tipo = document.querySelector('input[name="tipoPedido"]:checked')?.value || 'presencial';
+      const meta = {
           garcom: (document.getElementById('inputGarcom')?.value || '').trim(),
           mesa: (document.getElementById('inputMesaPedido')?.value || '').trim(),
           pessoas: Number(document.getElementById('inputQtdPessoas')?.value) || 0,
           copos: Number(document.getElementById('inputQtdCopos')?.value) || 0,
-          pratos: Number(document.getElementById('inputQtdPratos')?.value) || 0
+          pratos: Number(document.getElementById('inputQtdPratos')?.value) || 0,
+          tipoPedido: tipo
       };
+      if (tipo === 'online') {
+          meta.nomeEntrega = (document.getElementById('pedidoEntregaNome')?.value || '').trim();
+          meta.telefone = (document.getElementById('pedidoEntregaTelefone')?.value || '').trim();
+          meta.endereco = formatarEnderecoEntregaPedido();
+          meta.enderecoRua = (document.getElementById('pedidoEntregaEndereco')?.value || '').trim();
+          meta.numero = (document.getElementById('pedidoEntregaNumero')?.value || '').trim();
+          meta.bairro = (document.getElementById('pedidoEntregaBairro')?.value || '').trim();
+          meta.cidade = (document.getElementById('pedidoEntregaCidade')?.value || '').trim();
+          if (!meta.mesa) meta.mesa = 'DELIVERY';
+      }
+      return meta;
   }
 
   function sincronizarDadosClienteNoPedido() {
@@ -7303,6 +8127,18 @@
           mesaEl.value = c.nome || '';
       } else if (c.tipoCadastro === 'delivery') {
           mesaEl.value = c.endereco ? `DELIVERY - ${c.endereco}` : 'DELIVERY';
+          const nomeEl = document.getElementById('pedidoEntregaNome');
+          const telEl = document.getElementById('pedidoEntregaTelefone');
+          const endEl = document.getElementById('pedidoEntregaEndereco');
+          const numEl = document.getElementById('pedidoEntregaNumero');
+          const baiEl = document.getElementById('pedidoEntregaBairro');
+          const cidEl = document.getElementById('pedidoEntregaCidade');
+          if (nomeEl && !nomeEl.value) nomeEl.value = c.nome || '';
+          if (telEl && !telEl.value) telEl.value = c.telefone || '';
+          if (endEl && !endEl.value) endEl.value = c.endereco || c.logradouro || '';
+          if (numEl && !numEl.value) numEl.value = c.numero || '';
+          if (baiEl && !baiEl.value) baiEl.value = c.bairro || '';
+          if (cidEl && !cidEl.value) cidEl.value = c.cidade || '';
       }
   }
 
@@ -7312,20 +8148,20 @@
       let merged = { ...base, ...(metaOverride || {}) };
       let horaRef = merged.horaPedido || obterReferenciaHoraComanda(itens);
       let d = parseDataHoraPedido(horaRef || merged.data || obterDataHoraLocal());
-      let ehDelivery = c && (c.tipoCadastro === 'delivery' || !c.tipoCadastro);
+      let ehDelivery = !!(merged.tipoPedido === 'online' || merged.endereco || (c && (c.tipoCadastro === 'delivery' || !c.tipoCadastro)));
       return {
           data: d ? d.toLocaleDateString('pt-BR') : '—',
           hora: d ? d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '—',
           numPedido: merged.numPedido || (itens[0] && itens[0].numPedido) || '—',
-          cliente: merged.cliente || (c && c.nome) || '—',
+          cliente: merged.nomeEntrega || merged.cliente || (c && c.nome) || '—',
           garcom: merged.garcom || localStorage.getItem('baytigrill_garcom') || '—',
           mesa: merged.mesa || (c && c.tipoCadastro === 'mesa' ? c.nome : '') || '—',
           pessoas: merged.pessoas || 0,
           copos: merged.copos || 0,
           pratos: merged.pratos || 0,
           ehDelivery: ehDelivery,
-          telefone: (c && c.telefone) || '',
-          endereco: (c && c.endereco) || ''
+          telefone: merged.telefone || (c && c.telefone) || '',
+          endereco: merged.endereco || (c && c.endereco) || ''
       };
   }
 
@@ -7361,8 +8197,8 @@
               + '<ol style="font-size:12px;text-align:left;line-height:1.6;margin:12px 0 0;padding-left:18px;">'
               + '<li>Feche o Chrome normal deste PC</li>'
               + '<li>Defina a <strong>KNUP IM607</strong> como impressora padrão do Windows</li>'
-              + '<li>Execute <strong>EDITAR-LINK-DO-CAIXA.bat</strong> e coloque o link do site no arquivo de texto</li>'
-              + '<li>Depois abra sempre pelo <strong>INICIAR-CAIXA-IMPRESSAO-AUTOMATICA.bat</strong></li>'
+              + '<li>Execute <strong>CRIAR-ATALHO-BAYTIGRILL.bat</strong> uma vez (icone na Area de Trabalho)</li>'
+              + '<li>Todo dia abra pelo icone <strong>BAYTIGRILL Caixa</strong> (nao pelo Chrome comum)</li>'
               + '</ol>',
           confirmButtonText: 'Entendi',
           background: '#3A4536',
@@ -7665,11 +8501,21 @@ html,body{width:58mm;min-height:0;height:auto;margin:0;padding:0;background:#fff
   function aplicarTaxaPadrao() {
       let tipo = document.querySelector('input[name="tipoPedido"]:checked').value;
       let taxaInput = document.getElementById('inputTaxa');
+      let blocoEntrega = document.getElementById('pedidoEnderecoEntrega');
+      let blocoCupom = document.getElementById('pedidoDadosCupom');
+      let mesaEl = document.getElementById('inputMesaPedido');
       
       if(tipo === 'online') {
-          if(empDados.taxaEntrega > 0) { taxaInput.value = empDados.taxaEntrega; }
+          if(taxaInput && empDados.taxaEntrega > 0) { taxaInput.value = empDados.taxaEntrega; }
+          if (blocoEntrega) blocoEntrega.style.display = 'block';
+          if (blocoCupom) blocoCupom.style.display = 'none';
+          if (mesaEl) mesaEl.value = 'DELIVERY';
+          sincronizarDadosClienteNoPedido();
       } else {
-          taxaInput.value = '';
+          if (taxaInput) taxaInput.value = '';
+          if (blocoEntrega) blocoEntrega.style.display = 'none';
+          if (blocoCupom) blocoCupom.style.display = 'block';
+          if (mesaEl && mesaEl.value === 'DELIVERY') mesaEl.value = '';
       }
       atualizarTotalCarrinho();
   }
@@ -7751,6 +8597,14 @@ html,body{width:58mm;min-height:0;height:auto;margin:0;padding:0;background:#fff
       if (pessoasEl) pessoasEl.value = '';
       if (coposEl) coposEl.value = '';
       if (pratosEl) pratosEl.value = '';
+      ['pedidoEntregaNome','pedidoEntregaTelefone','pedidoEntregaEndereco','pedidoEntregaNumero','pedidoEntregaBairro','pedidoEntregaCidade'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.value = '';
+      });
+      const blocoEntrega = document.getElementById('pedidoEnderecoEntrega');
+      if (blocoEntrega) blocoEntrega.style.display = 'none';
+      const blocoCupom = document.getElementById('pedidoDadosCupom');
+      if (blocoCupom) blocoCupom.style.display = 'block';
       renderCarrinho();
   }
 
@@ -8048,7 +8902,9 @@ html,body{width:58mm;min-height:0;height:auto;margin:0;padding:0;background:#fff
               }); 
           }
       }); 
-      balcaoDiaLista.forEach(r => { tVenda += calcularTotalBalcao(r); });
+      balcaoDiaLista.forEach(r => {
+          if (normalizarData(r.dia || r.criadoEm || '').startsWith(hoje)) tVenda += calcularTotalBalcao(r);
+      });
       let resumo = calcularResumoCaixaDia(hoje);
       document.getElementById('dashTotal').innerText = formatarMoeda(tVenda); 
       document.getElementById('dashRecebido').innerText = formatarMoeda(resumo.recebido); 
@@ -8187,65 +9043,140 @@ html,body{width:58mm;min-height:0;height:auto;margin:0;padding:0;background:#fff
 
       let htmlProdutos = document.getElementById('listaProdutosRelatorio').innerHTML;
       let htmlSaidas = document.getElementById('conteudoListaSangrias').innerHTML || '<div style="color:#000;">Nenhum lançamento de saída.</div>';
-      let logoHtml = htmlLogoImpressao(70);
+      // Só usa logo em base64 no PDF (URL local trava o html2canvas em file://)
+      let logoHtml = (logoBase64 && String(logoBase64).indexOf('data:') === 0)
+          ? `<div style="text-align:center;margin-bottom:8px;"><img src="${logoBase64}" alt="Logo" style="max-height:52px;max-width:180px;object-fit:contain;"></div>`
+          : '';
 
       let html = `
-          <div style="width: 100%; font-family: 'Poppins', sans-serif; color: #000; background: #fff; padding: 20px; box-sizing: border-box;">
+          <div id="relatorioExtratoPdfRoot" style="width:100%;font-family:Arial,Helvetica,sans-serif;color:#000;background:#fff;padding:20px;box-sizing:border-box;">
               <div style="text-align:center;">
                   ${logoHtml}
-                  ${htmlCabecalhoEmpresaImpressao({ tamanhoTitulo: 20 })}
-                  <h3 style="font-size:14px; border-bottom: 1px solid #000; padding-bottom: 10px; margin-top:0; color: #333;">${periodoStr}</h3>
+                  ${htmlCabecalhoEmpresaImpressao({ tamanhoTitulo: 20 }).replace(/Poppins/g, 'Arial')}
+                  <h3 style="font-size:14px;border-bottom:1px solid #000;padding-bottom:10px;margin-top:0;color:#000;font-weight:700;">${periodoStr}</h3>
               </div>
 
-              <h4 style="margin: 20px 0 8px 0; font-size:14px; text-transform:uppercase;">RESUMO DE CAIXA</h4>
-              <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:4px;"><span>Dinheiro:</span> <b>${vDin}</b></div>
-              <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:4px;"><span>Pix Transf.:</span> <b>${vPix}</b></div>
-              <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:4px;"><span>Cartão:</span> <b>${vCar}</b></div>
-              <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:4px;"><span>QR Code:</span> <b>${vQr}</b></div>
-              <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:4px;"><span>Site/App:</span> <b>${vOnl}</b></div>
-              <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:12px; color:#c00;"><span>(-) Despesas:</span> <b>${vSai}</b></div>
-              <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:4px; color:#c00;"><span>(-) Troco dado:</span> <b>${vTroco}</b></div>
-              <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:4px;"><span>Caixa inicial:</span> <b>${vInicial}</b></div>
-              <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:12px;"><span>Dinheiro no caixa (esperado):</span> <b>${vDinEsp}</b></div>
+              <h4 style="margin:20px 0 8px 0;font-size:14px;text-transform:uppercase;color:#000;font-weight:700;">RESUMO DE CAIXA</h4>
+              <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;color:#000;"><span>Dinheiro:</span> <b>${vDin}</b></div>
+              <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;color:#000;"><span>Pix Transf.:</span> <b>${vPix}</b></div>
+              <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;color:#000;"><span>Cartão:</span> <b>${vCar}</b></div>
+              <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;color:#000;"><span>QR Code:</span> <b>${vQr}</b></div>
+              <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;color:#000;"><span>Site/App:</span> <b>${vOnl}</b></div>
+              <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:12px;color:#000;"><span>(-) Despesas:</span> <b>${vSai}</b></div>
+              <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;color:#000;"><span>(-) Troco dado:</span> <b>${vTroco}</b></div>
+              <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;color:#000;"><span>Caixa inicial:</span> <b>${vInicial}</b></div>
+              <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:12px;color:#000;"><span>Dinheiro no caixa (esperado):</span> <b>${vDinEsp}</b></div>
               
-              <div style="display:flex; justify-content:space-between; font-size:18px; font-weight:700; border-top: 2px solid #000; padding-top:8px; font-family: 'Poppins', sans-serif;"><span>SALDO LÍQUIDO:</span> <span>${vLiq}</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:18px;font-weight:700;border-top:2px solid #000;padding-top:8px;color:#000;"><span>SALDO LÍQUIDO:</span> <span>${vLiq}</span></div>
 
-              <h4 style="margin: 25px 0 8px 0; font-size:14px; text-transform:uppercase; border-top: 1px dashed #000; padding-top: 15px;">DISCRIMINAÇÃO DE DESPESAS</h4>
-              <div style="font-size:12px; margin-bottom: 15px;">
-                  ${htmlSaidas.replace(/color: var(--text-muted);/g, 'color: #000;').replace(/color: var\(--danger\);/g, 'color: #000;')}
+              <h4 style="margin:25px 0 8px 0;font-size:14px;text-transform:uppercase;border-top:1px dashed #000;padding-top:15px;color:#000;font-weight:700;">DISCRIMINAÇÃO DE DESPESAS</h4>
+              <div style="font-size:12px;margin-bottom:15px;color:#000;">
+                  ${htmlSaidas.replace(/color:\s*var\(--text-muted\);/g, 'color:#000;').replace(/color:\s*var\(--danger\);/g, 'color:#000;').replace(/color:\s*#d0d0d0/g, 'color:#000')}
               </div>
 
-              <h4 style="margin: 25px 0 8px 0; font-size:14px; text-transform:uppercase; border-top: 1px dashed #000; padding-top: 15px;">MOVIMENTO DE PRATOS</h4>
-              <div style="font-size:13px; color:#000 !important;">
-                  ${htmlProdutos.replace(/color:var(--text-muted);/g, 'color:#000;').replace(/color:var\(--text-main\);/g, 'color:#000;').replace(/color: #555;/g, 'color:#000;')}
+              <h4 style="margin:25px 0 8px 0;font-size:14px;text-transform:uppercase;border-top:1px dashed #000;padding-top:15px;color:#000;font-weight:700;">MOVIMENTO DE PRATOS</h4>
+              <div style="font-size:13px;color:#000 !important;">
+                  ${htmlProdutos.replace(/color:\s*var\(--text-muted\);/g, 'color:#000;').replace(/color:\s*var\(--text-main\);/g, 'color:#000;').replace(/color:\s*#555;/g, 'color:#000;').replace(/Poppins/g, 'Arial')}
               </div>
               
-              <div style="border-top:1px solid #000; margin: 30px 0 10px;"></div>
-              <div style="text-align:center; font-size:11px; color:#444;">Impresso em: ${new Date().toLocaleString('pt-BR')}</div>
+              <div style="border-top:1px solid #000;margin:30px 0 10px;"></div>
+              <div style="text-align:center;font-size:11px;color:#000;">Impresso em: ${new Date().toLocaleString('pt-BR')}</div>
           </div>
       `;
 
+      gerarPdfExtratoCaixa(html, 'Relatorio_BAYTIGRILL_' + hojeStr.replace(/\//g, '-') + '.pdf');
+  }
+
+  function abrirImpressaoExtratoHtml(htmlInterno) {
+      const win = window.open('', '_blank', 'width=820,height=900');
+      if (!win) {
+          Swal.fire('Bloqueado', 'Permita pop-ups para imprimir o extrato, ou tente novamente.', 'warning');
+          return;
+      }
+      win.document.write(`<!DOCTYPE html><html><head><title>Extrato BAYTIGRILL</title>
+          <style>
+            @page { margin: 12mm; }
+            body { margin: 0; background: #fff; color: #000; font-family: Arial, Helvetica, sans-serif; }
+            button { display: none !important; }
+          </style>
+        </head><body>${htmlInterno}
+          <script>
+            window.onload = function () {
+              setTimeout(function () {
+                try { window.focus(); window.print(); } catch (e) {}
+              }, 350);
+            };
+          <\/script>
+        </body></html>`);
+      win.document.close();
+  }
+
+  function gerarPdfExtratoCaixa(html, nomeArquivo) {
       Swal.fire({
           title: 'Gerando PDF...',
           text: 'Preparando o documento, aguarde...',
-          didOpen: () => { Swal.showLoading() }
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          didOpen: () => { Swal.showLoading(); }
       });
 
-      let elementoHTML = document.createElement('div');
-      elementoHTML.innerHTML = html;
+      const antigo = document.getElementById('pdf-export-temp');
+      if (antigo) antigo.remove();
 
-      let opt = {
-        margin:       10,
-        filename:     'Relatorio_BAYTIGRILL_' + hojeStr.replace(/\//g, '-') + '.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      const host = document.createElement('div');
+      host.id = 'pdf-export-temp';
+      host.style.cssText = 'position:fixed;left:-10000px;top:0;width:794px;background:#fff;z-index:-1;pointer-events:none;';
+      host.innerHTML = html;
+      document.body.appendChild(host);
+
+      const alvo = host.querySelector('#relatorioExtratoPdfRoot') || host.firstElementChild || host;
+      const limpar = () => { try { host.remove(); } catch (e) {} };
+
+      const falharParaImpressao = (motivo) => {
+          limpar();
+          Swal.fire({
+              icon: 'info',
+              title: 'Abrindo impressão',
+              text: (motivo || 'O download automático não concluiu.') + ' Use a janela de impressão e escolha "Salvar como PDF" se quiser o arquivo.',
+              confirmButtonText: 'OK'
+          }).then(() => abrirImpressaoExtratoHtml(html));
       };
 
-      html2pdf().set(opt).from(elementoHTML).save().then(() => {
-          Swal.close();
-          Swal.fire('Baixado!', 'Extrato salvo no seu computador/celular.', 'success');
-      });
+      if (typeof html2pdf === 'undefined') {
+          falharParaImpressao('Biblioteca PDF não carregou (verifique a internet).');
+          return;
+      }
+
+      const opt = {
+          margin: 10,
+          filename: nomeArquivo || 'Relatorio_BAYTIGRILL.pdf',
+          image: { type: 'jpeg', quality: 0.95 },
+          html2canvas: {
+              scale: 1.5,
+              useCORS: true,
+              allowTaint: true,
+              logging: false,
+              backgroundColor: '#ffffff',
+              windowWidth: 794,
+              imageTimeout: 4000
+          },
+          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+          pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+      };
+
+      const prometeSave = html2pdf().set(opt).from(alvo).save();
+      const prometeTimeout = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Tempo esgotado ao gerar o PDF.')), 18000)
+      );
+
+      Promise.race([prometeSave, prometeTimeout])
+          .then(() => {
+              limpar();
+              Swal.fire({ icon: 'success', title: 'Baixado!', text: 'Extrato salvo no seu computador/celular.', timer: 2200, showConfirmButton: false });
+          })
+          .catch((err) => {
+              falharParaImpressao(err && err.message ? err.message : '');
+          });
   }
 
   function lancarSangria() {
@@ -8993,22 +9924,27 @@ html,body{width:58mm;min-height:0;height:auto;margin:0;padding:0;background:#fff
   function atualizarInputsEmpresa() { 
       if(document.getElementById('confEmpNome')) { 
           document.getElementById('confEmpNome').value = empDados.nome || ''; 
+      }
+      if(document.getElementById('confEmpEnd')) {
           document.getElementById('confEmpEnd').value = empDados.end || ''; 
+      }
+      if(document.getElementById('confEmpTel')) {
           document.getElementById('confEmpTel').value = empDados.tel || ''; 
-          
+      }
+      if(document.getElementById('confEmpTaxa')) {
           if(empDados.taxaEntrega > 0) {
               document.getElementById('confEmpTaxa').value = empDados.taxaEntrega;
           } else {
               document.getElementById('confEmpTaxa').value = '';
           }
-          if(document.getElementById('confEmpPix')) {
-              document.getElementById('confEmpPix').value = empDados.pixCopiaCola || '';
-          }
-          atualizarPreviewQrConfig();
-          atualizarDisplayContadorPedido();
-          sincronizarChkExigirSenhaCaixa();
-          atualizarLinkCardapioDigital();
-      } 
+      }
+      if(document.getElementById('confEmpPix')) {
+          document.getElementById('confEmpPix').value = empDados.pixCopiaCola || '';
+      }
+      atualizarPreviewQrConfig();
+      atualizarDisplayContadorPedido();
+      sincronizarChkExigirSenhaCaixa();
+      atualizarLinkCardapioDigital();
   }
   
   function formatarMoeda(v) { return Number(v).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'}); }
@@ -9078,30 +10014,21 @@ html,body{width:58mm;min-height:0;height:auto;margin:0;padding:0;background:#fff
       atualizarBotoesLoginCaixa();
   }
   
-  function salvarDadosEmpresa() { 
-      let n = document.getElementById('confEmpNome').value.trim(); 
-      let e = document.getElementById('confEmpEnd').value.trim(); 
-      let t = document.getElementById('confEmpTel').value.trim(); 
-      let tx = Number(String(document.getElementById('confEmpTaxa').value || '').replace(',', '.')) || 0; 
-      let pix = (document.getElementById('confEmpPix').value || '').trim();
-
-      let dados = { nome: n || 'BAYTIGRILL', end: e, tel: t, taxaEntrega: tx, pixCopiaCola: pix };
+  function persistirDadosEmpresaParcial(dados, tituloOk, textoOk) {
       aplicarDadosEmpresaNoApp(dados);
-
       if (!firebaseConfigurado()) {
           Swal.fire({
               icon: 'success',
-              title: 'Salvo!',
-              text: 'Configurações guardadas neste dispositivo. Ao configurar o Firebase, sincronizará na nuvem.',
+              title: tituloOk || 'Salvo!',
+              text: textoOk || 'Configurações guardadas neste dispositivo. Ao configurar o Firebase, sincronizará na nuvem.',
               timer: 2800,
               showConfirmButton: false
           });
           return;
       }
-
       Swal.fire({ title: 'Salvando...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
       db.collection("config").doc("empresa").set(dados, { merge: true })
-          .then(() => Swal.fire({ icon: 'success', title: 'Sucesso', text: 'Os dados do restaurante foram salvos na nuvem.' }))
+          .then(() => Swal.fire({ icon: 'success', title: 'Sucesso', text: textoOk || 'Dados salvos na nuvem.' }))
           .catch(err => {
               console.error(err);
               Swal.fire({
@@ -9110,6 +10037,48 @@ html,body{width:58mm;min-height:0;height:auto;margin:0;padding:0;background:#fff
                   text: 'Não foi possível enviar ao Firebase agora. Os dados ficaram salvos neste aparelho.'
               });
           });
+  }
+
+  function salvarEnderecoEmpresa() {
+      let n = (document.getElementById('confEmpNome')?.value || '').trim();
+      let e = (document.getElementById('confEmpEnd')?.value || '').trim();
+      let t = (document.getElementById('confEmpTel')?.value || '').trim();
+      persistirDadosEmpresaParcial(
+          { nome: n || 'BAYTIGRILL', end: e, tel: t },
+          'Salvo!',
+          'Endereço e dados do restaurante salvos.'
+      );
+  }
+
+  function salvarChavePixEmpresa() {
+      let pix = (document.getElementById('confEmpPix')?.value || '').trim();
+      persistirDadosEmpresaParcial(
+          { pixCopiaCola: pix },
+          'Salvo!',
+          'Chave PIX salva.'
+      );
+  }
+
+  function salvarTaxaEntregaEmpresa() {
+      let tx = Number(String(document.getElementById('confEmpTaxa')?.value || '').replace(',', '.')) || 0;
+      persistirDadosEmpresaParcial(
+          { taxaEntrega: tx },
+          'Salvo!',
+          'Taxa de entrega salva.'
+      );
+  }
+
+  function salvarDadosEmpresa() {
+      let n = (document.getElementById('confEmpNome')?.value || '').trim();
+      let e = (document.getElementById('confEmpEnd')?.value || '').trim();
+      let t = (document.getElementById('confEmpTel')?.value || '').trim();
+      let tx = Number(String(document.getElementById('confEmpTaxa')?.value || '').replace(',', '.')) || 0;
+      let pix = (document.getElementById('confEmpPix')?.value || '').trim();
+      persistirDadosEmpresaParcial(
+          { nome: n || 'BAYTIGRILL', end: e, tel: t, taxaEntrega: tx, pixCopiaCola: pix },
+          'Salvo!',
+          'Os dados do restaurante foram salvos.'
+      );
   }
   
   function editarDadosCliente(id) { let c = clientes.find(x => x.id === id); let novoNome = prompt("Corrigir nome na comanda:", c.nome); if(novoNome && novoNome.trim() !== '') { db.collection("clientes").doc(id).update({nome: novoNome.toUpperCase()}).then(() => Swal.fire({icon:'success', title: 'Atualizado', timer: 1000, showConfirmButton: false})); } }
