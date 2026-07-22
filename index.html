@@ -1059,6 +1059,23 @@
 
   .pedido-vinculo-box { display: flex; flex-direction: column; gap: 10px; }
   .pedido-vinculo-busca { width: 100%; margin-top: 4px; padding: 14px; font-size: 13px; }
+  .pedido-entrega-busca-wrap { position: relative; margin-bottom: 14px; }
+  .pedido-entrega-busca-wrap .pedido-vinculo-busca { margin-top: 6px; }
+  .pedido-entrega-sugestoes {
+      position: absolute; left: 0; right: 0; top: 100%; z-index: 40;
+      background: #fff; border: 2px solid #4B5D3F; border-top: none;
+      border-radius: 0 0 8px 8px; max-height: 220px; overflow-y: auto;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  }
+  .pedido-entrega-sugestao {
+      display: block; width: 100%; text-align: left; padding: 12px 14px;
+      border: none; border-bottom: 1px solid #E5E8E3; background: #fff;
+      cursor: pointer; font-family: 'Poppins', sans-serif; color: #111;
+  }
+  .pedido-entrega-sugestao:hover, .pedido-entrega-sugestao:focus { background: #E8EDE6; }
+  .pedido-entrega-sugestao strong { display: block; font-size: 13px; font-weight: 700; }
+  .pedido-entrega-sugestao span { display: block; font-size: 11px; color: #444; margin-top: 3px; font-weight: 600; }
+  .pedido-entrega-sugestoes-vazio { padding: 12px 14px; font-size: 12px; color: #666; font-weight: 600; }
   .pedido-avulso-row {
       display: inline-flex;
       align-items: center;
@@ -2587,7 +2604,7 @@
         <datalist id="opcoesCatalogo"></datalist>
 
         <div class="card">
-          <p class="balao-ajuda" style="margin-top:0; margin-bottom:16px;">Selecione a mesa ou cliente já cadastrado em <strong>Cadastrar Mesa</strong> e monte a comanda.</p>
+          <p class="balao-ajuda" style="margin-top:0; margin-bottom:16px;">Em <strong>Salão / Retirada</strong>, vincule a mesa ou cliente. Em <strong>Entrega</strong>, use a busca do cadastro ou preencha o endereço.</p>
           <h3 style="margin-top:0; color:#111; font-weight:700; font-style:normal;">Montar Comanda</h3>
           <div class="balao-bloco" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
               <div class="radio-group">
@@ -2602,7 +2619,12 @@
           </div>
           <div class="balao-bloco" id="pedidoEnderecoEntrega" style="display:none;">
               <label class="balao-titulo" style="display:block; margin-bottom:10px;">ENDEREÇO DE ENTREGA</label>
-              <p class="balao-ajuda" style="margin:0 0 12px;">Informe os dados da entrega. Se vincular um cliente delivery, os campos preenchidos dele entram automaticamente.</p>
+              <div class="pedido-entrega-busca-wrap">
+                  <label class="balao-titulo" style="display:block; font-size:10px; letter-spacing:0.6px;">BUSCAR CLIENTE CADASTRADO</label>
+                  <input type="search" id="pedidoBuscaClienteEntrega" class="pedido-vinculo-busca" placeholder="🔍 Digite nome ou telefone — puxa o cadastro automaticamente..." oninput="onBuscaClienteEntrega()" onfocus="onBuscaClienteEntrega()" autocomplete="off">
+                  <div id="pedidoBuscaClienteEntregaLista" class="pedido-entrega-sugestoes" style="display:none;" role="listbox"></div>
+              </div>
+              <p class="balao-ajuda" style="margin:0 0 12px;">Se o cliente já estiver no <strong>Cadastro de Clientes</strong>, a busca preenche os campos. Você também pode digitar o endereço manualmente.</p>
               <div class="cliente-campo-grid">
                   <div class="span-2"><input type="text" id="pedidoEntregaNome" placeholder="Nome do destinatário" autocomplete="name"></div>
                   <div class="span-2"><input type="text" id="pedidoEntregaTelefone" placeholder="Telefone" inputmode="tel" autocomplete="tel"></div>
@@ -2613,8 +2635,10 @@
                   <div><input type="text" id="pedidoEntregaBairro" placeholder="Bairro" autocomplete="address-level3"></div>
                   <div><input type="text" id="pedidoEntregaCidade" placeholder="Cidade" autocomplete="address-level2"></div>
               </div>
+              <input type="hidden" id="pedidoEntregaClienteId" value="">
+              <input type="hidden" id="pedidoEntregaFonteCadastro" value="">
           </div>
-          <div class="pedido-vinculo-box balao-bloco">
+          <div class="pedido-vinculo-box balao-bloco" id="pedidoVinculoBox">
               <label class="balao-titulo">VINCULAR AO CLIENTE OU MESA:</label>
               <input type="search" id="filtroClienteSelect" class="pedido-vinculo-busca" placeholder="🔍 Buscar nome, mesa ou digite avulso..." oninput="onFiltroClientePedido()" autocomplete="off">
               <label class="pedido-avulso-row" for="pedidoModoAvulso">
@@ -2622,7 +2646,7 @@
                   <span>Pedido <strong>avulso</strong> (sem cadastro — digite o nome abaixo)</span>
               </label>
               <input type="text" id="inputNomeAvulso" class="pedido-nome-avulso" placeholder="Ex: AVULSO, Balcão, Retirada, Cliente sem cadastro..." oninput="sincronizarNomeAvulsoPedido()" style="display:none;">
-              <select id="clienteSelect">
+              <select id="clienteSelect" onchange="sincronizarDadosClienteNoPedido()">
                   <option value="">Selecione a conta ativa...</option>
               </select>
           </div>
@@ -5636,6 +5660,10 @@
           agendarPreviewCardapioArte();
       }
       if (id === 'estoque') iniciarPainelEstoque();
+      if (id === 'pedido') {
+          if (!balcaoDiaLista.length) carregarBalcaoLocal();
+          atualizarSelect();
+      }
       if (id === 'endereco' || id === 'chavePix' || id === 'taxaEntrega' || id === 'cardapioOnline' || id === 'segurancaCaixa' || id === 'contadorPedidos') atualizarInputsEmpresa();
   }
 
@@ -6241,9 +6269,17 @@
       return new Promise((resolve, reject) => {
           let nome = String(nomeComanda || '').trim().toUpperCase();
           if (!nome) { reject(new Error('Nome vazio')); return; }
-          let existente = clientes.find(c => String(c.nome || '').toUpperCase() === nome);
+          let tipo = tipoCadastro || 'mesa';
+          let existente = clientes.find(c => {
+              if (String(c.nome || '').toUpperCase() !== nome) return false;
+              if (tipo === 'avulso') return c.tipoCadastro === 'avulso';
+              if (tipo === 'mesa') return c.tipoCadastro === 'mesa' || (!c.tipoCadastro && !c.telefone);
+              if (tipo === 'delivery') return c.tipoCadastro === 'delivery' || !c.tipoCadastro;
+              return c.tipoCadastro === tipo;
+          });
           if (existente) { resolve(existente.id); return; }
-          let dados = { nome, itens: [], tipoCadastro: tipoCadastro || 'mesa' };
+          let dados = { nome, itens: [], tipoCadastro: tipo };
+          if (tipo === 'avulso') dados.avulsoTemporario = true;
           if (!firebaseConfigurado()) {
               let idLocal = 'local_' + Date.now();
               clientes.push({ id: idLocal, ...dados });
@@ -6310,6 +6346,11 @@
 
   function resolverVinculoPedido() {
       return new Promise((resolve, reject) => {
+          let tipo = document.querySelector('input[name="tipoPedido"]:checked')?.value || 'presencial';
+          if (tipo === 'online') {
+              resolverVinculoPedidoEntrega().then(resolve).catch(reject);
+              return;
+          }
           if (document.getElementById('pedidoModoAvulso')?.checked) {
               let nome = (document.getElementById('inputNomeAvulso')?.value || '').trim();
               if (!nome) {
@@ -6317,7 +6358,7 @@
                   return;
               }
               sincronizarNomeAvulsoPedido();
-              resolverOuCriarClientePorNome(nome, 'mesa').then(id => {
+              resolverOuCriarClientePorNome(nome, 'avulso').then(id => {
                   let c = clientes.find(x => x.id === id);
                   if (!c) reject(new Error('Não foi possível abrir a comanda avulsa.'));
                   else resolve({ id, cliente: c });
@@ -6334,6 +6375,205 @@
           else resolve({ id, cliente: c });
       });
   }
+
+  function obterDadosFormEntregaPedido() {
+      return {
+          nome: (document.getElementById('pedidoEntregaNome')?.value || '').trim(),
+          telefone: (document.getElementById('pedidoEntregaTelefone')?.value || '').trim(),
+          endereco: (document.getElementById('pedidoEntregaEndereco')?.value || '').trim(),
+          numero: (document.getElementById('pedidoEntregaNumero')?.value || '').trim(),
+          bairro: (document.getElementById('pedidoEntregaBairro')?.value || '').trim(),
+          cidade: (document.getElementById('pedidoEntregaCidade')?.value || '').trim()
+      };
+  }
+
+  function resolverOuCriarClienteDelivery(dados) {
+      return new Promise((resolve, reject) => {
+          let nome = String(dados.nome || '').trim().toUpperCase();
+          if (!nome) { reject(new Error('Informe o nome do destinatário da entrega.')); return; }
+          let telDig = String(dados.telefone || '').replace(/\D/g, '');
+          let existente = null;
+          let idPref = (document.getElementById('pedidoEntregaClienteId')?.value || '').trim();
+          let fonte = (document.getElementById('pedidoEntregaFonteCadastro')?.value || '').trim();
+          if (idPref && fonte === 'comanda') {
+              existente = clientes.find(c => c.id === idPref);
+          }
+          if (!existente && telDig) {
+              existente = clientes.find(c => String(c.telefone || '').replace(/\D/g, '') === telDig);
+          }
+          if (!existente) {
+              existente = clientes.find(c => String(c.nome || '').toUpperCase() === nome && (c.tipoCadastro === 'delivery' || !c.tipoCadastro));
+          }
+          let payload = {
+              nome,
+              telefone: dados.telefone || '',
+              endereco: formatarEnderecoEntregaPedido() || dados.endereco || '',
+              logradouro: dados.endereco || '',
+              numero: dados.numero || '',
+              bairro: dados.bairro || '',
+              cidade: dados.cidade || '',
+              tipoCadastro: 'delivery'
+          };
+          if (existente) {
+              Object.assign(existente, payload);
+              if (firebaseConfigurado()) {
+                  db.collection('clientes').doc(existente.id).set(payload, { merge: true }).catch(() => {});
+              }
+              resolve(existente.id);
+              return;
+          }
+          let dadosNovo = { ...payload, itens: [] };
+          if (!firebaseConfigurado()) {
+              let idLocal = 'local_' + Date.now();
+              clientes.push({ id: idLocal, ...dadosNovo });
+              atualizarSelect();
+              resolve(idLocal);
+              return;
+          }
+          db.collection('clientes').add(dadosNovo).then(ref => {
+              clientes.push({ id: ref.id, ...dadosNovo });
+              atualizarSelect();
+              resolve(ref.id);
+          }).catch(reject);
+      });
+  }
+
+  function resolverVinculoPedidoEntrega() {
+      return new Promise((resolve, reject) => {
+          let dados = obterDadosFormEntregaPedido();
+          if (!dados.nome) {
+              reject(new Error('Informe o nome do destinatário da entrega.'));
+              return;
+          }
+          resolverOuCriarClienteDelivery(dados).then(id => {
+              let c = clientes.find(x => x.id === id);
+              if (!c) reject(new Error('Não foi possível abrir a comanda de entrega.'));
+              else resolve({ id, cliente: c });
+          }).catch(reject);
+      });
+  }
+
+  function listarCadastrosParaEntrega(termo) {
+      let t = String(termo || '').trim().toLowerCase();
+      let tDig = t.replace(/\D/g, '');
+      if (!balcaoDiaLista.length) {
+          try { balcaoDiaLista = JSON.parse(localStorage.getItem(obterChaveBalcaoLocal()) || '[]'); } catch (e) {}
+      }
+      let mapa = new Map();
+      (balcaoDiaLista || []).forEach(reg => {
+          if (!reg || !reg.nome) return;
+          mapa.set('balcao:' + reg.id, {
+              id: reg.id,
+              fonte: 'balcao',
+              nome: reg.nome || '',
+              telefone: reg.telefone || '',
+              endereco: reg.endereco || '',
+              numero: reg.numero || '',
+              bairro: reg.bairro || '',
+              cidade: reg.cidade || ''
+          });
+      });
+      (clientes || []).forEach(c => {
+          if (!c || !c.nome) return;
+          if (c.tipoCadastro === 'mesa') return;
+          let key = 'comanda:' + c.id;
+          if (mapa.has('balcao:' + c.id)) return;
+          mapa.set(key, {
+              id: c.id,
+              fonte: 'comanda',
+              nome: c.nome || '',
+              telefone: c.telefone || '',
+              endereco: c.endereco || c.logradouro || '',
+              numero: c.numero || '',
+              bairro: c.bairro || '',
+              cidade: c.cidade || ''
+          });
+      });
+      let lista = Array.from(mapa.values());
+      if (t) {
+          lista = lista.filter(reg => {
+              let nome = String(reg.nome || '').toLowerCase();
+              let tel = String(reg.telefone || '').replace(/\D/g, '');
+              let end = [reg.endereco, reg.numero, reg.bairro, reg.cidade].join(' ').toLowerCase();
+              return nome.includes(t) || end.includes(t) || (tDig && tel.includes(tDig));
+          });
+      }
+      return lista.sort((a, b) => String(a.nome).localeCompare(String(b.nome), 'pt-BR', { sensitivity: 'base' })).slice(0, 12);
+  }
+
+  function fecharSugestoesClienteEntrega() {
+      let box = document.getElementById('pedidoBuscaClienteEntregaLista');
+      if (box) { box.style.display = 'none'; box.innerHTML = ''; }
+  }
+
+  function onBuscaClienteEntrega() {
+      let inp = document.getElementById('pedidoBuscaClienteEntrega');
+      let box = document.getElementById('pedidoBuscaClienteEntregaLista');
+      if (!inp || !box) return;
+      let termo = (inp.value || '').trim();
+      if (termo.length < 1) { fecharSugestoesClienteEntrega(); return; }
+      let lista = listarCadastrosParaEntrega(termo);
+      if (!lista.length) {
+          box.innerHTML = '<div class="pedido-entrega-sugestoes-vazio">Nenhum cliente encontrado. Preencha o endereço abaixo.</div>';
+          box.style.display = 'block';
+          return;
+      }
+      box.innerHTML = lista.map(reg => {
+          let end = formatarEnderecoBalcaoResumo(reg) || 'Sem endereço cadastrado';
+          let tel = reg.telefone ? ' • ' + escaparHtml(reg.telefone) : '';
+          let fonteEnc = encodeURIComponent(reg.fonte || 'balcao');
+          let idEnc = encodeURIComponent(String(reg.id || ''));
+          return `<button type="button" class="pedido-entrega-sugestao" role="option" onclick="selecionarClienteEntregaCadastro('${fonteEnc}','${idEnc}')">
+              <strong>${escaparHtml(reg.nome)}</strong>
+              <span>${escaparHtml(end)}${tel}</span>
+          </button>`;
+      }).join('');
+      box.style.display = 'block';
+  }
+
+  function selecionarClienteEntregaCadastro(fonte, id) {
+      fonte = decodeURIComponent(fonte || '');
+      id = decodeURIComponent(id || '');
+      let lista = listarCadastrosParaEntrega('');
+      let reg = lista.find(x => x.fonte === fonte && String(x.id) === String(id));
+      if (!reg) {
+          if (fonte === 'balcao') reg = (balcaoDiaLista || []).find(x => x.id === id);
+          else reg = (clientes || []).find(x => x.id === id);
+          if (reg) {
+              reg = {
+                  id: reg.id,
+                  fonte,
+                  nome: reg.nome || '',
+                  telefone: reg.telefone || '',
+                  endereco: reg.endereco || reg.logradouro || '',
+                  numero: reg.numero || '',
+                  bairro: reg.bairro || '',
+                  cidade: reg.cidade || ''
+              };
+          }
+      }
+      if (!reg) return;
+      const setVal = (idEl, val) => { let el = document.getElementById(idEl); if (el) el.value = val || ''; };
+      setVal('pedidoEntregaNome', reg.nome);
+      setVal('pedidoEntregaTelefone', reg.telefone);
+      setVal('pedidoEntregaEndereco', reg.endereco);
+      setVal('pedidoEntregaNumero', reg.numero);
+      setVal('pedidoEntregaBairro', reg.bairro);
+      setVal('pedidoEntregaCidade', reg.cidade);
+      setVal('pedidoEntregaClienteId', reg.id);
+      setVal('pedidoEntregaFonteCadastro', reg.fonte || 'balcao');
+      let busca = document.getElementById('pedidoBuscaClienteEntrega');
+      if (busca) busca.value = reg.nome || '';
+      fecharSugestoesClienteEntrega();
+      const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 1600, background: '#3A4536', color: '#F0E6D2' });
+      Toast.fire({ icon: 'success', title: 'Cadastro aplicado na entrega' });
+  }
+
+  document.addEventListener('click', function(ev) {
+      let wrap = document.querySelector('.pedido-entrega-busca-wrap');
+      if (!wrap) return;
+      if (!wrap.contains(ev.target)) fecharSugestoesClienteEntrega();
+  });
 
   function limparFormularioGarcom() {
       carrinhoGarcom = [];
@@ -6588,7 +6828,8 @@
       const el = document.getElementById('listaMesasCadastro');
       if (!el) return;
       const contas = clientes.filter(c =>
-          c.tipoCadastro === 'mesa' || c.tipoCadastro === 'delivery' || !c.tipoCadastro
+          c.tipoCadastro !== 'avulso' &&
+          (c.tipoCadastro === 'mesa' || c.tipoCadastro === 'delivery' || !c.tipoCadastro)
       );
       if (!contas.length) {
           el.innerHTML = '<p style="margin:0;">Nenhuma mesa ou cliente cadastrado. Use o formulário acima.</p>';
@@ -6635,41 +6876,61 @@
       return { itens: [], pagamento: '', novoOnline: false };
   }
 
-  function limparMesa(cid) { 
+  function limparMesa(cid) {
+      let c = clientes.find(x => x.id === cid);
+      let ehAvulso = c && c.tipoCadastro === 'avulso';
       Swal.fire({
-          title:'Liberar Mesa?', 
-          text: 'Isso irá arquivar os pratos consumidos e liberar a mesa para novos clientes.', 
-          icon:'warning', 
-          showCancelButton:true, 
-          confirmButtonColor: '#D4AF37', 
-          confirmButtonText: 'Sim, Liberar Mesa'
-      }).then(r => { 
-          if(r.isConfirmed) { 
-              let c = clientes.find(x => x.id === cid);
-              const zerar = () => {
-                  const upd = payloadZerarItensComanda();
-                  if (!firebaseConfigurado()) {
-                      if (c) { c.itens = []; c.pagamento = ''; c.novoOnline = false; }
-                      render();
-                      return Swal.fire('Mesa Liberada!','','success');
-                  }
-                  return db.collection("clientes").doc(cid).update(upd).then(() => Swal.fire('Mesa Liberada!','','success'));
-              };
-              if (c && Array.isArray(c.itens) && c.itens.length > 0) {
-                  if (!firebaseConfigurado()) {
-                      zerar();
-                      return;
-                  }
-                  db.collection("caixa").add({
-                      tipo: 'REGISTRO_ITENS',
-                      data: obterDataHoraLocal(),
-                      itens: c.itens
-                  }).then(zerar);
-              } else {
-                  zerar();
+          title: ehAvulso ? 'Encerrar comanda avulsa?' : 'Liberar Mesa?',
+          text: ehAvulso
+              ? 'A comanda será encerrada e removida (não fica cadastrada como mesa).'
+              : 'Isso irá arquivar os pratos consumidos e liberar a mesa para novos clientes.',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#D4AF37',
+          confirmButtonText: ehAvulso ? 'Sim, encerrar' : 'Sim, Liberar Mesa'
+      }).then(r => {
+          if (!r.isConfirmed) return;
+          const finalizarOk = () => Swal.fire(ehAvulso ? 'Comanda encerrada!' : 'Mesa Liberada!', '', 'success');
+          const removerAvulso = () => {
+              if (!firebaseConfigurado()) {
+                  clientes = clientes.filter(x => x.id !== cid);
+                  render();
+                  atualizarSelect();
+                  renderListaMesasCadastro();
+                  return finalizarOk();
               }
-          } 
-      }); 
+              return db.collection('clientes').doc(cid).delete().then(() => {
+                  clientes = clientes.filter(x => x.id !== cid);
+                  render();
+                  atualizarSelect();
+                  renderListaMesasCadastro();
+                  finalizarOk();
+              });
+          };
+          const zerar = () => {
+              if (ehAvulso) return removerAvulso();
+              const upd = payloadZerarItensComanda();
+              if (!firebaseConfigurado()) {
+                  if (c) { c.itens = []; c.pagamento = ''; c.novoOnline = false; }
+                  render();
+                  return finalizarOk();
+              }
+              return db.collection('clientes').doc(cid).update(upd).then(finalizarOk);
+          };
+          if (c && Array.isArray(c.itens) && c.itens.length > 0) {
+              if (!firebaseConfigurado()) {
+                  zerar();
+                  return;
+              }
+              db.collection('caixa').add({
+                  tipo: 'REGISTRO_ITENS',
+                  data: obterDataHoraLocal(),
+                  itens: c.itens
+              }).then(zerar);
+          } else {
+              zerar();
+          }
+      });
   }
 
   function calcularSaldoCliente(c) {
@@ -7672,7 +7933,7 @@
           let itens = Array.isArray(c.itens) ? c.itens : [];
           if (itens.length === 0) return false;
           if (calcularSaldoCliente(c) <= 0.01) return false;
-          return c.tipoCadastro === 'mesa' || c.tipoCadastro === 'delivery' || !c.tipoCadastro;
+          return c.tipoCadastro === 'mesa' || c.tipoCadastro === 'delivery' || c.tipoCadastro === 'avulso' || !c.tipoCadastro;
       }).sort((a, b) => {
           if (a.novoOnline && !b.novoOnline) return -1;
           if (!a.novoOnline && b.novoOnline) return 1;
@@ -7714,7 +7975,8 @@
           let saldo = calcularSaldoCliente(c);
           let itens = Array.isArray(c.itens) ? c.itens : [];
           let qtdAbertos = itens.filter(i => !i.pago).length;
-          let isDelivery = c.tipoCadastro === 'delivery' || !c.tipoCadastro;
+          let isAvulso = c.tipoCadastro === 'avulso';
+          let isDelivery = !isAvulso && (c.tipoCadastro === 'delivery' || !c.tipoCadastro);
           let nums = itens.map(i => Number(i.numPedido) || 0);
           let ultimoPedido = nums.length ? Math.max(...nums) : 0;
           let horaRef = obterReferenciaHoraComanda(itens);
@@ -7724,11 +7986,13 @@
           let infoDelivery = isDelivery
               ? `<div class="comanda-inicio-info">${c.telefone ? '📞 ' + c.telefone : ''}${c.endereco ? '<br>📍 ' + c.endereco : ''}</div>`
               : '';
+          let tipoLabel = isAvulso ? '🧾 AVULSO' : (isDelivery ? '🛵 DELIVERY' : '🪑 MESA / SALÃO');
+          let tipoClass = isAvulso ? 'comanda-tipo-mesa' : (isDelivery ? 'comanda-tipo-delivery' : 'comanda-tipo-mesa');
 
           return `
-            <div class="comanda-inicio-card ${isDelivery ? 'comanda-tipo-delivery' : 'comanda-tipo-mesa'}${c.novoOnline ? ' comanda-nova' : ''}" onclick="abrirComandaDoInicio('${c.id}')">
+            <div class="comanda-inicio-card ${tipoClass}${c.novoOnline ? ' comanda-nova' : ''}" onclick="abrirComandaDoInicio('${c.id}')">
                 <div class="comanda-inicio-top">
-                    <span class="comanda-inicio-tipo">${isDelivery ? '🛵 DELIVERY' : '🪑 MESA / SALÃO'}</span>
+                    <span class="comanda-inicio-tipo">${tipoLabel}</span>
                     ${c.novoOnline ? '<span class="comanda-inicio-alerta">NOVO</span>' : ''}
                 </div>
                 <div class="comanda-inicio-nome">${c.nome}</div>
@@ -7778,7 +8042,7 @@
       let termo = document.getElementById('searchBox').value.toLowerCase();
       
       let listaFiltrada = clientes.filter(c => {
-      let matchFiltro = (filtroListaAtual === 'todos') || (c.tipoCadastro === filtroListaAtual) || (!c.tipoCadastro && filtroListaAtual === 'delivery');
+      let matchFiltro = (filtroListaAtual === 'todos') || (c.tipoCadastro === filtroListaAtual) || (!c.tipoCadastro && filtroListaAtual === 'delivery') || (c.tipoCadastro === 'avulso' && filtroListaAtual === 'todos');
       let nomeStr = String(c.nome || ''); 
       let matchBusca = nomeStr.toLowerCase().includes(termo);
       let itens = Array.isArray(c.itens) ? c.itens : [];
@@ -7852,8 +8116,9 @@
             <div class="client-card" data-cliente-id="${c.id}"${c.novoOnline ? ' style="box-shadow:0 0 0 3px rgba(201,162,59,0.55);"' : ''}>
               <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:12px;">
                   <div>
-                      <div class="client-name">${c.nome}${c.novoOnline ? ' <span style="font-size:11px; background:var(--accent); color:#000; padding:3px 8px; border-radius:4px; font-family:Poppins,sans-serif; font-style:normal;">🛎️ NOVO ONLINE</span>' : ''}</div>
-                      ${c.tipoCadastro === 'delivery' || !c.tipoCadastro ? `<div style="font-size:12px; color:var(--text-muted); margin-top:4px;">${c.endereco || 'Apenas Contato'}</div><div style="font-size:11px; color:#666;">Tel: ${c.telefone || 'N/I'}</div>` : ''}
+                      <div class="client-name">${c.nome}${c.tipoCadastro === 'avulso' ? ' <span style="font-size:11px; background:#4B5D3F; color:#fff; padding:3px 8px; border-radius:4px; font-family:Poppins,sans-serif; font-style:normal;">AVULSO</span>' : ''}${c.novoOnline ? ' <span style="font-size:11px; background:var(--accent); color:#000; padding:3px 8px; border-radius:4px; font-family:Poppins,sans-serif; font-style:normal;">🛎️ NOVO ONLINE</span>' : ''}</div>
+                      ${c.tipoCadastro === 'delivery' || (!c.tipoCadastro && c.tipoCadastro !== 'avulso') ? `<div style="font-size:12px; color:var(--text-muted); margin-top:4px;">${c.endereco || 'Apenas Contato'}</div><div style="font-size:11px; color:#666;">Tel: ${c.telefone || 'N/I'}</div>` : ''}
+                      ${c.tipoCadastro === 'avulso' ? `<div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Pedido avulso — não cadastrado como mesa</div>` : ''}
                       ${pagInfo}
                   </div>
                   <div style="text-align:right;"><div style="font-size:10px; color:#666; letter-spacing: 1px;">TOTAL ABERTO</div><div class="saldo-tag" style="color:${saldoCli > 0 ? 'var(--danger)' : 'var(--success)'}; font-size:18px;">${formatarMoeda(saldoCli)}</div></div>
@@ -8482,12 +8747,13 @@ html,body{width:58mm;min-height:0;height:auto;margin:0;padding:0;background:#fff
       let filtroInput = document.getElementById('filtroClienteSelect');
       let termo = filtroInput ? filtroInput.value.toLowerCase() : '';
       let s = document.getElementById('clienteSelect'); 
+      if (!s) return;
       let atual = s.value; 
       s.innerHTML = '<option value="">Selecione a conta ativa...</option>'; 
       
-      let lista = clientes;
+      let lista = clientes.filter(c => c.tipoCadastro !== 'avulso');
       if(termo) {
-          lista = clientes.filter(c => 
+          lista = lista.filter(c => 
               String(c.nome||'').toLowerCase().includes(termo) || 
               (c.telefone && c.telefone.replace(/\D/g, '').includes(termo.replace(/\D/g, '')))
           );
@@ -8506,19 +8772,25 @@ html,body{width:58mm;min-height:0;height:auto;margin:0;padding:0;background:#fff
       let taxaInput = document.getElementById('inputTaxa');
       let blocoEntrega = document.getElementById('pedidoEnderecoEntrega');
       let blocoCupom = document.getElementById('pedidoDadosCupom');
+      let blocoVinculo = document.getElementById('pedidoVinculoBox');
       let mesaEl = document.getElementById('inputMesaPedido');
       
       if(tipo === 'online') {
           if(taxaInput && empDados.taxaEntrega > 0) { taxaInput.value = empDados.taxaEntrega; }
           if (blocoEntrega) blocoEntrega.style.display = 'block';
           if (blocoCupom) blocoCupom.style.display = 'none';
+          if (blocoVinculo) blocoVinculo.style.display = 'none';
           if (mesaEl) mesaEl.value = 'DELIVERY';
-          sincronizarDadosClienteNoPedido();
+          if (!balcaoDiaLista.length) carregarBalcaoLocal();
+          fecharSugestoesClienteEntrega();
       } else {
           if (taxaInput) taxaInput.value = '';
           if (blocoEntrega) blocoEntrega.style.display = 'none';
           if (blocoCupom) blocoCupom.style.display = 'block';
+          if (blocoVinculo) blocoVinculo.style.display = '';
           if (mesaEl && mesaEl.value === 'DELIVERY') mesaEl.value = '';
+          fecharSugestoesClienteEntrega();
+          sincronizarDadosClienteNoPedido();
       }
       atualizarTotalCarrinho();
   }
@@ -8600,12 +8872,17 @@ html,body{width:58mm;min-height:0;height:auto;margin:0;padding:0;background:#fff
       if (pessoasEl) pessoasEl.value = '';
       if (coposEl) coposEl.value = '';
       if (pratosEl) pratosEl.value = '';
-      ['pedidoEntregaNome','pedidoEntregaTelefone','pedidoEntregaEndereco','pedidoEntregaNumero','pedidoEntregaBairro','pedidoEntregaCidade'].forEach(id => {
+      ['pedidoEntregaNome','pedidoEntregaTelefone','pedidoEntregaEndereco','pedidoEntregaNumero','pedidoEntregaBairro','pedidoEntregaCidade','pedidoEntregaClienteId','pedidoEntregaFonteCadastro'].forEach(id => {
           const el = document.getElementById(id);
           if (el) el.value = '';
       });
+      const buscaEntrega = document.getElementById('pedidoBuscaClienteEntrega');
+      if (buscaEntrega) buscaEntrega.value = '';
+      fecharSugestoesClienteEntrega();
       const blocoEntrega = document.getElementById('pedidoEnderecoEntrega');
       if (blocoEntrega) blocoEntrega.style.display = 'none';
+      const blocoVinculo = document.getElementById('pedidoVinculoBox');
+      if (blocoVinculo) blocoVinculo.style.display = '';
       const blocoCupom = document.getElementById('pedidoDadosCupom');
       if (blocoCupom) blocoCupom.style.display = 'block';
       renderCarrinho();
@@ -10216,6 +10493,9 @@ html,body{width:58mm;min-height:0;height:auto;margin:0;padding:0;background:#fff
   // ================= CARDÁPIO — ARTE + WHATSAPP (IMAGEM) =================
   let moldeCardapioImg = null;
   let moldeCardapioCarregando = null;
+  let pratoOrnamentoImg = null;
+  let pratoOrnamentoCarregando = null;
+  const PRATO_ORNAMENTO_VER = 2;
   let previewCardapioTimer = null;
 
   function urlAssetCardapio(caminho) {
@@ -10271,83 +10551,100 @@ html,body{width:58mm;min-height:0;height:auto;margin:0;padding:0;background:#fff
       };
   }
 
-  /** Desenha um prato ornamental (vista de cima) nos cantos do pergaminho. */
-  function desenharPratoOrnamentoCardapio(ctx, cx, cy, r) {
+  /** Remove fundo branco/claro da imagem do prato e cacheia canvas transparente. */
+  function processarPratoOrnamentoTransparente(img) {
+      let c = document.createElement('canvas');
+      c.width = img.naturalWidth || img.width;
+      c.height = img.naturalHeight || img.height;
+      let ctx = c.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      let data = ctx.getImageData(0, 0, c.width, c.height);
+      let px = data.data;
+      for (let i = 0; i < px.length; i += 4) {
+          let r = px[i], g = px[i + 1], b = px[i + 2];
+          let max = Math.max(r, g, b);
+          let min = Math.min(r, g, b);
+          if (r >= 248 && g >= 248 && b >= 248) {
+              px[i + 3] = 0;
+          } else if (r >= 235 && g >= 235 && b >= 235 && (max - min) <= 12) {
+              let media = (r + g + b) / 3;
+              let a = Math.round(255 * ((255 - media) / 20));
+              if (a < 0) a = 0;
+              if (a > 255) a = 255;
+              px[i + 3] = Math.min(px[i + 3], a);
+          }
+      }
+      ctx.putImageData(data, 0, 0);
+      return c;
+  }
+
+  function pratoOrnamentoUrl() {
+      return urlAssetCardapio('assets/prato-ornamento.png?v=' + PRATO_ORNAMENTO_VER);
+  }
+
+  function carregarPratoOrnamento(forcar) {
+      let urlAtual = pratoOrnamentoUrl();
+      if (!forcar && pratoOrnamentoImg && pratoOrnamentoImg._pronto) {
+          return Promise.resolve(pratoOrnamentoImg);
+      }
+      if (!forcar && pratoOrnamentoCarregando) return pratoOrnamentoCarregando;
+      pratoOrnamentoCarregando = new Promise((resolve) => {
+          let img = new Image();
+          img.onload = () => {
+              try {
+                  pratoOrnamentoImg = processarPratoOrnamentoTransparente(img);
+                  pratoOrnamentoImg._pronto = true;
+                  pratoOrnamentoImg._src = urlAtual;
+              } catch (e) {
+                  pratoOrnamentoImg = img;
+                  pratoOrnamentoImg._pronto = true;
+              }
+              resolve(pratoOrnamentoImg);
+          };
+          img.onerror = () => {
+              let img2 = new Image();
+              img2.onload = () => {
+                  try {
+                      pratoOrnamentoImg = processarPratoOrnamentoTransparente(img2);
+                      pratoOrnamentoImg._pronto = true;
+                  } catch (e) {
+                      pratoOrnamentoImg = img2;
+                      pratoOrnamentoImg._pronto = true;
+                  }
+                  resolve(pratoOrnamentoImg);
+              };
+              img2.onerror = () => resolve(null);
+              img2.src = urlAssetCardapio('assets/prato-ornamento-src.png?v=' + PRATO_ORNAMENTO_VER);
+          };
+          img.src = urlAtual;
+      });
+      return pratoOrnamentoCarregando;
+  }
+
+  function desenharPratoOrnamentoCardapio(ctx, cx, cy, tamanho, espelhar) {
+      let img = pratoOrnamentoImg;
+      if (!img) return;
+      let w = tamanho;
+      let h = tamanho * ((img.height || 1) / (img.width || 1));
       ctx.save();
       ctx.translate(cx, cy);
-
-      // Sombra suave
-      ctx.beginPath();
-      ctx.ellipse(2, 3, r * 1.02, r * 0.92, 0, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(62, 39, 35, 0.12)';
-      ctx.fill();
-
-      // Prato externo
-      let grad = ctx.createRadialGradient(0, -r * 0.15, r * 0.15, 0, 0, r);
-      grad.addColorStop(0, '#F5E6C8');
-      grad.addColorStop(0.55, '#E8D4A8');
-      grad.addColorStop(1, '#C9A86A');
-      ctx.beginPath();
-      ctx.arc(0, 0, r, 0, Math.PI * 2);
-      ctx.fillStyle = grad;
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(90, 60, 30, 0.55)';
-      ctx.lineWidth = Math.max(1.5, r * 0.04);
-      ctx.stroke();
-
-      // Aba / borda
-      ctx.beginPath();
-      ctx.arc(0, 0, r * 0.82, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(139, 105, 20, 0.45)';
-      ctx.lineWidth = Math.max(1, r * 0.035);
-      ctx.stroke();
-
-      // Centro do prato
-      let grad2 = ctx.createRadialGradient(-r * 0.1, -r * 0.1, 0, 0, 0, r * 0.55);
-      grad2.addColorStop(0, '#FFF8E7');
-      grad2.addColorStop(1, '#E6D2A8');
-      ctx.beginPath();
-      ctx.arc(0, 0, r * 0.55, 0, Math.PI * 2);
-      ctx.fillStyle = grad2;
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(120, 85, 40, 0.35)';
-      ctx.lineWidth = Math.max(1, r * 0.025);
-      ctx.stroke();
-
-      // Detalhe de comida estilizado (oval + folhas)
-      ctx.beginPath();
-      ctx.ellipse(0, r * 0.02, r * 0.22, r * 0.14, -0.3, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(120, 72, 40, 0.55)';
-      ctx.fill();
-
-      ctx.beginPath();
-      ctx.ellipse(-r * 0.18, -r * 0.08, r * 0.1, r * 0.05, 0.6, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(76, 110, 55, 0.5)';
-      ctx.fill();
-      ctx.beginPath();
-      ctx.ellipse(r * 0.16, -r * 0.1, r * 0.09, r * 0.045, -0.5, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(76, 110, 55, 0.45)';
-      ctx.fill();
-
-      // Filete dourado
-      ctx.beginPath();
-      ctx.arc(0, 0, r * 0.94, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(201, 162, 59, 0.55)';
-      ctx.lineWidth = Math.max(1, r * 0.03);
-      ctx.stroke();
-
+      if (espelhar) ctx.scale(-1, 1);
+      ctx.shadowColor = 'rgba(62, 39, 35, 0.18)';
+      ctx.shadowBlur = Math.max(4, tamanho * 0.08);
+      ctx.shadowOffsetY = Math.max(2, tamanho * 0.03);
+      ctx.drawImage(img, -w / 2, -h / 2, w, h);
       ctx.restore();
   }
 
   function desenharOrnamentosCantosCardapio(ctx, W, H, met) {
-      let r = Math.max(26, Math.round(48 * met.escala));
-      let y = Math.min(met.yDia - r * 0.85, H * 0.265);
-      let xEsq = met.padX * 0.48 + r * 0.2;
-      let xDir = W - met.padX * 0.48 - r * 0.2;
-      desenharPratoOrnamentoCardapio(ctx, xEsq, y, r);
-      desenharPratoOrnamentoCardapio(ctx, xDir, y, r);
+      if (!pratoOrnamentoImg) return;
+      let tamanho = Math.max(70, Math.round(118 * met.escala));
+      let y = Math.min(met.yDia - tamanho * 0.22, H * 0.268);
+      let xEsq = met.padX * 0.55 + tamanho * 0.18;
+      let xDir = W - met.padX * 0.55 - tamanho * 0.18;
+      desenharPratoOrnamentoCardapio(ctx, xEsq, y, tamanho, false);
+      desenharPratoOrnamentoCardapio(ctx, xDir, y, tamanho, true);
   }
-
   function moldeCardapioUrl() {
       let bust = MOLDE_CARDAPIO_VER;
       if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
@@ -10839,6 +11136,7 @@ html,body{width:58mm;min-height:0;height:auto;margin:0;padding:0;background:#fff
           textoPlano = tmp.innerText.replace(/\u00a0/g, ' ').trim();
       }
       let molde = await carregarMoldeCardapio();
+      await carregarPratoOrnamento();
       let W = CARDAPIO_CANVAS_W;
       let H = CARDAPIO_CANVAS_H;
       let canvas = document.getElementById('cardapioArteCanvas');
